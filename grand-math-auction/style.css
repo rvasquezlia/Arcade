@@ -33,6 +33,15 @@
             --text-sub: #64748b;
             --input-bg: #f1f5f9;
             --accent-glow: rgba(180, 83, 9, 0.15);
+
+            /* Shared kit mapping (redeclared here — see dark-block comment) */
+            --kit-accent: var(--gold-primary);
+            --kit-accent-ink: #ffffff;
+            --kit-accent-glow: var(--accent-glow);
+            --kit-surface: var(--input-bg);
+            --kit-border: var(--card-border);
+            --kit-input-bg: var(--card-bg);
+            --kit-error: var(--rose-red);
         }
 
         * {

@@ -14,6 +14,8 @@
             --font-mono: 'Share Tech Mono', monospace;
             --glow-color: rgba(0, 240, 255, 0.2);
             --shadow-color: rgba(0, 0, 0, 0.7);
+            --canvas-bg: #04070f;
+            --panel-sunken: rgba(0, 0, 0, 0.25);
 
             /* Shared kit mapping */
             --kit-accent: var(--accent-cyan);
@@ -38,6 +40,20 @@
             --text-secondary: #475569;
             --glow-color: rgba(2, 132, 199, 0.12);
             --shadow-color: rgba(0, 0, 0, 0.08);
+            --canvas-bg: #eef3fa;
+            --panel-sunken: rgba(2, 132, 199, 0.06);
+
+            /* Shared kit mapping (redeclared here — custom properties whose
+               value is itself var(--other-var) do not reliably re-track that
+               other var's light-mode override across browsers, so each theme
+               block must restate these explicitly) */
+            --kit-accent: var(--accent-cyan);
+            --kit-accent-ink: #001014;
+            --kit-accent-glow: var(--glow-color);
+            --kit-surface: var(--card-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
         }
 
         * {
@@ -189,7 +205,7 @@
             width: 380px;
             height: 380px;
             margin: 0 auto;
-            background: #04070f;
+            background: var(--canvas-bg);
             border: 2px solid var(--border-color);
             border-radius: 6px;
             box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.05);
@@ -215,7 +231,7 @@
         }
 
         .telemetry-box {
-            background: rgba(0,0,0,0.25);
+            background: var(--panel-sunken);
             border: 1px solid var(--border-color);
             border-left: 3px solid var(--accent-cyan);
             padding: 14px 18px;

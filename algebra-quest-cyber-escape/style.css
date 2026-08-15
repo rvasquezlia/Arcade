@@ -35,6 +35,18 @@
             --text-color: #0f172a;
             --subtext-color: #475569;
             --box-bg: #f8fafc;
+
+            /* Shared kit mapping (redeclared here — a custom property whose
+               value is var(--other-var) does not reliably re-track that
+               other var's light-mode override, so each theme block restates
+               these explicitly) */
+            --kit-accent: var(--accent-blue);
+            --kit-accent-ink: #001420;
+            --kit-accent-glow: rgba(2, 132, 199, 0.25);
+            --kit-surface: var(--box-bg);
+            --kit-border: var(--card-border);
+            --kit-input-bg: var(--card-bg);
+            --kit-error: var(--accent-red);
         }
 
         * {
