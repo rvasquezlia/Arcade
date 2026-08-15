@@ -1,25 +1,24 @@
         :root {
-            --bg-color: #060911;
-            --container-bg: #0b111e;
-            --card-bg: #121a2c;
-            --border-color: #1e2d4a;
-            --accent-cyan: #00f0ff;
-            --accent-green: #00ff88;
-            --accent-red: #ff2a6d;
-            --accent-gold: #ffb703;
-            --text-primary: #e2e8f0;
-            --text-secondary: #64748b;
-            --font-header: 'Orbitron', sans-serif;
-            --font-body: 'Rajdhani', sans-serif;
-            --font-mono: 'Share Tech Mono', monospace;
-            --glow-color: rgba(0, 240, 255, 0.2);
-            --shadow-color: rgba(0, 0, 0, 0.7);
-            --canvas-bg: #04070f;
-            --panel-sunken: rgba(0, 0, 0, 0.25);
+            --bg-color: #050b12;
+            --container-bg: #0a1420;
+            --card-bg: #101d2c;
+            --border-color: #1c2f42;
+            --accent-teal: #2dd4bf;
+            --accent-gold: #facc15;
+            --accent-red: #f87171;
+            --accent-green: #4ade80;
+            --text-primary: #e4edf5;
+            --text-secondary: #6d8299;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --glow-color: rgba(45, 212, 191, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.65);
+            --panel-sunken: rgba(0, 0, 0, 0.3);
+            --canvas-bg: #050b12;
 
             /* Shared kit mapping */
-            --kit-accent: var(--accent-cyan);
-            --kit-accent-ink: #001014;
+            --kit-accent: var(--accent-teal);
+            --kit-accent-ink: #00201a;
             --kit-accent-glow: var(--glow-color);
             --kit-surface: var(--card-bg);
             --kit-border: var(--border-color);
@@ -27,29 +26,32 @@
             --kit-error: var(--accent-red);
         }
 
+        /* TRUE LIGHT THEME — bright clinical-white lab report look,
+           not a second dark palette. Panels sit in the #f2f6f8–#ffffff
+           range with dark, readable text and softer accent tones. */
         body.light-mode {
-            --bg-color: #f1f5f9;
+            --bg-color: #f1f6f6;
             --container-bg: #ffffff;
-            --card-bg: #f8fafc;
-            --border-color: #cbd5e1;
-            --accent-cyan: #0284c7;
-            --accent-green: #16a34a;
+            --card-bg: #f6faf9;
+            --border-color: #c9dcd8;
+            --accent-teal: #0d9488;
+            --accent-gold: #b45309;
             --accent-red: #dc2626;
-            --accent-gold: #d97706;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --glow-color: rgba(2, 132, 199, 0.12);
-            --shadow-color: rgba(0, 0, 0, 0.08);
-            --canvas-bg: #eef3fa;
-            --panel-sunken: rgba(2, 132, 199, 0.06);
+            --accent-green: #15803d;
+            --text-primary: #0c1f22;
+            --text-secondary: #4a6763;
+            --glow-color: rgba(13, 148, 136, 0.12);
+            --shadow-color: rgba(10, 40, 40, 0.1);
+            --panel-sunken: rgba(12, 60, 55, 0.05);
+            --canvas-bg: #f6faf9;
 
-            /* Shared kit mapping (redeclared here — custom properties whose
-               value is itself var(--other-var) do not reliably re-track that
-               other var's light-mode override across browsers, so each theme
-               block must restate these explicitly) */
-            --kit-accent: var(--accent-cyan);
-            --kit-accent-ink: #001014;
-            --kit-accent-glow: var(--glow-color);
+            /* Shared kit mapping (light) — redeclared in full: a custom
+               property whose value is var(--other-var) does not reliably
+               re-track that other var's light-mode override, so every
+               --kit-* token must be restated here, not just the ink. */
+            --kit-accent: var(--accent-teal);
+            --kit-accent-ink: #000000;
+            --kit-accent-glow: rgba(13, 148, 136, 0.18);
             --kit-surface: var(--card-bg);
             --kit-border: var(--border-color);
             --kit-input-bg: var(--container-bg);
@@ -66,7 +68,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-primary);
-            font-family: var(--font-body);
+            font-family: var(--font-mono);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -75,7 +77,6 @@
             padding: 16px;
         }
 
-        /* Fixed Top Right Control Switch */
         .top-controls {
             position: fixed;
             top: 18px;
@@ -88,28 +89,29 @@
             color: var(--text-primary);
             border: 2px solid var(--border-color);
             padding: 8px 16px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-family: var(--font-mono);
             font-weight: 700;
             font-size: 0.85rem;
             cursor: pointer;
             box-shadow: 0 4px 12px var(--shadow-color);
-            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .theme-toggle-btn:hover {
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
+            border-color: var(--accent-teal);
+            color: var(--accent-teal);
         }
 
-        /* Main Container */
-        .tactical-container {
+        .lab-container {
             width: 100%;
-            max-width: 980px;
+            max-width: 1000px;
             background: var(--container-bg);
             border: 2px solid var(--border-color);
-            border-top: 5px solid var(--accent-cyan);
-            border-radius: 6px;
+            border-top: 5px solid var(--accent-teal);
+            border-radius: 10px;
             padding: 28px;
             box-shadow: 0 16px 40px var(--shadow-color);
             min-height: 600px;
@@ -118,37 +120,38 @@
             justify-content: space-between;
         }
 
-        .title-header {
-            font-family: var(--font-header);
-            font-size: 1.8rem;
-            color: var(--accent-cyan);
+        .lab-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-teal);
             text-align: center;
-            letter-spacing: 2px;
+            letter-spacing: 0.5px;
             margin-bottom: 4px;
-            text-transform: uppercase;
         }
 
-        .subtitle-header {
+        .lab-subtitle {
             font-family: var(--font-mono);
             text-align: center;
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             margin-bottom: 20px;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
-        /* HUD Bar */
         .hud-status-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--card-bg);
+            background: var(--panel-sunken);
             border: 1px solid var(--border-color);
             padding: 12px 18px;
             margin-bottom: 20px;
             font-family: var(--font-mono);
-            border-radius: 4px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .hud-item {
@@ -157,20 +160,19 @@
         }
 
         .hud-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-secondary);
             text-transform: uppercase;
         }
 
         .hud-value {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
-            color: var(--accent-cyan);
+            color: var(--accent-teal);
         }
 
-        /* Battery Energy Gauge */
-        .battery-container {
-            width: 160px;
+        .meter-container {
+            width: 150px;
             height: 12px;
             background: var(--border-color);
             border-radius: 6px;
@@ -178,38 +180,36 @@
             margin-top: 4px;
         }
 
-        .battery-fill {
+        .meter-fill {
             height: 100%;
             width: 100%;
             background: var(--accent-green);
             transition: width 0.3s ease, background-color 0.3s ease;
         }
 
-        /* Layout Grid for Interactive Arena */
         .arena-grid {
             display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 24px;
+            grid-template-columns: 400px 1fr;
+            gap: 22px;
             align-items: start;
         }
 
-        @media (max-width: 820px) {
+        @media (max-width: 860px) {
             .arena-grid {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* Canvas Radar Container */
         .canvas-wrapper {
             position: relative;
-            width: 380px;
-            height: 380px;
+            width: 100%;
+            max-width: 400px;
+            height: 340px;
             margin: 0 auto;
             background: var(--canvas-bg);
             border: 2px solid var(--border-color);
-            border-radius: 6px;
-            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.05);
-            cursor: crosshair;
+            border-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(45, 212, 191, 0.05);
         }
 
         canvas {
@@ -218,43 +218,42 @@
             height: 100%;
         }
 
-        /* Command Terminal Controls */
         .terminal-panel {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 380px;
+            min-height: 340px;
         }
 
-        .telemetry-box {
+        .scenario-box {
             background: var(--panel-sunken);
             border: 1px solid var(--border-color);
-            border-left: 3px solid var(--accent-cyan);
+            border-left: 3px solid var(--accent-teal);
             padding: 14px 18px;
             margin-bottom: 16px;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
-        .telemetry-title {
+        .scenario-title {
             font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--accent-cyan);
+            font-size: 0.72rem;
+            color: var(--accent-teal);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 6px;
         }
 
-        .telemetry-prompt {
-            font-size: 1.15rem;
+        .scenario-prompt {
+            font-family: var(--font-display);
+            font-size: 1.08rem;
             line-height: 1.5;
             font-weight: 600;
         }
 
-        /* Coordinate Inputs */
         .coord-control-group {
             display: flex;
             flex-direction: column;
@@ -270,37 +269,37 @@
         }
 
         .slider-label {
-            width: 80px;
+            width: 90px;
             font-weight: 700;
-            color: var(--accent-cyan);
+            color: var(--accent-teal);
+            font-size: 0.9rem;
         }
 
         .coord-slider {
             flex: 1;
-            accent-color: var(--accent-cyan);
+            accent-color: var(--accent-teal);
             cursor: pointer;
         }
 
         .coord-val-display {
-            width: 44px;
+            width: 54px;
             text-align: right;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
         }
 
-        /* Tactical Action Buttons */
         .fire-btn {
-            background: var(--accent-cyan);
-            color: #000;
+            background: var(--accent-teal);
+            color: #00201a;
             border: none;
             padding: 14px;
-            font-family: var(--font-header);
+            font-family: var(--font-display);
             font-size: 1rem;
-            font-weight: 900;
-            letter-spacing: 2px;
+            font-weight: 700;
+            letter-spacing: 1px;
             text-transform: uppercase;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 6px;
             box-shadow: 0 4px 14px var(--glow-color);
             transition: transform 0.15s ease, opacity 0.15s ease;
             width: 100%;
@@ -311,22 +310,19 @@
             opacity: 0.95;
         }
 
-        /* Feedback Status */
         .feedback-line {
             font-family: var(--font-mono);
             text-align: center;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             min-height: 24px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-top: 10px;
         }
 
         .text-success { color: var(--accent-green); }
         .text-error { color: var(--accent-red); }
 
-        /* General Layout Screen Center */
         .screen-center {
             display: flex;
             flex-direction: column;
@@ -337,22 +333,22 @@
         }
 
         .primary-btn {
-            background: var(--accent-cyan);
-            color: #000;
+            background: var(--accent-teal);
+            color: #00201a;
             border: none;
             padding: 14px 40px;
-            font-family: var(--font-header);
+            font-family: var(--font-display);
             font-size: 1rem;
-            font-weight: 800;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             cursor: pointer;
             margin-top: 20px;
-            border-radius: 4px;
+            border-radius: 6px;
             box-shadow: 0 4px 16px var(--glow-color);
         }
 
-        .briefing-box {
+        .brief-box {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             padding: 22px 28px;
@@ -361,30 +357,11 @@
             max-width: 680px;
             line-height: 1.7;
             font-size: 1rem;
-            border-radius: 4px;
+            border-radius: 8px;
         }
 
-        .briefing-box ul { padding-left: 20px; }
-        .briefing-box li { margin-bottom: 8px; }
-
-        .disclaimer-card {
-            background: rgba(0, 240, 255, 0.05);
-            border: 2px dashed var(--accent-cyan);
-            padding: 22px 26px;
-            margin: 20px 0;
-            text-align: center;
-            max-width: 680px;
-            border-radius: 4px;
-        }
-
-        .disclaimer-card h3 {
-            font-family: var(--font-header);
-            color: var(--accent-cyan);
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+        .brief-box ul { padding-left: 20px; }
+        .brief-box li { margin-bottom: 8px; }
 
         footer {
             margin-top: 20px;

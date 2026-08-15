@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gear Ratio Robotics: Mars Rover Workshop</title>
+
+    <!-- Google Fonts for Industrial Robotics Workshop Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Control -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Dark Mode</button>
+    </div>
+
+    <!-- Main Workshop Container -->
+    <div class="workshop-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <div class="hero-icon">⚙️</div>
+            <h1 class="workshop-title">Gear Ratio Robotics</h1>
+            <p class="workshop-subtitle">Mars Rover Assembly Bay // Ratios &amp; Unit Rates</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>MISSION BRIEFING:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Build gear trains for the Mars rover across 12 terrain challenges by selecting a driver gear and a driven gear that produce the exact target ratio.</li>
+                    <li><strong>Power Cells:</strong> Your workshop runs on 100% Power Cells. Exact gear locks recharge cells; mismatched gear trains drain power based on how far off your ratio was.</li>
+                    <li><strong>Rover Progress:</strong> Precise gear locks send the rover further across the terrain track — sloppy ones barely budge it.</li>
+                    <li><strong>Terrain Randomization:</strong> Challenges and their order are shuffled at the start of every workshop session.</li>
+                    <li><strong>Session Memory:</strong> Progress lives only in this browser tab. Reloading resets the whole assembly bay.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🔧 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before powering up the workshop!</div>
+            </div>
+
+            <button class="action-btn" onclick="startGame()">POWER UP WORKSHOP</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <h2 id="terrainHeader" class="workshop-title" style="font-size: 1.3rem; text-align: left;">Terrain 1: Dust Slope Alpha</h2>
+
+            <!-- HUD Bar -->
+            <div class="hud-bar">
+                <div class="hud-item">
+                    <span class="hud-label">Terrain</span>
+                    <span id="roundCounter" class="hud-value">1 / 12</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Power Cells</span>
+                    <div class="power-container">
+                        <div id="powerFill" class="power-fill"></div>
+                    </div>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Score</span>
+                    <span id="scoreDisplay" class="hud-value">0 PTS</span>
+                </div>
+            </div>
+
+            <!-- Rover Track -->
+            <div class="rover-track">
+                <div class="track-terrain"></div>
+                <div id="roverIcon" class="rover-icon">🤖</div>
+                <div class="track-goal">🚩</div>
+            </div>
+
+            <!-- Mission Prompt -->
+            <div class="mission-box">
+                <div class="mission-tag">Terrain Requirement</div>
+                <div id="missionText" class="mission-text">Loading terrain data...</div>
+                <div class="target-readout">Target Ratio (Driver : Driven) — <span id="targetReadout">3 : 2</span></div>
+            </div>
+
+            <!-- Gear Selection Panel -->
+            <div class="gear-panel">
+                <div class="gear-row">
+                    <div class="gear-row-label">DRIVER GEAR</div>
+                    <div id="driverButtons" class="gear-buttons"></div>
+                </div>
+                <div class="gear-row">
+                    <div class="gear-row-label">DRIVEN GEAR</div>
+                    <div id="drivenButtons" class="gear-buttons"></div>
+                </div>
+                <div class="live-readout">
+                    Achieved Ratio: <span id="achievedReadout">— : —</span>
+                </div>
+                <button class="fire-btn" onclick="engageGearTrain()">ENGAGE GEAR TRAIN ⚙️</button>
+                <div id="feedbackLine" class="feedback-line"></div>
+            </div>
+        </div>
+
+        <!-- 3. FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <div class="hero-icon">🛑</div>
+            <h1 class="workshop-title" style="color: var(--accent-red);">ROVER STRANDED</h1>
+            <p class="workshop-subtitle">Your Power Cells were fully drained by mismatched gear trains.</p>
+            <p style="font-family: var(--mono-font); margin-bottom: 16px;">Final Workshop Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🔧 Engineer: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'gear-ratio-robotics', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartGame()">REBUILD WORKSHOP</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <div class="hero-icon">🏁</div>
+            <h1 class="workshop-title" style="color: var(--accent-orange);">TERRAIN CONQUERED</h1>
+            <p class="workshop-subtitle">Master Rover Engineer Distinction Awarded</p>
+
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Outstanding engineering! You built precise gear trains across all 12 Martian terrain challenges, matching driver-to-driven ratios to get the rover safely across every obstacle.
+            </p>
+
+            <div class="score-readout">
+                Total Workshop Score: <span id="victoryScore">1000</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🔧 Engineer: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as official proof of mission completion for your instructor.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'gear-ratio-robotics', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartGame()">NEW WORKSHOP SESSION</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Engineer Rodrigo Vasquez
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

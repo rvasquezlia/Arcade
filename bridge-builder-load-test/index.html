@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge Builder Load Test: Structural Drafting Table</title>
+
+    <!-- Google Fonts for Civil Engineering Blueprint Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Engine Configuration -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Control -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Dark Mode</button>
+    </div>
+
+    <!-- Main Blueprint Container -->
+    <div class="blueprint-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <div class="hero-icon">🏗️</div>
+            <h1 class="blueprint-title">Bridge Builder Load Test</h1>
+            <p class="blueprint-subtitle">Structural Drafting Table // Adding &amp; Subtracting Fractions</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>SITE ENGINEER INSTRUCTIONS:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Solve 12 beam-span calculations by adding or subtracting fractional beam lengths with unlike denominators.</li>
+                    <li><strong>Structural Integrity:</strong> You start with 3 Integrity Points. Each incorrect span calculation costs 1 point. Losing all 3 collapses the bridge.</li>
+                    <li><strong>Blueprint Randomization:</strong> Beam problems and answer choices are shuffled at the start of every build.</li>
+                    <li><strong>Session Memory:</strong> This drafting table only holds progress in active memory. Reloading the page clears the blueprint completely.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🏗️ Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before opening the drafting table!</div>
+            </div>
+
+            <button class="action-btn" onclick="startGame()">OPEN DRAFTING TABLE</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <h2 id="beamHeader" class="blueprint-title" style="font-size: 1.3rem; text-align: left;">Beam Calculation 1</h2>
+
+            <!-- HUD Bar -->
+            <div class="hud-bar">
+                <div class="hud-item">
+                    <span class="hud-label">Beam</span>
+                    <span id="roundCounter" class="hud-value">1 / 12</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Structural Integrity</span>
+                    <span id="integrityDisplay" class="hud-value">3 / 3</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Score</span>
+                    <span id="scoreDisplay" class="hud-value">0 PTS</span>
+                </div>
+            </div>
+
+            <!-- Bridge Span Visual -->
+            <div class="bridge-visual">
+                <div class="bridge-pier"></div>
+                <div class="bridge-gap">
+                    <span id="beamEmojiRow">🪵</span>
+                </div>
+                <div class="bridge-pier"></div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="span-card">
+                <div class="span-tag">Structural Load Calculation</div>
+                <div id="spanText" class="span-text">Loading beam data...</div>
+            </div>
+
+            <!-- Option Choices -->
+            <div id="optionsGrid" class="options-grid"></div>
+
+            <div id="feedbackLine" class="feedback-line"></div>
+        </div>
+
+        <!-- 3. FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <div class="hero-icon">💥</div>
+            <h1 class="blueprint-title" style="color: var(--accent-red);">BRIDGE COLLAPSE</h1>
+            <p class="blueprint-subtitle">Your structural integrity rating dropped to zero.</p>
+            <p style="font-family: var(--mono-font); margin-bottom: 16px;">Final Span Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🏗️ Engineer: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'bridge-builder-load-test', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartGame()">REBUILD BRIDGE</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <div class="hero-icon">🌉</div>
+            <h1 class="blueprint-title" style="color: var(--accent-blue);">BRIDGE APPROVED</h1>
+            <p class="blueprint-subtitle">Certified Structural Engineer Distinction Awarded</p>
+
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Excellent work! You correctly calculated all 12 beam spans, combining and comparing fractional lengths with unlike denominators to pass every load test.
+            </p>
+
+            <div class="score-readout">
+                Final Certified Score: <span id="victoryScore">1000</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🏗️ Engineer: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as official proof of completion for your instructor.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'bridge-builder-load-test', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartGame()">NEW BRIDGE PROJECT</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Site Engineer Rodrigo Vasquez
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

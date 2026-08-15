@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyway Cable Bridge Anchor</title>
+
+    <!-- Google Fonts for Structural/Civil Engineering Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=Roboto+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Control Button -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Structural Container -->
+    <div class="bridge-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <div class="bridge-icon">🌉</div>
+            <h1 class="bridge-title">Skyway Cable Bridge Anchor</h1>
+            <p class="bridge-subtitle">Pythagorean Theorem // Structural Civil Engineering</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>ANCHOR CREW BRIEFING:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Every suspension tower forms a right triangle between its anchor point, base, and cable line. Use <code>a² + b² = c²</code> to solve for the missing cable length or tower leg across 12 anchor points.</li>
+                    <li><strong>Mix of Problems:</strong> Some towers give you both legs and ask for the diagonal cable (hypotenuse); others give you the cable and one leg and ask for the missing leg. A few answers are exact whole numbers, others round to 1 decimal place — read carefully.</li>
+                    <li><strong>Structural Stability:</strong> You begin with 3 Stability points. Each incorrect anchor calculation drains 1 point. Lose all 3 and the crossing is condemned.</li>
+                    <li><strong>Randomization:</strong> Anchor points and answer choices are pulled from a larger data bank and shuffled every session.</li>
+                    <li><strong>Progress Disclaimer:</strong> This terminal holds session memory only. Reloading or leaving the page wipes the anchor log completely.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🔧 Engineer Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting the survey!</div>
+            </div>
+
+            <button class="action-btn" onclick="startSurvey()">BEGIN ANCHOR SURVEY</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <div>
+                <!-- Status HUD Bar -->
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-label">Tower</span>
+                        <span id="roundCounter" class="status-value">1 / 12</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Stability</span>
+                        <span id="stabilityDisplay" class="status-value">3 / 3</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Cable Tension</span>
+                        <div class="tension-gauge">
+                            <div id="tensionFill" class="tension-fill"></div>
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Score</span>
+                        <span id="scoreDisplay" class="status-value">0 PTS</span>
+                    </div>
+                </div>
+
+                <div class="survey-grid">
+                    <!-- Triangle Diagram -->
+                    <div class="triangle-panel" id="trianglePanel"></div>
+
+                    <!-- Question + Options -->
+                    <div class="question-panel">
+                        <div class="question-card">
+                            <div class="question-tag">Anchor Point Survey</div>
+                            <div id="questionText" class="question-text">Loading survey data...</div>
+                        </div>
+
+                        <div id="optionsGrid" class="options-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedbackLine" class="feedback-line"></div>
+        </div>
+
+        <!-- 3. CROSSING CONDEMNED / FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <div class="bridge-icon">⚠️</div>
+            <h1 class="bridge-title" style="color: var(--accent-red);">CROSSING CONDEMNED</h1>
+            <p class="bridge-subtitle">Structural stability reached zero — the bridge cannot be certified.</p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Survey Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🔧 Engineer: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'skyway-cable-bridge-anchor', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartSurvey()">RESURVEY TOWERS</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <div class="bridge-icon">🏗️</div>
+            <h1 class="bridge-title" style="color: var(--accent-green);">BRIDGE CERTIFIED</h1>
+            <p class="bridge-subtitle">Master Structural Engineer Distinction Awarded</p>
+
+            <p style="font-size: 1.05rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Outstanding structural work! Every anchor tower was calculated correctly and the skyway is cleared for crossing.
+            </p>
+
+            <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px;">
+                Total Score: <span id="victoryScore" style="color: var(--accent-green);">1200</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🔧 Engineer: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'skyway-cable-bridge-anchor', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartSurvey()">NEW BRIDGE SURVEY</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Structural Engineering Division
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

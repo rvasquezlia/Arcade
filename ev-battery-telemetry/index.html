@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Battery Telemetry: Function Diagnostics</title>
+
+    <!-- Google Fonts for Digital EV Dashboard Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Engine Configuration -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Toggle -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Dashboard Container -->
+    <div class="dash-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <h1 class="dash-title">🔋 EV Battery Telemetry</h1>
+            <p class="dash-subtitle">Function Diagnostics Console // Domain &amp; Range Calibration</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>ENGINEER BRIEFING:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Diagnose the vehicle's battery discharge function \( f(x) \) across 12 telemetry readings — evaluating outputs and identifying valid domain &amp; range limits.</li>
+                    <li><strong>Battery Cells:</strong> You start with 3 Diagnostic Cells. Each incorrect reading drains 1 cell. Losing all 3 shuts down the console.</li>
+                    <li><strong>Telemetry Randomization:</strong> Readings and answer choices are shuffled every diagnostic session.</li>
+                    <li><strong>Session Memory:</strong> This console holds data only in active memory. Reloading the page resets the diagnostic log completely.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting the console!</div>
+            </div>
+
+            <button class="action-btn" onclick="startDiagnostics()">BOOT DIAGNOSTIC CONSOLE</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <div>
+                <h2 id="readingHeader" class="dash-title" style="font-size: 1.35rem; text-align: left;">Reading #1: Discharge Curve</h2>
+
+                <!-- Status HUD Bar -->
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-label">Reading:</span>
+                        <span id="readingCounter" class="status-value">1 / 12</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Battery Cells:</span>
+                        <span id="livesDisplay" class="status-value">🔋🔋🔋</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Diagnostic Score:</span>
+                        <span id="scoreDisplay" class="status-value">0 PTS</span>
+                    </div>
+                </div>
+
+                <!-- Function Mapping Diagram -->
+                <div class="mapping-diagram">
+                    <div class="map-node">
+                        <span class="map-label">INPUT</span>
+                        <span id="mapInput" class="map-value">x</span>
+                    </div>
+                    <div class="map-arrow">➜ f(x) ➜</div>
+                    <div class="map-node">
+                        <span class="map-label">OUTPUT</span>
+                        <span id="mapOutput" class="map-value">?</span>
+                    </div>
+                </div>
+
+                <!-- Telemetry Prompt Box -->
+                <div class="telemetry-card">
+                    <div class="telemetry-tag">Telemetry Console Readout</div>
+                    <div id="telemetryText" class="telemetry-text">
+                        Booting function diagnostics...
+                    </div>
+                </div>
+
+                <!-- Option Choices Grid -->
+                <div id="optionsGrid" class="options-grid">
+                    <!-- Dynamic option buttons -->
+                </div>
+            </div>
+
+            <div id="feedbackLine" class="feedback-line"></div>
+        </div>
+
+        <!-- 3. SYSTEM SHUTDOWN / FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <h1 class="dash-title" style="color: var(--accent-red);">CONSOLE SHUTDOWN // CELLS DEPLETED</h1>
+            <p class="dash-subtitle">All 3 diagnostic cells were drained by incorrect readings.</p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Diagnostic Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'ev-battery-telemetry', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartDiagnostics()">RECHARGE &amp; REBOOT</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <h1 class="dash-title" style="color: var(--accent-green);">FULL SYSTEM DIAGNOSTIC PASSED</h1>
+            <p class="dash-subtitle">Certified Function &amp; Domain/Range Specialist</p>
+
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Excellent engineering work! You correctly evaluated every battery discharge function and identified valid domain and range limits across all 12 telemetry readings.
+            </p>
+
+            <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); margin-bottom: 10px; border-radius: 6px;">
+                Total Diagnostic Score: <span id="victoryScore" style="color: var(--accent-green);">1200</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'ev-battery-telemetry', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartDiagnostics()">NEW DIAGNOSTIC SESSION</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // EV Systems Lab
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

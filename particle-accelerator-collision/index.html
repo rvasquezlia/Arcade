@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particle Accelerator Collision: Containment Sort</title>
+
+    <!-- Google Fonts for Particle Physics Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Exo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Engine Configuration and Script -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Control Button -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Facility Container -->
+    <div class="facility-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <div class="facility-icon">⚛️</div>
+            <h1 class="facility-title">Particle Accelerator Collision</h1>
+            <p class="facility-subtitle">Rational vs. Irrational Containment Facility</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>CONTAINMENT PROTOCOL:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Particles stream through the beam pipe one at a time. Sort each numeric value into the <strong>RATIONAL</strong> or <strong>IRRATIONAL</strong> containment chamber before the next collision cycle.</li>
+                    <li><strong>Containment Integrity:</strong> You begin with 3 Integrity Points. Every misclassified particle drains 1 point. Lose all 3 and the beam destabilizes.</li>
+                    <li><strong>Beam Randomization:</strong> The particle sequence is shuffled from a larger data bank every run — no two sessions match.</li>
+                    <li><strong>Progress Disclaimer:</strong> This terminal holds session memory only. Reloading or leaving the page wipes the containment log completely.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🔬 Operator Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting the sequence!</div>
+            </div>
+
+            <button class="action-btn" onclick="startSequence()">ACTIVATE ACCELERATOR</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <div>
+                <!-- Status HUD Bar -->
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-label">Particle</span>
+                        <span id="roundCounter" class="status-value">1 / 12</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Integrity</span>
+                        <span id="integrityDisplay" class="status-value">3 / 3</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Score</span>
+                        <span id="scoreDisplay" class="status-value">0 PTS</span>
+                    </div>
+                </div>
+
+                <!-- Beam Pipe / Particle Display -->
+                <div class="beam-pipe">
+                    <div class="beam-pipe-tag">Incoming Particle Value</div>
+                    <div id="particleValue" class="particle-value">Loading particle stream...</div>
+                </div>
+
+                <!-- Chamber Sorting Buttons -->
+                <div class="chamber-grid">
+                    <button id="rationalBtn" class="chamber-btn chamber-rational" onclick="sortParticle(true, this)">
+                        <span class="chamber-icon">🟢</span>
+                        <span class="chamber-label">RATIONAL<br><small>Terminates, repeats, or is a fraction of integers</small></span>
+                    </button>
+                    <button id="irrationalBtn" class="chamber-btn chamber-irrational" onclick="sortParticle(false, this)">
+                        <span class="chamber-icon">🟣</span>
+                        <span class="chamber-label">IRRATIONAL<br><small>Never-ending, never-repeating decimal</small></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="feedbackLine" class="feedback-line"></div>
+        </div>
+
+        <!-- 3. CONTAINMENT BREACH / FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <div class="facility-icon">💥</div>
+            <h1 class="facility-title" style="color: var(--accent-red);">CONTAINMENT BREACH</h1>
+            <p class="facility-subtitle">Integrity dropped to zero — the beam collision could not be prevented.</p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Sort Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🔬 Operator: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'particle-accelerator-collision', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartSequence()">RESTART CONTAINMENT</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <div class="facility-icon">🛰️</div>
+            <h1 class="facility-title" style="color: var(--accent-gold);">BEAM STABILIZED</h1>
+            <p class="facility-subtitle">Master Classification Distinction Awarded</p>
+
+            <p style="font-size: 1.05rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Outstanding sorting precision! Every particle was routed to the correct containment chamber before the beam could collide.
+            </p>
+
+            <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px;">
+                Total Score: <span id="victoryScore" style="color: var(--accent-gold);">1200</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🔬 Operator: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'particle-accelerator-collision', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartSequence()">NEW BEAM SEQUENCE</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Particle Containment Division
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+        :root {
+            --bg-color: #0c1c30;
+            --container-bg: #112743;
+            --panel-bg: #17304f;
+            --border-color: #2a4a72;
+            --grid-line: rgba(93, 154, 219, 0.12);
+            --panel-sunken: rgba(0, 0, 0, 0.3);
+            --text-primary: #e8eff8;
+            --text-secondary: #93aecb;
+            --accent-blue: #4da3ff;
+            --accent-amber: #e0a458;
+            --accent-red: #f0596a;
+            --accent-green: #4ade80;
+            --display-font: 'Oswald', sans-serif;
+            --mono-font: 'IBM Plex Mono', monospace;
+            --shadow-color: rgba(0, 0, 0, 0.55);
+
+            /* Shared kit mapping */
+            --kit-accent: var(--accent-blue);
+            --kit-accent-ink: #04182f;
+            --kit-accent-glow: rgba(77, 163, 255, 0.25);
+            --kit-surface: var(--panel-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
+        }
+
+        body.light-mode {
+            --bg-color: #f6f7fa;
+            --container-bg: #ffffff;
+            --panel-bg: #eef2f8;
+            --border-color: #c7d2e2;
+            --grid-line: rgba(29, 78, 216, 0.08);
+            --panel-sunken: rgba(0, 0, 0, 0.045);
+            --text-primary: #10233f;
+            --text-secondary: #4c6584;
+            --accent-blue: #1d4ed8;
+            --accent-amber: #b45309;
+            --accent-red: #b91c1c;
+            --accent-green: #15803d;
+            --shadow-color: rgba(16, 35, 63, 0.12);
+
+            /* Shared kit mapping (light theme) */
+            --kit-accent: var(--accent-blue);
+            --kit-accent-ink: #f5f8ff;
+            --kit-accent-glow: rgba(29, 78, 216, 0.15);
+            --kit-surface: var(--panel-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: var(--text-primary);
+            font-family: var(--mono-font);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .top-controls {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn {
+            background: var(--container-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: var(--mono-font);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .blueprint-container {
+            width: 100%;
+            max-width: 860px;
+            background: var(--container-bg);
+            border: 2px solid var(--border-color);
+            border-top: 6px solid var(--accent-blue);
+            border-radius: 6px;
+            padding: 32px;
+            box-shadow: 0 12px 30px var(--shadow-color);
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hero-icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+
+        .blueprint-title {
+            font-family: var(--display-font);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            text-align: center;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .blueprint-subtitle {
+            font-family: var(--mono-font);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .screen-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .brief-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 20px 28px;
+            text-align: left;
+            margin: 16px 0;
+            max-width: 680px;
+            line-height: 1.7;
+            font-size: 0.92rem;
+        }
+
+        .brief-box ul { padding-left: 20px; }
+        .brief-box li { margin-bottom: 8px; }
+
+        .action-btn {
+            background: var(--accent-blue);
+            color: #ffffff;
+            border: none;
+            padding: 14px 36px;
+            font-family: var(--display-font);
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 18px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .action-btn:hover { opacity: 0.92; }
+
+        /* HUD Bar */
+        .hud-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            margin-bottom: 18px;
+            border-radius: 4px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.9rem;
+        }
+
+        .hud-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-value {
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        /* Bridge Visual */
+        .bridge-visual {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 60px;
+            margin-bottom: 18px;
+        }
+
+        .bridge-pier {
+            width: 28px;
+            height: 100%;
+            background: var(--panel-sunken);
+            border: 1px solid var(--border-color);
+            border-radius: 2px 2px 0 0;
+        }
+
+        .bridge-gap {
+            flex: 1;
+            height: 100%;
+            border-bottom: 3px dashed var(--accent-amber);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-size: 1.6rem;
+            padding-bottom: 4px;
+        }
+
+        /* Question Box */
+        .span-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 4px;
+            padding: 20px 24px;
+            margin-bottom: 18px;
+        }
+
+        .span-tag {
+            font-family: var(--mono-font);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .span-text {
+            font-family: var(--display-font);
+            font-size: 1.15rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* Option Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        @media (max-width: 620px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+
+        .option-btn {
+            background: var(--panel-sunken);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            border-radius: 4px;
+            font-family: var(--mono-font);
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .option-key {
+            font-family: var(--mono-font);
+            background: var(--border-color);
+            color: var(--text-primary);
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            border-radius: 3px;
+        }
+
+        .feedback-line {
+            font-family: var(--mono-font);
+            text-align: center;
+            font-size: 0.98rem;
+            font-weight: 700;
+            min-height: 24px;
+        }
+
+        .text-success { color: var(--accent-green); }
+        .text-error { color: var(--accent-red); }
+
+        .score-readout {
+            font-family: var(--mono-font);
+            font-size: 1.15rem;
+            background: var(--panel-bg);
+            padding: 10px 22px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 12px;
+            color: var(--accent-blue);
+        }
+
+        footer {
+            margin-top: 20px;
+            font-family: var(--mono-font);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .hud-bar { flex-direction: column; align-items: flex-start; }
+        }
