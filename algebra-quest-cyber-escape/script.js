@@ -87,6 +87,7 @@
         let isDarkMode = true;
         let isAnswerLocked = false;
         let activeQuestions = [];
+        let playerName = '';
 
         // Utility: Fisher-Yates Array Shuffle
         function shuffleArray(array) {
@@ -127,6 +128,10 @@
 
         // Start Game Initialization
         function startGame() {
+            const name = ArcadeKit.requireName('playerNameInput', 'playerNameError');
+            if (!name) return;
+            playerName = name;
+
             currentLevel = 0;
             score = 0;
             hp = 3;
@@ -237,12 +242,14 @@
             document.getElementById('gameplayScreen').style.display = 'none';
             document.getElementById('gameOverScreen').style.display = 'flex';
             document.getElementById('finalScoreFail').innerText = score;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayFail']);
         }
 
         function triggerVictory() {
             document.getElementById('gameplayScreen').style.display = 'none';
             document.getElementById('victoryScreen').style.display = 'flex';
             document.getElementById('finalScoreWin').innerText = score;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
         }
 
         function restartGame() {

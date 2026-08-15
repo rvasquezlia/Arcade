@@ -27,6 +27,8 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -52,6 +54,12 @@
                     <li><strong>Tactical Geometry:</strong> Calculate reflections, midpoints, translations, and trajectories to lock down all 10 target sectors.</li>
                     <li><strong>Session Integrity:</strong> Session progress lives strictly in active memory. Reloading the page clears the radar logs and restarts the grid operation.</li>
                 </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">COMMANDER CALLSIGN:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before initializing the terminal!</div>
             </div>
 
             <button class="primary-btn" onclick="startMission()">INITIALIZE RADAR TERMINAL</button>
@@ -131,6 +139,13 @@
             <h1 class="title-header" style="color: var(--accent-red);">BATTERY EXHAUSTED // SYSTEM OFFLINE</h1>
             <p class="subtitle-header">Targeting error variance depleted your tactical operational battery core.</p>
             <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Radar Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">COMMANDER: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'quadrant-fleet', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
             <button class="primary-btn" style="background: var(--accent-red); color: white;" onclick="restartMission()">RECHARGE & RE-INITIALIZE</button>
         </div>
 
@@ -147,14 +162,10 @@
                 Final Radar Score: <span id="victoryScore" style="color: var(--accent-cyan);">1000</span> PTS
             </div>
 
-            <!-- MANDATORY PROOF OF PROGRESS DISCLAIMER -->
-            <div class="disclaimer-card">
-                <h3>PROOF OF PROGRESS REQUIRED</h3>
-                <p>
-                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this victory screen now as official proof of mission completion for your instructor.
-                    <br><br>
-                    <span style="color: var(--accent-red); font-weight: 700;">Warning:</span> If you refresh or close this browser page, your session memory will reset completely and require re-interception of all 10 sectors.
-                </p>
+            <div class="kit-submission-card">
+                <div class="kit-player-line">COMMANDER: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as official proof of mission completion for your instructor.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'quadrant-fleet', playerName: playerName, score: score})">📸 Save Screenshot</button>
             </div>
 
             <button class="primary-btn" onclick="restartMission()">NEW RADAR OPERATION</button>
@@ -166,6 +177,7 @@
         Lincoln International Academy // Department of Mathematics // Commander Rodrigo Vasquez
     </footer>
 
+    <script src="../shared/arcade-kit.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

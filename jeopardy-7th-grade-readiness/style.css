@@ -13,6 +13,15 @@
             --tile-bg: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
             --tile-hover: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
             --glow: 0 0 20px rgba(56, 189, 248, 0.25);
+
+            /* Shared kit mapping */
+            --kit-accent: var(--accent-blue);
+            --kit-accent-ink: #ffffff;
+            --kit-accent-glow: rgba(56, 189, 248, 0.3);
+            --kit-surface: var(--bg-color);
+            --kit-border: var(--card-border);
+            --kit-input-bg: var(--card-bg);
+            --kit-error: var(--accent-red);
         }
 
         /* Light Mode Theme Overrides */

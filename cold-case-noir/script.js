@@ -69,6 +69,7 @@
         let activeCases = [];
         let isDarkMode = true;
         let isLocked = false;
+        let playerName = '';
 
         // Fisher-Yates Array Shuffle
         function shuffleArray(arr) {
@@ -106,6 +107,10 @@
 
         // Start Investigation
         function startInvestigation() {
+            const name = ArcadeKit.requireName('playerNameInput', 'playerNameError');
+            if (!name) return;
+            playerName = name;
+
             currentFileIndex = 0;
             score = 0;
             integrity = 3;
@@ -203,12 +208,14 @@
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('failScreen').style.display = 'flex';
             document.getElementById('failScore').innerText = score;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayFail']);
         }
 
         function triggerVictory() {
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('victoryScreen').style.display = 'flex';
             document.getElementById('victoryScore').innerText = score;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
         }
 
         function restartInvestigation() {

@@ -27,6 +27,8 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -55,6 +57,12 @@
                     <li>📉 <strong>Market Risk:</strong> Wrong answers forfeit your bid. If your capital drops to $0, you go Bankrupt!</li>
                     <li>⚠️ <strong>Session Disclaimer:</strong> Progress is live only. Refreshing the browser resets your capital and restarts the auction from Lot 1.</li>
                 </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting!</div>
             </div>
 
             <button class="gold-button" onclick="startAuction()">ENTER THE AUCTION 🔨</button>
@@ -114,6 +122,13 @@
             <div style="font-size: 4rem; margin-bottom: 10px;">💸</div>
             <h1 class="auction-header" style="color: var(--rose-red);">BANKRUPT!</h1>
             <p class="auction-subtitle">You ran out of investment capital. The auction house has closed your vault.</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('bankruptScreen', {buttonEl: this, gameSlug: 'grand-math-auction', playerName: playerName, score: 0})">📸 Save Screenshot</button>
+            </div>
+
             <button class="gold-button" style="background: var(--rose-red); color: white;" onclick="restartAuction()">RE-ENTER AUCTION 🔄</button>
         </div>
 
@@ -133,14 +148,10 @@
                 Final Net Worth: <span id="finalCapitalVal" style="color: var(--emerald-green);">$0</span>
             </div>
 
-            <!-- MANDATORY SCREENSHOT DISCLAIMER ALERT -->
-            <div class="disclaimer-card">
-                <h3>📸 ATTENTION: PROOF OF PROGRESS REQUIRED!</h3>
-                <p>
-                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this completed screen now to submit to your teacher as official proof of completion!
-                    <br><br>
-                    <span style="color: var(--rose-red);">⚠️ Warning:</span> If you refresh or close this browser page, your session will reset and you will lose your score.
-                </p>
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'grand-math-auction', playerName: playerName, score: capital})">📸 Save Screenshot</button>
             </div>
 
             <button class="gold-button" onclick="restartAuction()">PLAY AGAIN 🔄</button>
@@ -152,6 +163,7 @@
         Lincoln International Academy • Advanced Algebra Vault • Created by Rodrigo Vasquez
     </footer>
 
+    <script src="../shared/arcade-kit.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

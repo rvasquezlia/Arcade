@@ -252,6 +252,7 @@
         let selectedProb = null;
         let isDarkMode = true;
         let isSpinning = false;
+        let playerName = '';
 
         // Canvas & Wheel Physics
         let canvas, ctx;
@@ -271,14 +272,17 @@
         function toggleTheme() {
             isDarkMode = !isDarkMode;
             const body = document.body;
-            const btn = document.getElementById('themeBtn');
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
 
             if (isDarkMode) {
                 body.classList.remove('light-mode');
-                btn.innerText = '[ VELVET VIP THEME ]';
+                icon.innerText = '🌙';
+                text.innerText = 'Dark Mode';
             } else {
                 body.classList.add('light-mode');
-                btn.innerText = '[ EMERALD SUITE THEME ]';
+                icon.innerText = '☀️';
+                text.innerText = 'Light Mode';
             }
             drawWheel();
         }
@@ -299,6 +303,10 @@
 
         // Start New Casino Game Session (Pick 10 Random Questions)
         function startCasinoSession() {
+            const name = ArcadeKit.requireName('playerNameInput', 'playerNameError');
+            if (!name) return;
+            playerName = name;
+
             // Select 10 random rounds from 20 question pool
             activeSessionRounds = shuffleArray(allCasinoRounds).slice(0, 10);
 
@@ -596,12 +604,14 @@
         function triggerFail() {
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('failScreen').style.display = 'flex';
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayFail']);
         }
 
         function triggerVictory() {
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('victoryScreen').style.display = 'flex';
             document.getElementById('victoryChips').innerText = `$${bankroll.toLocaleString()}`;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
         }
 
         function restartSession() {

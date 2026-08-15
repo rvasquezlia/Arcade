@@ -27,6 +27,8 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -53,6 +55,12 @@
                 <li>📸 <strong>Progress Reporting:</strong> Complete all stages to earn your completion badge.</li>
                 <li>⚠️ <strong>Warning:</strong> Refreshing or leaving the browser will reset your score and force a complete restart!</li>
             </ul>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting!</div>
+            </div>
 
             <button class="start-btn" onclick="startGame()">START GAME 🚀</button>
         </div>
@@ -95,6 +103,13 @@
             <h1 class="arcade-title" style="color: var(--accent-red);">GAME OVER</h1>
             <p class="sub-title">You ran out of Hearts! The Cyber Grid overpowered you.</p>
             <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 10px;">Final Score: <span id="finalScoreFail" style="color:var(--accent-yellow)">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('gameOverScreen', {buttonEl: this, gameSlug: 'algebra-quest', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
             <button class="action-btn" style="background: var(--accent-red);" onclick="restartGame()">TRY AGAIN 🔄</button>
         </div>
 
@@ -114,14 +129,10 @@
                 Total Score: <span id="finalScoreWin" style="color: var(--accent-yellow);">1300</span> PTS
             </div>
 
-            <!-- DISCLAIMER screenshot instruction -->
-            <div class="disclaimer-alert">
-                <h3>📸 IMPORTANT: SUBMIT YOUR PROGRESS!</h3>
-                <p>
-                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this entire screen right now to present as proof of progress to your teacher!
-                    <br><br>
-                    <span style="color: var(--accent-red);">⚠️ Note:</span> If you refresh, close, or reload this page, all game progress will be lost and you will have to restart from Stage 1!
-                </p>
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'algebra-quest', playerName: playerName, score: score})">📸 Save Screenshot</button>
             </div>
 
             <button class="action-btn" style="background: var(--accent-green); color: #052e16;" onclick="restartGame()">Play Again 🔄</button>
@@ -133,6 +144,7 @@
         Lincoln International Academy • 8th Grade Algebra I • Designed by <span>Rodrigo Vasquez</span>
     </footer>
 
+    <script src="../shared/arcade-kit.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

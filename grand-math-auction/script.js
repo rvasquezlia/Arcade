@@ -81,6 +81,7 @@
         let activeLots = [];
         let isDarkMode = true;
         let isLocked = false;
+        let playerName = '';
 
         // Shuffle utility
         function shuffleArray(arr) {
@@ -121,6 +122,10 @@
 
         // Start Auction
         function startAuction() {
+            const name = ArcadeKit.requireName('playerNameInput', 'playerNameError');
+            if (!name) return;
+            playerName = name;
+
             currentLotIndex = 0;
             capital = 1000;
             selectedBidAmount = 100;
@@ -244,12 +249,14 @@
         function triggerBankruptcy() {
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('bankruptScreen').style.display = 'flex';
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayFail']);
         }
 
         function triggerVictory() {
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('victoryScreen').style.display = 'flex';
             document.getElementById('finalCapitalVal').innerText = `$${capital.toLocaleString()}`;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
         }
 
         function restartAuction() {

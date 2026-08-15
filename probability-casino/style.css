@@ -1,5 +1,7 @@
         :root {
             --bg-casino: #05140d;
+            --bg-gradient-inner: #0e3320;
+            --bg-gradient-outer: #030d08;
             --felt-green: #0a3a22;
             --felt-border: #145835;
             --card-bg: #0f2218;
@@ -10,25 +12,46 @@
             --neon-green: #00ff66;
             --text-light: #f8fafc;
             --text-muted: #a3b8cc;
+            --panel-sunken: rgba(0, 0, 0, 0.4);
+            --panel-floating: rgba(0, 0, 0, 0.6);
+            --on-gold-text: #000000;
             --font-casino: 'Cinzel', serif;
             --font-arcade: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
             --font-mono: 'Share Tech Mono', monospace;
             --shadow-deep: rgba(0, 0, 0, 0.85);
+
+            /* Shared kit mapping */
+            --kit-accent: var(--gold-primary);
+            --kit-accent-ink: #241900;
+            --kit-accent-glow: var(--gold-glow);
+            --kit-surface: var(--panel-sunken);
+            --kit-border: var(--felt-border);
+            --kit-input-bg: var(--card-bg);
+            --kit-error: var(--neon-pink);
         }
 
+        /* TRUE LIGHT THEME — a bright ivory casino lobby look, not a second
+           dark palette. (Previously this block just swapped in a different
+           dark brown scheme, so "Light Mode" looked just as dark as
+           "Dark Mode" — that was the bug.) */
         body.light-mode {
-            --bg-casino: #1a0f07;
-            --felt-green: #2d180b;
-            --felt-border: #4a2b16;
-            --card-bg: #231207;
-            --gold-primary: #f59e0b;
-            --gold-glow: rgba(245, 158, 11, 0.25);
-            --neon-cyan: #0284c7;
-            --neon-pink: #e11d48;
-            --neon-green: #16a34a;
-            --text-light: #fef3c7;
-            --text-muted: #d4d4d8;
+            --bg-casino: #f8f1de;
+            --bg-gradient-inner: #fffaf0;
+            --bg-gradient-outer: #f1e6c8;
+            --felt-green: #eaf4ec;
+            --felt-border: #b7d9c1;
+            --card-bg: #ffffff;
+            --gold-primary: #a8620a;
+            --gold-glow: rgba(168, 98, 10, 0.2);
+            --neon-cyan: #0e7490;
+            --neon-pink: #be123c;
+            --neon-green: #15803d;
+            --text-light: #241a0c;
+            --text-muted: #6b5a3e;
+            --panel-sunken: rgba(120, 72, 12, 0.07);
+            --panel-floating: rgba(255, 255, 255, 0.88);
+            --on-gold-text: #ffffff;
         }
 
         * {
@@ -40,7 +63,7 @@
 
         body {
             background-color: var(--bg-casino);
-            background-image: radial-gradient(circle at center, #0e3320 0%, #030d08 100%);
+            background-image: radial-gradient(circle at center, var(--bg-gradient-inner) 0%, var(--bg-gradient-outer) 100%);
             color: var(--text-light);
             font-family: var(--font-body);
             min-height: 100vh;
@@ -60,7 +83,7 @@
         }
 
         .theme-toggle-btn {
-            background: rgba(0, 0, 0, 0.6);
+            background: var(--panel-floating);
             color: var(--gold-primary);
             border: 2px solid var(--gold-primary);
             padding: 8px 16px;
@@ -71,11 +94,14 @@
             cursor: pointer;
             box-shadow: 0 0 10px var(--gold-glow);
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .theme-toggle-btn:hover {
             background: var(--gold-primary);
-            color: #000;
+            color: var(--on-gold-text);
         }
 
         /* Main Casino Table Container */
@@ -120,12 +146,12 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
-            background: rgba(0, 0, 0, 0.4);
+            background: var(--panel-sunken);
             border: 2px solid var(--felt-border);
             padding: 10px 16px;
             margin-bottom: 20px;
             border-radius: 8px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.25);
         }
 
         .hud-item {
@@ -170,7 +196,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
+            background: var(--panel-sunken);
             border-radius: 50%;
             padding: 10px;
             border: 4px solid var(--gold-primary);
@@ -211,7 +237,7 @@
         }
 
         .dealer-prompt-box {
-            background: rgba(0, 0, 0, 0.5);
+            background: var(--panel-sunken);
             border: 1px solid var(--gold-primary);
             border-left: 5px solid var(--gold-primary);
             padding: 14px 18px;
@@ -241,7 +267,7 @@
         }
 
         .prob-btn {
-            background: rgba(0, 0, 0, 0.4);
+            background: var(--panel-sunken);
             color: var(--text-light);
             border: 1px solid var(--felt-border);
             padding: 12px;
@@ -274,7 +300,7 @@
         }
 
         .bet-spot {
-            background: rgba(0,0,0,0.35);
+            background: var(--panel-sunken);
             border: 2px dashed var(--felt-border);
             padding: 12px;
             border-radius: 8px;
@@ -397,7 +423,7 @@
         }
 
         .audit-card {
-            background: #0f1c15;
+            background: var(--card-bg);
             border: 3px solid var(--gold-primary);
             border-radius: 12px;
             max-width: 580px;
@@ -439,7 +465,7 @@
         }
 
         .audit-math-box {
-            background: rgba(0, 0, 0, 0.5);
+            background: var(--panel-sunken);
             border: 1px solid var(--felt-border);
             padding: 14px;
             border-radius: 6px;
@@ -450,7 +476,7 @@
 
         .audit-close-btn {
             background: var(--gold-primary);
-            color: #000;
+            color: var(--on-gold-text);
             border: none;
             padding: 12px 28px;
             font-family: var(--font-arcade);
@@ -466,6 +492,7 @@
 
         .audit-close-btn:hover {
             background: #fff;
+            color: #000;
         }
 
         /* Screens Helpers */
@@ -480,7 +507,7 @@
 
         .primary-btn {
             background: var(--gold-primary);
-            color: #000000;
+            color: var(--on-gold-text);
             border: none;
             padding: 14px 40px;
             font-family: var(--font-arcade);

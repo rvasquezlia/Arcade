@@ -11,6 +11,15 @@
             --text-color: #f8fafc;
             --subtext-color: #94a3b8;
             --box-bg: #0b1322;
+
+            /* Shared kit mapping */
+            --kit-accent: var(--accent-blue);
+            --kit-accent-ink: #ffffff;
+            --kit-accent-glow: rgba(56, 189, 248, 0.3);
+            --kit-surface: var(--box-bg);
+            --kit-border: var(--card-border);
+            --kit-input-bg: var(--card-bg);
+            --kit-error: var(--accent-red);
         }
 
         body.light-mode {

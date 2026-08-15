@@ -79,6 +79,7 @@
         let activeMissions = [];
         let isDarkMode = true;
         let isLocked = false;
+        let playerName = '';
 
         // Player Reticle Selection
         let playerX = 0;
@@ -282,6 +283,10 @@
 
         // Start Mission Game
         function startMission() {
+            const name = ArcadeKit.requireName('playerNameInput', 'playerNameError');
+            if (!name) return;
+            playerName = name;
+
             currentMissionIndex = 0;
             score = 0;
             battery = 100;
@@ -393,12 +398,14 @@
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('failScreen').style.display = 'flex';
             document.getElementById('failScore').innerText = score;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayFail']);
         }
 
         function triggerVictory() {
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('victoryScreen').style.display = 'flex';
             document.getElementById('victoryScore').innerText = score;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
         }
 
         function restartMission() {

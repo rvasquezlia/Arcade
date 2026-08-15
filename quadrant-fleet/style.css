@@ -14,6 +14,15 @@
             --font-mono: 'Share Tech Mono', monospace;
             --glow-color: rgba(0, 240, 255, 0.2);
             --shadow-color: rgba(0, 0, 0, 0.7);
+
+            /* Shared kit mapping */
+            --kit-accent: var(--accent-cyan);
+            --kit-accent-ink: #001014;
+            --kit-accent-glow: var(--glow-color);
+            --kit-surface: var(--card-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
         }
 
         body.light-mode {
