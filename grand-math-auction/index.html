@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Grand Math Auction: High-Stakes Algebra</title>
+
+    <!-- Google Fonts: Cinzel for high-society headers & Outfit for modern UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Setup for LaTeX Equation Rendering -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Light / Dark Mode Toggle in Top Right Corner -->
+    <div class="top-right-controls">
+        <button id="themeToggleBtn" class="theme-switch-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Game Frame -->
+    <div class="auction-container" id="mainContainer">
+
+        <!-- 1. INSTRUCTION / OPENING SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">🏛️💎</div>
+            <h1 class="auction-header">The Grand Math Auction</h1>
+            <p class="auction-subtitle">High-Stakes Algebra Capital Challenge</p>
+
+            <div class="rules-card">
+                <p style="margin-bottom: 8px;"><strong>Auction Rules & Protocol:</strong></p>
+                <ul style="padding-left: 20px;">
+                    <li>💰 <strong>Starting Capital:</strong> You enter the auction hall with <strong>$1,000</strong>.</li>
+                    <li>🔨 <strong>Place Your Bid:</strong> For each item, select your bid amount ($100, $250, $500, or ALL-IN) before submitting your answer.</li>
+                    <li>📈 <strong>High Returns:</strong> Correct answers yield <strong>+150%</strong> return on your bid!</li>
+                    <li>📉 <strong>Market Risk:</strong> Wrong answers forfeit your bid. If your capital drops to $0, you go Bankrupt!</li>
+                    <li>⚠️ <strong>Session Disclaimer:</strong> Progress is live only. Refreshing the browser resets your capital and restarts the auction from Lot 1.</li>
+                </ul>
+            </div>
+
+            <button class="gold-button" onclick="startAuction()">ENTER THE AUCTION 🔨</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <div>
+                <h2 id="auctionLotTitle" class="auction-header" style="font-size: 1.5rem; text-align: left;">Lot #1: Linear Systems</h2>
+                
+                <!-- HUD Status Bar -->
+                <div class="status-ribbon">
+                    <div class="ribbon-item">
+                        <span class="ribbon-label">Auction Lot</span>
+                        <span id="lotCounter" class="ribbon-val">1 / 12</span>
+                    </div>
+                    <div class="ribbon-item">
+                        <span class="ribbon-label">Vault Capital</span>
+                        <span id="capitalDisplay" class="ribbon-val" style="color: var(--emerald-green);">$1,000</span>
+                    </div>
+                    <div class="ribbon-item">
+                        <span class="ribbon-label">Current Bid</span>
+                        <span id="currentBidDisplay" class="ribbon-val">$100</span>
+                    </div>
+                </div>
+
+                <!-- Bidding Amount Selector -->
+                <div class="bid-selector">
+                    <span class="bid-label">SELECT BID WAGER:</span>
+                    <div class="bid-buttons">
+                        <button class="bid-chip active" onclick="selectBid(100, this)">$100</button>
+                        <button class="bid-chip" onclick="selectBid(250, this)">$250</button>
+                        <button class="bid-chip" onclick="selectBid(500, this)">$500</button>
+                        <button class="bid-chip" onclick="selectBid('ALL', this)">ALL-IN 🔥</button>
+                    </div>
+                </div>
+
+                <!-- Math Lot Question Box -->
+                <div class="lot-box">
+                    <span class="lot-tag">Item Description</span>
+                    <div id="lotQuestionText" style="margin-top: 6px;">
+                        Loading item specifications...
+                    </div>
+                </div>
+
+                <!-- Answer Options Grid -->
+                <div id="optionsGrid" class="options-grid">
+                    <!-- Buttons generated dynamically -->
+                </div>
+            </div>
+
+            <div id="feedbackMessage" class="feedback-message"></div>
+        </div>
+
+        <!-- 3. BANKRUPTCY / GAME OVER SCREEN -->
+        <div id="bankruptScreen" class="screen-center" style="display: none;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">💸</div>
+            <h1 class="auction-header" style="color: var(--rose-red);">BANKRUPT!</h1>
+            <p class="auction-subtitle">You ran out of investment capital. The auction house has closed your vault.</p>
+            <button class="gold-button" style="background: var(--rose-red); color: white;" onclick="restartAuction()">RE-ENTER AUCTION 🔄</button>
+        </div>
+
+        <!-- 4. VICTORY / COMPLETION SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <div style="font-size: 4rem; margin-bottom: 8px;">🏆📜</div>
+            <h1 class="auction-header">AUCTION TYCOON!</h1>
+            
+            <p style="font-size: 1.2rem; font-weight: 800; color: var(--gold-primary); margin-bottom: 8px;">
+                ✨ Compliment of High Distinction ✨
+            </p>
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px; font-weight: 600;">
+                Incredible strategic skill! You evaluated every algebraic lot with absolute precision, managed your capital wisely, and mastered the mathematical auction house!
+            </p>
+
+            <div style="font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 800; background: var(--input-bg); padding: 12px 28px; border-radius: 12px; border: 1px solid var(--card-border); margin-bottom: 10px;">
+                Final Net Worth: <span id="finalCapitalVal" style="color: var(--emerald-green);">$0</span>
+            </div>
+
+            <!-- MANDATORY SCREENSHOT DISCLAIMER ALERT -->
+            <div class="disclaimer-card">
+                <h3>📸 ATTENTION: PROOF OF PROGRESS REQUIRED!</h3>
+                <p>
+                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this completed screen now to submit to your teacher as official proof of completion!
+                    <br><br>
+                    <span style="color: var(--rose-red);">⚠️ Warning:</span> If you refresh or close this browser page, your session will reset and you will lose your score.
+                </p>
+            </div>
+
+            <button class="gold-button" onclick="restartAuction()">PLAY AGAIN 🔄</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy • Advanced Algebra Vault • Created by Rodrigo Vasquez
+    </footer>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

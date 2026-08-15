@@ -1,0 +1,459 @@
+/* ==========================================================
+   1. COLOR THEMES & VARIABLES
+   ========================================================== */
+:root {
+    /* Fonts — Fredoka (playful, bold display) + Nunito (warm, highly legible body).
+       Shared with Algebra Quest so the arcade feels like one connected site. */
+    --font-heading: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+
+    /* Button/badge fills: chosen so their paired text color passes WCAG AA
+       contrast regardless of theme (button backgrounds don't change with
+       light/dark — only the page and card colors around them do). */
+    --blue-btn-a: #0369a1;
+    --blue-btn-b: #075985;
+    --amber-btn-a: #f59e0b;
+    --amber-btn-b: #d97706;
+    --purple-btn-a: #6d28d9;
+    --purple-btn-b: #4c1d95;
+}
+
+/* Dark Theme Variables (Default) */
+[data-theme="dark"] {
+    --bg-page: #0a0e1a;
+    --bg-page-dot: rgba(148, 163, 184, 0.07);
+    --bg-card: #131a2c;
+    --bg-card-hover: #1c2540;
+    --bg-logo-card: #0f172a;
+    --border-card: #2b3554;
+    --ink: #f5f7ff;
+    --ink-soft: #aab3cc;
+    --header-bg: rgba(16, 22, 38, 0.92);
+    --toggle-bg: #1c2540;
+    --toggle-text: #facc15;
+    --card-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.6);
+    --disclaimer-bg: rgba(250, 204, 21, 0.1);
+    --disclaimer-border: #facc15;
+    --disclaimer-title: #fde68a;
+    --title-grad: linear-gradient(90deg, #38bdf8 0%, #facc15 50%, #c084fc 100%);
+
+    --blue-ink: #7dd3fc;
+    --blue-soft-bg: rgba(56, 189, 248, 0.16);
+    --amber-ink: #fbbf24;
+    --amber-soft-bg: rgba(251, 191, 36, 0.16);
+    --purple-ink: #c4b5fd;
+    --purple-soft-bg: rgba(196, 181, 253, 0.16);
+    --amber-btn-text: #241900;
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+    --bg-page: #eef2fb;
+    --bg-page-dot: rgba(3, 105, 161, 0.06);
+    --bg-card: #ffffff;
+    --bg-card-hover: #f6f9ff;
+    --bg-logo-card: #0f172a;
+    --border-card: #c7d5f0;
+    --ink: #101828;
+    --ink-soft: #48536b;
+    --header-bg: rgba(255, 255, 255, 0.92);
+    --toggle-bg: #e3ecff;
+    --toggle-text: #0353a4;
+    --card-shadow: 0 12px 28px -10px rgba(16, 24, 40, 0.16);
+    --disclaimer-bg: rgba(217, 119, 6, 0.09);
+    --disclaimer-border: #d97706;
+    --disclaimer-title: #92400e;
+    --title-grad: linear-gradient(90deg, #0369a1 0%, #92400e 50%, #6d28d9 100%);
+
+    --blue-ink: #075985;
+    --blue-soft-bg: #dbeeff;
+    --amber-ink: #92400e;
+    --amber-soft-bg: #fef3d9;
+    --purple-ink: #5b21b6;
+    --purple-soft-bg: #ede9fe;
+    --amber-btn-text: #241900;
+}
+
+/* ==========================================================
+   2. GLOBAL STYLES
+   ========================================================== */
+html {
+    font-size: 112.5%; /* ~18px base — bumped up for projector/classroom viewing */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+}
+
+body {
+    background-color: var(--bg-page);
+    background-image: radial-gradient(var(--bg-page-dot) 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.65;
+}
+
+a { color: inherit; }
+
+:focus-visible {
+    outline: 3px solid var(--blue-ink);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+/* ==========================================================
+   3. HEADER SECTION
+   ========================================================== */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--header-bg);
+    backdrop-filter: blur(16px);
+    border-bottom: 3px solid var(--border-card);
+    padding: 20px 32px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.header-container {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.logo-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 22px;
+    text-align: left;
+}
+
+.logo-img {
+    height: clamp(84px, 6vw + 60px, 128px);
+    width: auto;
+    object-fit: contain;
+    border-radius: 18px;
+    background-color: var(--bg-logo-card);
+    padding: 10px;
+    border: 2px solid var(--border-card);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.title-group .sub-header {
+    font-size: clamp(1rem, 0.4vw + 0.9rem, 1.15rem);
+    color: var(--ink-soft);
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.title-group h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 1.5vw + 1.5rem, 3.1rem);
+    letter-spacing: 0.3px;
+    background: var(--title-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.15;
+}
+
+.theme-toggle-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--toggle-bg);
+    color: var(--toggle-text);
+    border: 2px solid var(--border-card);
+    padding: 12px 22px;
+    border-radius: 24px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(0.95rem, 0.3vw + 0.85rem, 1.1rem);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+.theme-toggle-btn:hover {
+    transform: translateY(-50%) scale(1.06);
+}
+
+/* ==========================================================
+   4. MAIN CONTENT & HERO BANNER
+   ========================================================== */
+main {
+    flex: 1;
+    max-width: 1320px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 48px 28px;
+}
+
+.hero-banner {
+    text-align: center;
+    margin-bottom: 56px;
+    padding: clamp(32px, 3vw, 48px) clamp(24px, 4vw, 44px);
+    background: var(--bg-card);
+    border: 2px solid var(--border-card);
+    border-radius: 28px;
+    box-shadow: var(--card-shadow);
+}
+
+.hero-banner h2 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 1.4vw + 1.3rem, 2.6rem);
+    margin-bottom: 16px;
+    letter-spacing: 0.3px;
+}
+
+.hero-banner p {
+    font-size: clamp(1.08rem, 0.4vw + 1rem, 1.35rem);
+    color: var(--ink-soft);
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.65;
+}
+
+.disclaimer-box {
+    margin-top: 28px;
+    padding: 22px 26px;
+    background: var(--disclaimer-bg);
+    border: 3px dashed var(--disclaimer-border);
+    border-radius: 18px;
+    text-align: left;
+    font-size: clamp(1rem, 0.2vw + 0.95rem, 1.12rem);
+    color: var(--ink);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.disclaimer-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--disclaimer-title);
+    margin-bottom: 10px;
+    font-size: clamp(1.1rem, 0.2vw + 1.05rem, 1.25rem);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+}
+
+.disclaimer-box p + p {
+    margin-top: 10px;
+}
+
+/* ==========================================================
+   5. GRADE SECTIONS & TILES GRID
+   ========================================================== */
+.grade-section {
+    margin-bottom: 56px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 4px solid var(--border-card);
+}
+
+.section-header h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 0.8vw + 1.15rem, 1.9rem);
+    letter-spacing: 0.3px;
+}
+
+.section-badge {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 24px;
+    font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.92rem);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.grade-6 .section-header { border-color: var(--blue-btn-a); }
+.grade-6 h3 { color: var(--blue-ink); }
+.grade-6 .section-badge { background: linear-gradient(135deg, var(--blue-btn-a), var(--blue-btn-b)); color: #ffffff; }
+
+.grade-7 .section-header { border-color: var(--amber-btn-a); }
+.grade-7 h3 { color: var(--amber-ink); }
+.grade-7 .section-badge { background: linear-gradient(135deg, var(--amber-btn-a), var(--amber-btn-b)); color: var(--amber-btn-text); }
+
+.grade-8 .section-header { border-color: var(--purple-btn-a); }
+.grade-8 h3 { color: var(--purple-ink); }
+.grade-8 .section-badge { background: linear-gradient(135deg, var(--purple-btn-a), var(--purple-btn-b)); color: #ffffff; }
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
+}
+
+.game-card {
+    background-color: var(--bg-card);
+    border: 2px solid var(--border-card);
+    border-radius: 22px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card:hover {
+    transform: translateY(-6px);
+    background-color: var(--bg-card-hover);
+}
+
+.grade-6 .game-card:hover { border-color: var(--blue-btn-a); box-shadow: 0 14px 30px -8px rgba(3, 105, 161, 0.35); }
+.grade-7 .game-card:hover { border-color: var(--amber-btn-a); box-shadow: 0 14px 30px -8px rgba(217, 119, 6, 0.32); }
+.grade-8 .game-card:hover { border-color: var(--purple-btn-a); box-shadow: 0 14px 30px -8px rgba(109, 40, 217, 0.35); }
+
+.game-card:hover .game-icon {
+    transform: scale(1.15) rotate(-4deg);
+}
+
+.game-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.game-icon {
+    font-size: clamp(2.6rem, 1.2vw + 2.2rem, 3.2rem);
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.25s ease;
+}
+
+.game-tag {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.92rem);
+    padding: 6px 14px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.grade-6 .game-tag { background: var(--blue-soft-bg); color: var(--blue-ink); }
+.grade-7 .game-tag { background: var(--amber-soft-bg); color: var(--amber-ink); }
+.grade-8 .game-tag { background: var(--purple-soft-bg); color: var(--purple-ink); }
+
+.game-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.25rem, 0.5vw + 1.1rem, 1.5rem);
+    margin-bottom: 10px;
+    color: var(--ink);
+    letter-spacing: 0.2px;
+}
+
+.game-description {
+    font-size: clamp(1rem, 0.2vw + 0.95rem, 1.12rem);
+    color: var(--ink-soft);
+    margin-bottom: 26px;
+    flex-grow: 1;
+    line-height: 1.55;
+}
+
+.play-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.05rem, 0.2vw + 1rem, 1.2rem);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    gap: 8px;
+    letter-spacing: 0.3px;
+}
+
+.grade-6 .play-btn { background: linear-gradient(135deg, var(--blue-btn-a), var(--blue-btn-b)); color: #ffffff; }
+.grade-7 .play-btn { background: linear-gradient(135deg, var(--amber-btn-a), var(--amber-btn-b)); color: var(--amber-btn-text); }
+.grade-8 .play-btn { background: linear-gradient(135deg, var(--purple-btn-a), var(--purple-btn-b)); color: #ffffff; }
+
+.play-btn:hover {
+    transform: scale(1.03);
+    filter: brightness(1.15);
+}
+
+/* ==========================================================
+   6. FOOTER
+   ========================================================== */
+footer {
+    text-align: center;
+    padding: 32px 20px;
+    border-top: 2px solid var(--border-card);
+    color: var(--ink-soft);
+    font-size: clamp(0.95rem, 0.2vw + 0.9rem, 1.05rem);
+    background: var(--bg-card);
+    margin-top: auto;
+    line-height: 1.65;
+}
+
+.footer-subtext {
+    font-size: clamp(0.88rem, 0.2vw + 0.84rem, 0.98rem);
+    margin-top: 8px;
+    opacity: 0.95;
+}
+
+/* ==========================================================
+   7. RESPONSIVE BREAKPOINTS
+   ========================================================== */
+@media (max-width: 680px) {
+    .header-container {
+        flex-direction: column;
+        padding-top: 38px;
+    }
+    .theme-toggle-btn {
+        top: 0;
+        right: 0;
+        transform: none;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
+    .logo-group {
+        flex-direction: column;
+        text-align: center;
+        gap: 14px;
+    }
+    .games-grid { grid-template-columns: 1fr; }
+}

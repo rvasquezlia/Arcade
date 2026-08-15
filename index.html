@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lincoln International Academy | Middle School Math Arcade</title>
+    
+    <!-- Google Fonts: Fredoka (playful display) + Nunito (warm, legible body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ==========================================================
+         HEADER SECTION
+         ========================================================== -->
+    <header>
+        <div class="header-container">
+            
+            <div class="logo-group">
+                <img src="https://lh3.googleusercontent.com/d/1M8dDDCjYhiwtso7yNMWYVHh2HLpPpQ_x" alt="Lincoln International Academy Logo" class="logo-img">
+                <div class="title-group">
+                    <div class="sub-header">Lincoln International Academy</div>
+                    <h1>Middle School Math Arcade</h1>
+                </div>
+            </div>
+
+            <button class="theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </button>
+
+        </div>
+    </header>
+
+    <!-- ==========================================================
+         MAIN CONTENT AREA
+         ========================================================== -->
+    <main>
+
+        <section class="hero-banner">
+            <h2>Welcome to the Arcade! 🚀</h2>
+            <p>Ready to level up your math skills? This is your ultimate math playground where you can practice, challenge yourself, and master math concepts while having fun playing interactive games. Select your grade below to start playing!</p>
+
+            <div class="disclaimer-box">
+                <div class="disclaimer-title">⚠️ Arcade Pro-Tip & Progress Notice</div>
+                <p>These games are created for single-session play, meaning <strong>your progress is not saved automatically</strong>. If you refresh, close, or leave the page, your game will restart from the beginning!</p>
+                <p>📸 <strong>Need proof of completion for class?</strong> Make sure to snap a screenshot of your final score or victory screen when you finish so you can share it with your teacher!</p>
+            </div>
+        </section>
+
+        <!-- SECTION 1: 6TH GRADE GAMES -->
+        <section class="grade-section grade-6">
+            <div class="section-header">
+                <h3>6th Grade Arena</h3>
+                <span class="section-badge">6th Grade</span>
+            </div>
+
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🌉</span>
+                        <span class="game-tag">Quest</span>
+                    </div>
+                    <h4 class="game-title">Bridge to 6th Grade</h4>
+                    <p class="game-description">Conquer 4 interactive levels of multi-digit whole numbers, decimals, fractions, and 3D shapes!</p>
+                    <a href="bridge-to-6th-grade/index.html" class="play-btn">
+                        Play Game 🎮
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: 7TH GRADE GAMES -->
+        <section class="grade-section grade-7">
+            <div class="section-header">
+                <h3>7th Grade Arena</h3>
+                <span class="section-badge">7th Grade</span>
+            </div>
+
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🎰</span>
+                        <span class="game-tag">Jeopardy Style</span>
+                    </div>
+                    <h4 class="game-title">7th Grade Readiness Challenge</h4>
+                    <p class="game-description">A high-stakes review board covering coordinates, integers, PEMDAS, ratios, percents, and geometry!</p>
+                    <a href="jeopardy-7th-grade-readiness/index.html" class="play-btn">
+                        Play Game 🎮
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: 8TH GRADE GAMES -->
+        <section class="grade-section grade-8">
+            <div class="section-header">
+                <h3>8th Grade Arena</h3>
+                <span class="section-badge">8th Grade</span>
+            </div>
+
+            <div class="games-grid">
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">⚔️</span>
+                        <span class="game-tag">Quest</span>
+                    </div>
+                    <h4 class="game-title">Algebra Quest: Cyber Escape</h4>
+                    <p class="game-description">Conquer 13 math dungeons covering coordinate planes, scientific notation, equations, and inequalities to escape the cyber grid!</p>
+                    <a href="algebra-quest-cyber-escape/index.html" class="play-btn">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🏛️</span>
+                        <span class="game-tag">Auction</span>
+                    </div>
+                    <h4 class="game-title">The Grand Math Auction</h4>
+                    <p class="game-description">Bid your investment capital, solve high-stakes algebra problems, and build your fortune in this strategic math auction!</p>
+                    <a href="grand-math-auction/index.html" class="play-btn">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🕵️‍♂️</span>
+                        <span class="game-tag">Investigation</span>
+                    </div>
+                    <h4 class="game-title">Cold Case Noir</h4>
+                    <p class="game-description">Analyze the precinct evidence wall across unsolved case files involving coordinate geometry, scientific notation, and keyword ciphers!</p>
+                    <a href="cold-case-noir/index.html" class="play-btn">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">📡</span>
+                        <span class="game-tag">Tactical</span>
+                    </div>
+                    <h4 class="game-title">Quadrant Fleet</h4>
+                    <p class="game-description">Lock onto target coordinates and navigate the tactical cyber radar grid using precision coordinate geometry!</p>
+                    <a href="quadrant-fleet/index.html" class="play-btn">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🎰</span>
+                        <span class="game-tag">Probability</span>
+                    </div>
+                    <h4 class="game-title">Probability Casino</h4>
+                    <p class="game-description">Test your mathematical odds and master theoretical and experimental probability in interactive casino challenges!</p>
+                    <a href="probability-casino/index.html" class="play-btn">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================================
+         FOOTER
+         ========================================================== -->
+    <footer>
+        <p>🎮 <strong>Lincoln International Academy &bull; Middle School Math Arcade</strong></p>
+        <p class="footer-subtext">Created for <strong>Math Department - Middle School - Lincoln International Academy</strong> by <strong>Rodrigo Vasquez</strong>. <br><em>(Crafted with ☕, pixel magic, and zero broken calculators. Game over? Just hit refresh!) 🚀</em></p>
+    </footer>
+
+    <!-- ==========================================================
+         JAVASCRIPT
+         ========================================================== -->
+    <script src="script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebra Quest: Cyber Dungeon Escape</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Script & Configuration for LaTeX Rendering -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Light/Dark Mode Switch in Top Right Corner -->
+    <div class="top-bar">
+        <button id="themeBtn" class="theme-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="gameCard" class="game-card">
+
+        <!-- 1. START / INSTRUCTION SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <div style="font-size: 3.5rem; margin-bottom: 8px;">⚔️🏰</div>
+            <h1 class="arcade-title">Algebra Quest: Cyber Escape</h1>
+            <p class="sub-title">8th Grade Algebra Refresher Challenge | Lincoln International Academy</p>
+
+            <ul class="instructions-list">
+                <li>🎯 <strong>Goal:</strong> Conquer all 13 math dungeons to escape the cyber grid!</li>
+                <li>❤️ <strong>Health Points (HP):</strong> You start with 3 Hearts. Each wrong answer loses 1 Heart.</li>
+                <li>🔀 <strong>Randomized Challenges:</strong> Questions and answer choices are randomized every round.</li>
+                <li>📸 <strong>Progress Reporting:</strong> Complete all stages to earn your completion badge.</li>
+                <li>⚠️ <strong>Warning:</strong> Refreshing or leaving the browser will reset your score and force a complete restart!</li>
+            </ul>
+
+            <button class="start-btn" onclick="startGame()">START GAME 🚀</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameplayScreen" style="display: none;">
+            <div>
+                <h2 id="stageTitle" class="arcade-title" style="font-size: 1.5rem; text-align: left;">Stage 1: Coordinate Plane</h2>
+                
+                <!-- HUD Bar -->
+                <div class="hud-bar">
+                    <div class="hud-item">
+                        <span>Level:</span> <span id="levelCounter" style="color: var(--accent-blue);">1 / 13</span>
+                    </div>
+                    <div class="hud-item">
+                        <span>HP:</span> <span id="hpDisplay" class="hp-hearts">❤️❤️❤️</span>
+                    </div>
+                    <div class="hud-item">
+                        <span>Score:</span> <span id="scoreDisplay" style="color: var(--accent-yellow);">0 PTS</span>
+                    </div>
+                </div>
+
+                <!-- Math Problem Card -->
+                <div id="questionBox" class="question-box">
+                    Question text will appear here...
+                </div>
+
+                <!-- Answer Choices Options Grid -->
+                <div id="optionsGrid" class="options-grid">
+                    <!-- Dynamic option buttons rendered via JS -->
+                </div>
+            </div>
+
+            <div id="feedbackBanner" class="feedback-banner"></div>
+        </div>
+
+        <!-- 3. GAME OVER SCREEN -->
+        <div id="gameOverScreen" class="screen-center" style="display: none;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">💀</div>
+            <h1 class="arcade-title" style="color: var(--accent-red);">GAME OVER</h1>
+            <p class="sub-title">You ran out of Hearts! The Cyber Grid overpowered you.</p>
+            <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 10px;">Final Score: <span id="finalScoreFail" style="color:var(--accent-yellow)">0</span> PTS</p>
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartGame()">TRY AGAIN 🔄</button>
+        </div>
+
+        <!-- 4. VICTORY / COMPLETION SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🏆✨</div>
+            <h1 class="arcade-title" style="color: var(--accent-green); font-size: 2.2rem;">LEGENDARY VICTORY!</h1>
+            
+            <p style="font-size: 1.2rem; font-weight: 800; color: var(--accent-yellow); margin-bottom: 6px;">
+                🌟 Compliment of Excellence 🌟
+            </p>
+            <p style="font-size: 1.15rem; font-weight: 700; max-width: 600px; line-height: 1.5; margin-bottom: 16px;">
+                Outstanding performance! You have mastered all 13 core Algebra I prerequisite domains with exceptional mathematical precision!
+            </p>
+
+            <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; background: var(--box-bg); padding: 10px 24px; border-radius: 12px; border: 2px solid var(--card-border);">
+                Total Score: <span id="finalScoreWin" style="color: var(--accent-yellow);">1300</span> PTS
+            </div>
+
+            <!-- DISCLAIMER screenshot instruction -->
+            <div class="disclaimer-alert">
+                <h3>📸 IMPORTANT: SUBMIT YOUR PROGRESS!</h3>
+                <p>
+                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this entire screen right now to present as proof of progress to your teacher!
+                    <br><br>
+                    <span style="color: var(--accent-red);">⚠️ Note:</span> If you refresh, close, or reload this page, all game progress will be lost and you will have to restart from Stage 1!
+                </p>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-green); color: #052e16;" onclick="restartGame()">Play Again 🔄</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy • 8th Grade Algebra I • Designed by <span>Rodrigo Vasquez</span>
+    </footer>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

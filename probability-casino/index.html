@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability Casino: High-Roller Gaming Table</title>
+
+    <!-- Google Fonts for High-Roller Arcade Casino -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Engine Setup -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Right Switch Theme -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">[ VELVET VIP THEME ]</button>
+    </div>
+
+    <!-- Main Casino Table Container -->
+    <div class="casino-table">
+
+        <!-- 1. CASINO WELCOME SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <h1 class="casino-title">Probability Casino</h1>
+            <p class="casino-subtitle">High-Roller Wheel & Gaming Table // 10 Random Floor Rounds</p>
+
+            <div class="briefing-box">
+                <p style="margin-bottom: 10px;"><strong>CASINO OPERATIONAL RULES:</strong></p>
+                <ul>
+                    <li><strong>Dynamic Question Bank:</strong> 10 questions are randomly sampled from a bank of 20 probability challenges every game session.</li>
+                    <li><strong>Initial Bankroll:</strong> Start with <strong>$1,000 Chips</strong>. Survive all 10 rounds to complete your casino shift.</li>
+                    <li><strong>Step 1 - Odds Calibration:</strong> Select the exact probability $P(E)$ or complement $P(E') = 1 - P(E)$. A correct calculation unlocks a <strong>Dealer Audit Card</strong> and grants a <strong>1.5x Multiplier</strong>!</li>
+                    <li><strong>Step 2 - Table Betting:</strong> Select chip size ($100, $250, $500) and bet on <strong>Target $E$</strong> or <strong>Complement $E'$</strong>.</li>
+                    <li><strong>Step 3 - Real-Time Wheel Spin:</strong> Spin the wheel! Winning pays out instantly.</li>
+                </ul>
+            </div>
+
+            <button class="primary-btn" onclick="startCasinoSession()">ENTER CASINO FLOOR</button>
+        </div>
+
+        <!-- 2. GAMEPLAY ARENA SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <h2 id="roundHeader" class="casino-title" style="font-size: 1.4rem; text-align: left;">Round 01: Table Setup</h2>
+            <p class="casino-subtitle" style="text-align: left; margin-bottom: 12px;">CALCULATE ODDS & PLACE CHIP WAGERS</p>
+
+            <!-- Status HUD Bar -->
+            <div class="hud-status-bar">
+                <div class="hud-item">
+                    <span class="hud-label">Casino Shift</span>
+                    <span id="roundCounter" class="hud-value">01 / 10</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Chip Bankroll</span>
+                    <span id="bankrollDisplay" class="hud-value">$1,000</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Payout Multiplier</span>
+                    <span id="multiplierDisplay" class="hud-value" style="color: var(--neon-cyan);">1.0x</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Current Wager</span>
+                    <span id="currentBetDisplay" class="hud-value" style="color: var(--neon-pink);">$100</span>
+                </div>
+            </div>
+
+            <!-- Table Layout Grid -->
+            <div class="table-grid">
+                
+                <!-- Canvas Wheel Left -->
+                <div class="wheel-wrapper">
+                    <div class="wheel-pointer"></div>
+                    <canvas id="wheelCanvas" width="330" height="330"></canvas>
+                </div>
+
+                <!-- Dealer Terminal Right -->
+                <div class="terminal-panel">
+                    
+                    <!-- Dealer Prompt Box -->
+                    <div class="dealer-prompt-box">
+                        <div class="dealer-title">Dealer Probability Challenge</div>
+                        <div id="dealerPromptText" class="dealer-text">
+                            Loading floor probability challenge...
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Odds Calibration -->
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
+                            STEP 1: SELECT PROBABILITY CALIBRATION
+                        </div>
+                        <div id="probOptionsGrid" class="prob-options-grid">
+                            <!-- Dynamic Probability Buttons -->
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Table Wager Board -->
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
+                            STEP 2: PLACE TABLE BET
+                        </div>
+                        <div class="betting-board">
+                            <div id="betSpotE" class="bet-spot active" onclick="selectBetSpot('E')">
+                                <div id="labelEventE" class="bet-spot-title">Target Event E</div>
+                                <div class="bet-spot-odds">Win On Target Slices</div>
+                            </div>
+                            <div id="betSpotEPrime" class="bet-spot" onclick="selectBetSpot('E_PRIME')">
+                                <div id="labelEventEPrime" class="bet-spot-title">Complement E'</div>
+                                <div class="bet-spot-odds">Win On Complement Slices</div>
+                            </div>
+                        </div>
+
+                        <!-- Chip Selector -->
+                        <div class="chip-selector" style="margin-top: 10px;">
+                            <button class="chip-btn selected" onclick="selectChipValue(100, this)">$100</button>
+                            <button class="chip-btn" onclick="selectChipValue(250, this)">$250</button>
+                            <button class="chip-btn" onclick="selectChipValue(500, this)">$500</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Button & Output Feedback -->
+                    <div>
+                        <button id="spinBtn" class="spin-btn" onclick="spinWheel()" disabled>SELECT CALIBRATION FIRST</button>
+                        <div id="feedbackLine" class="feedback-line" style="margin-top: 8px;"></div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 3. BANKROLL BUSTED SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <h1 class="casino-title" style="color: var(--neon-pink);">BANKROLL BUSTED // HOUSE WINS</h1>
+            <p class="casino-subtitle">Your chip bankroll was completely exhausted on the floor.</p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Chips Remaining: $0</p>
+            <button class="primary-btn" style="background: var(--neon-pink); color: white;" onclick="restartSession()">REBUY CHIPS & RESTART</button>
+        </div>
+
+        <!-- 4. HIGH-ROLLER VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <h1 class="casino-title">HIGH-ROLLER VICTORY</h1>
+            <p class="casino-subtitle">Casino Theoretical Probability Mastery</p>
+
+            <p style="font-size: 1.15rem; max-width: 640px; line-height: 1.6; margin-bottom: 16px; font-weight: 600;">
+                Outstanding casino play! You navigated all 10 floor rounds, demonstrating complete mastery over theoretical probabilities $P(E)$ and complementary events $P(E') = 1 - P(E)$!
+            </p>
+
+            <div style="font-family: var(--font-arcade); font-size: 1.3rem; background: var(--card-bg); padding: 12px 28px; border: 1px solid var(--felt-border); margin-bottom: 10px; border-radius: 6px;">
+                Final Chip Cash-Out: <span id="victoryChips" style="color: var(--gold-primary); font-weight: 900;">$0</span>
+            </div>
+
+            <!-- MANDATORY PROOF OF PROGRESS DISCLAIMER -->
+            <div class="disclaimer-card">
+                <h3>PROOF OF PROGRESS REQUIRED</h3>
+                <p>
+                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this completed victory screen now to submit to your instructor as proof of mission completion.
+                    <br><br>
+                    <span style="color: var(--neon-pink); font-weight: 700;">Warning:</span> Reloading this browser page resets your chip balance to zero and regenerates a new random 10-round deck.
+                </p>
+            </div>
+
+            <button class="primary-btn" onclick="restartSession()">NEW CASINO SESSION</button>
+        </div>
+
+    </div>
+
+    <!-- DEALER AUDIT EXPLANATION CARD MODAL -->
+    <div id="auditModal" class="modal-overlay" style="display: none;">
+        <div class="audit-card">
+            <div id="auditBadge" class="audit-badge badge-correct">CALIBRATION SUCCESSFUL</div>
+            <h3 id="auditTitle" class="audit-title">Dealer Probability Audit Card</h3>
+            
+            <div class="audit-math-box">
+                <div id="auditMathContent">
+                    <!-- Dynamic Mathematical Breakdown HTML -->
+                </div>
+            </div>
+
+            <button class="audit-close-btn" onclick="closeAuditModal()">CONTINUE TO WHEEL SPIN 🎰</button>
+        </div>
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Commander Rodrigo Vasquez
+    </footer>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

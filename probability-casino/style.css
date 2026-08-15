@@ -1,0 +1,537 @@
+        :root {
+            --bg-casino: #05140d;
+            --felt-green: #0a3a22;
+            --felt-border: #145835;
+            --card-bg: #0f2218;
+            --gold-primary: #ffd700;
+            --gold-glow: rgba(255, 215, 0, 0.35);
+            --neon-cyan: #00f0ff;
+            --neon-pink: #ff0055;
+            --neon-green: #00ff66;
+            --text-light: #f8fafc;
+            --text-muted: #a3b8cc;
+            --font-casino: 'Cinzel', serif;
+            --font-arcade: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-mono: 'Share Tech Mono', monospace;
+            --shadow-deep: rgba(0, 0, 0, 0.85);
+        }
+
+        body.light-mode {
+            --bg-casino: #1a0f07;
+            --felt-green: #2d180b;
+            --felt-border: #4a2b16;
+            --card-bg: #231207;
+            --gold-primary: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.25);
+            --neon-cyan: #0284c7;
+            --neon-pink: #e11d48;
+            --neon-green: #16a34a;
+            --text-light: #fef3c7;
+            --text-muted: #d4d4d8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-casino);
+            background-image: radial-gradient(circle at center, #0e3320 0%, #030d08 100%);
+            color: var(--text-light);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        /* Top Controls */
+        .top-controls {
+            position: fixed;
+            top: 16px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn {
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--gold-primary);
+            border: 2px solid var(--gold-primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--gold-glow);
+            letter-spacing: 1px;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--gold-primary);
+            color: #000;
+        }
+
+        /* Main Casino Table Container */
+        .casino-table {
+            width: 100%;
+            max-width: 1050px;
+            background: var(--felt-green);
+            border: 10px solid #2d1b0e;
+            outline: 3px solid var(--gold-primary);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 50px var(--shadow-deep), inset 0 0 80px rgba(0, 0, 0, 0.6);
+            position: relative;
+            min-height: 660px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .casino-title {
+            font-family: var(--font-casino);
+            font-size: 2.2rem;
+            color: var(--gold-primary);
+            text-align: center;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px var(--gold-glow), 2px 2px 4px #000;
+            text-transform: uppercase;
+        }
+
+        .casino-subtitle {
+            font-family: var(--font-mono);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Status HUD Bar */
+        .hud-status-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--felt-border);
+            padding: 10px 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hud-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .hud-value {
+            font-family: var(--font-arcade);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--gold-primary);
+            text-shadow: 0 0 8px var(--gold-glow);
+        }
+
+        /* Layout Grid */
+        .table-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            align-items: center;
+        }
+
+        @media (max-width: 880px) {
+            .table-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Canvas Wheel Wrapper */
+        .wheel-wrapper {
+            position: relative;
+            width: 330px;
+            height: 330px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            padding: 10px;
+            border: 4px solid var(--gold-primary);
+            box-shadow: 0 0 25px var(--gold-glow);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 26px solid var(--neon-pink);
+            z-index: 10;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.9));
+        }
+
+        /* Dealer Terminal Panel */
+        .terminal-panel {
+            background: var(--card-bg);
+            border: 2px solid var(--felt-border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 8px 24px var(--shadow-deep);
+        }
+
+        .dealer-prompt-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--gold-primary);
+            border-left: 5px solid var(--gold-primary);
+            padding: 14px 18px;
+            border-radius: 6px;
+        }
+
+        .dealer-title {
+            font-family: var(--font-casino);
+            font-size: 0.85rem;
+            color: var(--gold-primary);
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .dealer-text {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        /* Calibration Grid Buttons */
+        .prob-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .prob-btn {
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--text-light);
+            border: 1px solid var(--felt-border);
+            padding: 12px;
+            border-radius: 6px;
+            font-family: var(--font-arcade);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .prob-btn:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .prob-btn.selected {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Betting Table Board */
+        .betting-board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .bet-spot {
+            background: rgba(0,0,0,0.35);
+            border: 2px dashed var(--felt-border);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .bet-spot:hover {
+            border-color: var(--gold-primary);
+        }
+
+        .bet-spot.active {
+            border: 2px solid var(--gold-primary);
+            background: var(--gold-glow);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .bet-spot-title {
+            font-family: var(--font-casino);
+            font-size: 0.95rem;
+            color: var(--gold-primary);
+            margin-bottom: 2px;
+        }
+
+        .bet-spot-odds {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Chips Controls */
+        .chip-selector {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .chip-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px dashed #ffffff;
+            background: radial-gradient(circle, #2a1003 0%, #0f0501 100%);
+            color: var(--gold-primary);
+            font-family: var(--font-arcade);
+            font-size: 0.85rem;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px var(--shadow-deep);
+        }
+
+        .chip-btn.selected {
+            border-style: solid;
+            background: radial-gradient(circle, #ffd700 0%, #b45309 100%);
+            color: #000;
+            box-shadow: 0 0 16px var(--gold-glow);
+            transform: scale(1.08);
+        }
+
+        /* Action Spin Button */
+        .spin-btn {
+            background: linear-gradient(135deg, #ff0055 0%, #b3003b 100%);
+            color: #ffffff;
+            border: none;
+            padding: 16px;
+            font-family: var(--font-arcade);
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 6px;
+            box-shadow: 0 4px 18px rgba(255, 0, 85, 0.4);
+            width: 100%;
+        }
+
+        .spin-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+        }
+
+        .spin-btn:disabled {
+            background: var(--felt-border);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Feedback Status */
+        .feedback-line {
+            font-family: var(--font-mono);
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            min-height: 24px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .text-success { color: var(--neon-green); }
+        .text-error { color: var(--neon-pink); }
+
+        /* MODAL / EXPLANATION CARD STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .audit-card {
+            background: #0f1c15;
+            border: 3px solid var(--gold-primary);
+            border-radius: 12px;
+            max-width: 580px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 0 35px var(--gold-glow);
+            font-family: var(--font-body);
+            position: relative;
+        }
+
+        .audit-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-family: var(--font-arcade);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .badge-correct {
+            background: var(--neon-green);
+            color: #000;
+        }
+
+        .badge-incorrect {
+            background: var(--neon-pink);
+            color: #fff;
+        }
+
+        .audit-title {
+            font-family: var(--font-casino);
+            color: var(--gold-primary);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--felt-border);
+            padding-bottom: 8px;
+        }
+
+        .audit-math-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--felt-border);
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .audit-close-btn {
+            background: var(--gold-primary);
+            color: #000;
+            border: none;
+            padding: 12px 28px;
+            font-family: var(--font-arcade);
+            font-weight: 900;
+            font-size: 0.95rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .audit-close-btn:hover {
+            background: #fff;
+        }
+
+        /* Screens Helpers */
+        .screen-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .primary-btn {
+            background: var(--gold-primary);
+            color: #000000;
+            border: none;
+            padding: 14px 40px;
+            font-family: var(--font-arcade);
+            font-size: 1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 16px var(--gold-glow);
+        }
+
+        .briefing-box {
+            background: var(--card-bg);
+            border: 1px solid var(--felt-border);
+            padding: 22px 28px;
+            text-align: left;
+            margin: 20px 0;
+            max-width: 680px;
+            line-height: 1.7;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
+        .briefing-box ul { padding-left: 20px; }
+        .briefing-box li { margin-bottom: 8px; }
+
+        .disclaimer-card {
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px dashed var(--gold-primary);
+            padding: 22px 26px;
+            margin: 20px 0;
+            text-align: center;
+            max-width: 680px;
+            border-radius: 8px;
+        }
+
+        .disclaimer-card h3 {
+            font-family: var(--font-casino);
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation: Bridge to 6th Grade</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for High-Legibility Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Compact Single-Line Navigation Header -->
+    <header class="bg-slate-800/90 backdrop-blur border-b border-slate-700 py-2.5 px-4 sm:px-6 sticky top-0 z-30 shadow-md transition-all">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+            
+            <!-- Left: Logo & Compact Title -->
+            <div class="flex items-center space-x-3 min-w-0">
+                <div class="logo-permanent-dark p-1.5 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <img src="https://lh3.googleusercontent.com/d/1M8dDDCjYhiwtso7yNMWYVHh2HLpPpQ_x" alt="Lincoln International Academy Logo" class="h-9 sm:h-11 w-auto object-contain">
+                </div>
+                <div class="truncate">
+                    <h1 class="title-gradient text-lg sm:text-2xl font-black tracking-tight truncate">
+                        Bridge to 6th Grade
+                    </h1>
+                    <p class="text-xs text-slate-400 text-sub-theme font-bold tracking-wide hidden sm:block">Interactive Math Challenge Quest</p>
+                </div>
+            </div>
+            
+            <!-- Right: Single-Line Controls & Score -->
+            <div class="flex items-center gap-2.5 sm:gap-4 flex-shrink-0">
+                <!-- Theme Button -->
+                <button id="theme-toggle-btn" onclick="toggleTheme()" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-1.5 px-3 rounded-xl border border-indigo-400/30 transition-all active:scale-95 shadow-sm text-xs sm:text-sm">
+                    <span id="theme-btn-icon">☀️</span>
+                    <span id="theme-btn-text" class="hidden sm:inline">Light Mode</span>
+                </button>
+
+                <!-- Score & Progress Card (In-line) -->
+                <div class="score-box-theme flex items-center space-x-3 sm:space-x-4 bg-slate-900/90 py-1.5 px-3 sm:px-4 rounded-xl border border-slate-700 transition-all">
+                    <div class="text-right">
+                        <span class="text-[10px] sm:text-xs uppercase tracking-wider text-slate-400 text-sub-theme font-black block">Score</span>
+                        <div id="score" class="text-base sm:text-lg font-black text-amber-400 leading-none">0</div>
+                    </div>
+                    <div class="h-6 w-px bg-slate-700/60"></div>
+                    <div class="text-right">
+                        <span class="text-[10px] sm:text-xs uppercase tracking-wider text-slate-400 text-sub-theme font-black block">Stage</span>
+                        <div id="progress-text" class="text-xs sm:text-sm font-black text-indigo-300 leading-none">Level 1/4</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-5 flex flex-col justify-center my-auto">
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-800 score-box-theme rounded-full h-2.5 mb-4 overflow-hidden border border-slate-700 p-0.5 shadow-inner">
+            <div id="progress-bar" class="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-1.5 rounded-full transition-all duration-500" style="width: 3%"></div>
+        </div>
+
+        <!-- Level Navigation Tabs -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-5" id="level-tabs">
+            <!-- Dynamic tabs inserted here -->
+        </div>
+
+        <!-- Main Question Card -->
+        <div id="game-card" class="game-card-theme bg-slate-800 border border-slate-700 rounded-2xl p-5 sm:p-8 shadow-xl relative transition-all duration-300">
+            
+            <!-- Question Tracker & Badge -->
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-5">
+                <span id="level-badge" class="badge-standard px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    Level 1
+                </span>
+                <span id="question-tracker" class="text-xs sm:text-sm font-bold text-slate-400 text-sub-theme tracking-wide">Question 1 of 9</span>
+            </div>
+
+            <!-- Balanced Question Title -->
+            <h2 id="question-text" class="text-xl sm:text-2xl md:text-3xl font-extrabold mb-6 text-slate-100 text-main-theme leading-relaxed">
+                Loading question...
+            </h2>
+
+            <!-- Answer Options Grid -->
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-2">
+                <!-- Option buttons generated dynamically -->
+            </div>
+
+            <!-- Optional Skip Button -->
+            <div id="skip-container" class="hidden text-right mt-5 pt-3 border-t border-slate-700/50">
+                <button onclick="skipChallenge()" class="text-xs sm:text-sm font-extrabold text-slate-400 hover:text-amber-400 transition-colors underline underline-offset-4">
+                    Skip Challenge ➔
+                </button>
+            </div>
+        </div>
+
+        <!-- Final Victory Screen -->
+        <div id="victory-screen" class="hidden game-card-theme text-center bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-10 shadow-xl">
+            <div class="text-6xl sm:text-7xl mb-4 animate-bounce">🏆</div>
+            <h2 class="text-3xl sm:text-5xl font-black text-amber-400 mb-3 tracking-tight">Quest Completed!</h2>
+            <p class="text-slate-300 text-sub-theme max-w-lg mx-auto mb-6 text-base sm:text-lg font-semibold">You conquered all levels, solved logic challenges, and proved you have been studying for 6th Grade Math!</p>
+            <div class="score-box-theme inline-block bg-slate-900 border border-slate-700 rounded-2xl px-8 py-4 mb-6 shadow-inner">
+                <span class="text-xs text-slate-400 text-sub-theme uppercase tracking-wider block font-black mb-1">Final Score</span>
+                <span id="final-score" class="text-4xl sm:text-5xl font-black text-indigo-400">0</span>
+            </div>
+            <br>
+            <button onclick="restartQuest()" class="py-3.5 px-10 rounded-xl font-extrabold text-base sm:text-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-indigo-500/25">
+                Play Again
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Mission Briefing Instruction Modal -->
+    <div id="intro-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity duration-300">
+        <div class="modal-inner-theme bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 max-w-xl w-full shadow-2xl relative text-center">
+            <div class="w-14 h-14 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+                🚀
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black mb-1 bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text text-transparent">
+                Mission Briefing
+            </h2>
+            <p class="text-slate-400 text-sub-theme text-xs uppercase tracking-wider font-black mb-5">Operation: Bridge to 6th Grade</p>
+            
+            <div class="modal-box-theme text-left space-y-3 bg-slate-900/70 p-5 rounded-xl border border-slate-700/60 mb-6 text-sm sm:text-base text-slate-200 font-semibold leading-relaxed">
+                <div class="flex items-start space-x-3">
+                    <span class="text-indigo-400 font-black text-lg">1.</span>
+                    <p>Solve <b>8 Core Math Questions</b> in each level (+100 pts each).</p>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <span class="text-amber-400 font-black text-lg">2.</span>
+                    <p>Unlock the <b>⚡ Double-Reward Logic Challenge</b> at the end of each level (+200 pts!).</p>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <span class="text-purple-400 font-black text-lg">3.</span>
+                    <p>Conquer all 4 levels to face the <b>🔥 Ultimate Boss Challenge</b> (+300 pts!).</p>
+                </div>
+            </div>
+
+            <button onclick="startMission()" class="w-full py-3.5 px-6 rounded-xl font-extrabold bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white transition-all shadow-md shadow-indigo-600/20 active:scale-[0.98] text-base">
+                Start Mission ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden transition-opacity duration-300">
+        <div class="modal-inner-theme bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">
+            <div id="modal-badge" class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-3">
+                <!-- Status icon & title -->
+            </div>
+            <h3 id="modal-title" class="text-2xl sm:text-3xl font-black mb-3 text-main-theme text-white"></h3>
+            <div id="modal-explanation" class="modal-box-theme text-slate-200 text-base sm:text-lg mb-6 leading-relaxed bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 font-semibold">
+                <!-- Explanation text -->
+            </div>
+            <button id="modal-next-btn" onclick="nextStep()" class="w-full py-3.5 px-6 rounded-xl font-extrabold bg-indigo-600 hover:bg-indigo-500 text-white transition-all flex items-center justify-center space-x-2 shadow-md shadow-indigo-600/20 active:scale-[0.98] text-base">
+                <span>Continue</span>
+                <span class="text-lg">➔</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Web Audio Synthesizer -->
+
+    <!-- Master Game Logic -->
+    <script src="script.js" defer></script>
+</body>
+</html>
