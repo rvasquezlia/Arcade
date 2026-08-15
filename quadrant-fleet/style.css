@@ -1,0 +1,370 @@
+        :root {
+            --bg-color: #060911;
+            --container-bg: #0b111e;
+            --card-bg: #121a2c;
+            --border-color: #1e2d4a;
+            --accent-cyan: #00f0ff;
+            --accent-green: #00ff88;
+            --accent-red: #ff2a6d;
+            --accent-gold: #ffb703;
+            --text-primary: #e2e8f0;
+            --text-secondary: #64748b;
+            --font-header: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-mono: 'Share Tech Mono', monospace;
+            --glow-color: rgba(0, 240, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.7);
+        }
+
+        body.light-mode {
+            --bg-color: #f1f5f9;
+            --container-bg: #ffffff;
+            --card-bg: #f8fafc;
+            --border-color: #cbd5e1;
+            --accent-cyan: #0284c7;
+            --accent-green: #16a34a;
+            --accent-red: #dc2626;
+            --accent-gold: #d97706;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --glow-color: rgba(2, 132, 199, 0.12);
+            --shadow-color: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        /* Fixed Top Right Control Switch */
+        .top-controls {
+            position: fixed;
+            top: 18px;
+            right: 22px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn {
+            background: var(--container-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            letter-spacing: 1px;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        /* Main Container */
+        .tactical-container {
+            width: 100%;
+            max-width: 980px;
+            background: var(--container-bg);
+            border: 2px solid var(--border-color);
+            border-top: 5px solid var(--accent-cyan);
+            border-radius: 6px;
+            padding: 28px;
+            box-shadow: 0 16px 40px var(--shadow-color);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .title-header {
+            font-family: var(--font-header);
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .subtitle-header {
+            font-family: var(--font-mono);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* HUD Bar */
+        .hud-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            font-family: var(--font-mono);
+            border-radius: 4px;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hud-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .hud-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        /* Battery Energy Gauge */
+        .battery-container {
+            width: 160px;
+            height: 12px;
+            background: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .battery-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--accent-green);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Layout Grid for Interactive Arena */
+        .arena-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 820px) {
+            .arena-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Canvas Radar Container */
+        .canvas-wrapper {
+            position: relative;
+            width: 380px;
+            height: 380px;
+            margin: 0 auto;
+            background: #04070f;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.05);
+            cursor: crosshair;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Command Terminal Controls */
+        .terminal-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 380px;
+        }
+
+        .telemetry-box {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+
+        .telemetry-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .telemetry-prompt {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        /* Coordinate Inputs */
+        .coord-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+        }
+
+        .slider-label {
+            width: 80px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .coord-slider {
+            flex: 1;
+            accent-color: var(--accent-cyan);
+            cursor: pointer;
+        }
+
+        .coord-val-display {
+            width: 44px;
+            text-align: right;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Tactical Action Buttons */
+        .fire-btn {
+            background: var(--accent-cyan);
+            color: #000;
+            border: none;
+            padding: 14px;
+            font-family: var(--font-header);
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 4px 14px var(--glow-color);
+            transition: transform 0.15s ease, opacity 0.15s ease;
+            width: 100%;
+        }
+
+        .fire-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        /* Feedback Status */
+        .feedback-line {
+            font-family: var(--font-mono);
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            min-height: 24px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .text-success { color: var(--accent-green); }
+        .text-error { color: var(--accent-red); }
+
+        /* General Layout Screen Center */
+        .screen-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .primary-btn {
+            background: var(--accent-cyan);
+            color: #000;
+            border: none;
+            padding: 14px 40px;
+            font-family: var(--font-header);
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 16px var(--glow-color);
+        }
+
+        .briefing-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 22px 28px;
+            text-align: left;
+            margin: 20px 0;
+            max-width: 680px;
+            line-height: 1.7;
+            font-size: 1rem;
+            border-radius: 4px;
+        }
+
+        .briefing-box ul { padding-left: 20px; }
+        .briefing-box li { margin-bottom: 8px; }
+
+        .disclaimer-card {
+            background: rgba(0, 240, 255, 0.05);
+            border: 2px dashed var(--accent-cyan);
+            padding: 22px 26px;
+            margin: 20px 0;
+            text-align: center;
+            max-width: 680px;
+            border-radius: 4px;
+        }
+
+        .disclaimer-card h3 {
+            font-family: var(--font-header);
+            color: var(--accent-cyan);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }

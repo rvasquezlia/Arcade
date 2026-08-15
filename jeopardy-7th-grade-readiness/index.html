@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7th Grade Math Warm-Up: Jeopardy Review</title>
+
+    <!-- MathJax Library for Rendering LaTeX -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>7th Grade Readiness Challenge</h1>
+        <div class="header-controls">
+            <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()">☀️ Light Mode</button>
+            <div class="score-board">Score: $<span id="score">0</span></div>
+        </div>
+    </header>
+
+    <!-- Start Instructions Overlay -->
+    <div id="instruction-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Welcome, 7th Graders!</h2>
+            <p>Test your 6th-grade math skills before starting the new year!</p>
+            <ul>
+                <li>Select tiles from the board ranging from <strong>$100</strong> to <strong>$400</strong>.</li>
+                <li><strong>Dynamic Multipliers:</strong> 2x & 3x challenges are randomly hidden across tiles every game!</li>
+                <li><strong>Shuffled Choices:</strong> Answer options change position every time you play.</li>
+                <li>Pick the right choice to maximize your total score!</li>
+            </ul>
+            <button class="btn" onclick="startGame()">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Active Question Modal -->
+    <div id="question-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div id="multiplier-tag"></div>
+            <div id="question-category" style="color: var(--accent-blue); font-weight: 800; text-transform: uppercase; letter-spacing: 1px;"></div>
+            <div id="question-body" class="question-text"></div>
+            <div id="options-container" class="options-grid"></div>
+            <div id="feedback" class="feedback"></div>
+            <button id="next-btn" class="btn" style="display: none; margin-top: 20px;" onclick="closeQuestion()">Continue</button>
+        </div>
+    </div>
+
+    <!-- Game Completion Modal -->
+    <div id="completion-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">🏆</div>
+            <h2>Quest Completed!</h2>
+            <p style="font-size: 1.3rem; font-weight: 800; color: var(--accent-green); margin-bottom: 10px;">
+                Final Score: $<span id="final-score">0</span>
+            </p>
+            <p>You have answered all 24 questions on the board!</p>
+            
+            <div class="screenshot-card">
+                <h3>📸 Student Verification</h3>
+                <p style="font-weight: 600; color: var(--text-color);">
+                    Take a screenshot of this screen right now to show your teacher as proof of completion!
+                </p>
+            </div>
+
+            <button class="btn" style="margin-top: 10px;" onclick="restartGame()">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <!-- Game Board Grid -->
+    <main class="board" id="board"></main>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

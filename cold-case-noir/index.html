@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cold Case Noir: The Evidence Wall</title>
+
+    <!-- Google Fonts Import for Noir Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Engine Configuration and Script -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Right Theme Control Button -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">[ DARK MODE ]</button>
+    </div>
+
+    <!-- Main Dossier Container -->
+    <div class="dossier-container">
+
+        <!-- 1. START SCREEN / BRIEFING -->
+        <div id="startScreen" class="screen-center">
+            <h1 class="case-title">Cold Case Noir</h1>
+            <p class="case-subtitle">Precinct Evidence Board // Algebra Investigation</p>
+
+            <div class="dossier-box">
+                <p style="margin-bottom: 10px;"><strong>DETECTIVE BRIEFING & RULES OF EVIDENCE:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Analyze the evidence wall across 10 unsolved case files involving coordinates, scientific notation, and keyword ciphers.</li>
+                    <li><strong>Integrity Rating:</strong> You start with 3 Integrity Badges. Each incorrect lead deductions 1 badge. Losing all 3 closes the case unsolved.</li>
+                    <li><strong>Evidence Randomization:</strong> Case files and lead options are shuffled upon each new investigation.</li>
+                    <li><strong>Progress Disclaimer:</strong> This window maintains active memory only. Reloading or leaving the page resets all evidence logs completely.</li>
+                </ul>
+            </div>
+
+            <button class="action-btn" onclick="startInvestigation()">OPEN EVIDENCE BOARD</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <div>
+                <h2 id="caseHeader" class="case-title" style="font-size: 1.4rem; text-align: left;">Case File #1: Signal Trace</h2>
+                
+                <!-- Status HUD Bar -->
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-label">Case File:</span>
+                        <span id="fileCounter" class="status-value">1 / 10</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Integrity:</span>
+                        <span id="integrityDisplay" class="status-value">3 / 3</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Evidence Score:</span>
+                        <span id="scoreDisplay" class="status-value">0 PTS</span>
+                    </div>
+                </div>
+
+                <!-- Evidence Clue Box -->
+                <div class="evidence-card">
+                    <div class="evidence-tag">Case Evidence Log</div>
+                    <div id="evidenceText" class="evidence-text">
+                        Loading case file data...
+                    </div>
+                </div>
+
+                <!-- Option Choices Grid -->
+                <div id="optionsGrid" class="options-grid">
+                    <!-- Dynamic option buttons -->
+                </div>
+            </div>
+
+            <div id="feedbackLine" class="feedback-line"></div>
+        </div>
+
+        <!-- 3. CASE FAILED / COLD LOCK SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <h1 class="case-title" style="color: var(--accent-red);">CASE CLOSED // UNSOLVED</h1>
+            <p class="case-subtitle">Your integrity rating dropped to zero. The evidence remains unverified.</p>
+            <p style="font-family: var(--code-font); margin-bottom: 16px;">Final Evidence Score: <span id="failScore">0</span> PTS</p>
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartInvestigation()">REOPEN INVESTIGATION</button>
+        </div>
+
+        <!-- 4. VICTORY / CASE SOLVED SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <h1 class="case-title" style="color: var(--accent-amber);">CASE SOLVED</h1>
+            <p class="case-subtitle">Master Detective Distinction Awarded</p>
+
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Outstanding investigative work! You have successfully resolved all 10 cold case files by correctly applying coordinate geometry, scientific notation, and algebraic translations.
+            </p>
+
+            <div style="font-family: var(--code-font); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); margin-bottom: 10px;">
+                Total Verified Score: <span id="victoryScore" style="color: var(--accent-amber);">1000</span> PTS
+            </div>
+
+            <!-- MANDATORY PROOF DISCLAIMER -->
+            <div class="disclaimer-box">
+                <h3>OFFICIAL RECORD NOTICE: PROOF REQUIRED</h3>
+                <p>
+                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this entire screen now as official proof of case completion for your instructor.
+                    <br><br>
+                    <strong>Notice:</strong> Refreshing or closing this browser window resets all evidence logs and requires a complete re-investigation from Case File #1.
+                </p>
+            </div>
+
+            <button class="action-btn" onclick="restartInvestigation()">NEW CASE ASSIGNMENT</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Detective Rodrigo Vasquez
+    </footer>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
