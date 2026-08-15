@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lincoln International Academy | Middle School Math Arcade</title>
+    
+    <!-- Google Fonts for Arcade / Cyber Vibe -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,400&family=Russo+One&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================
+           1. COLOR THEMES & VARIABLES
+           ========================================================== */
+        :root {
+            /* Base Fonts */
+            --font-heading: 'Russo One', sans-serif;
+            --font-body: 'Chakra Petch', sans-serif;
+
+            /* Accent Colors per Grade */
+            --color-6th: #38bdf8;
+            --color-6th-glow: rgba(56, 189, 248, 0.35);
+            --color-7th: #facc15;
+            --color-7th-glow: rgba(250, 204, 21, 0.35);
+            --color-8th: #c084fc;
+            --color-8th-glow: rgba(192, 132, 252, 0.35);
+        }
+
+        /* Dark Theme Variables (Default) */
+        [data-theme="dark"] {
+            --bg-page: #0b0f19;
+            --bg-card: #151c2e;
+            --bg-card-hover: #1e293b;
+            --bg-logo-card: #1e293b;  
+            --border-card: #2a3654;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --header-bg: rgba(21, 28, 46, 0.95);
+            --toggle-bg: #1e293b;
+            --toggle-text: #facc15;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            --disclaimer-bg: rgba(250, 204, 21, 0.08);
+            --disclaimer-border: #facc15;
+            --disclaimer-title: #facc15;
+        }
+
+        /* Light Theme Variables */
+        [data-theme="light"] {
+            --bg-page: #f0f4f8;
+            --bg-card: #f0f7ff;        
+            --bg-card-hover: #ffffff;  
+            --bg-logo-card: #1e293b;   
+            --border-card: #93c5fd;    
+            --text-main: #0f172a;
+            --text-muted: #334155;
+            --header-bg: rgba(240, 247, 255, 0.95);
+            --toggle-bg: #dbeafe;
+            --toggle-text: #1e40af;
+            --card-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.12);
+            --disclaimer-bg: rgba(234, 179, 8, 0.12);
+            --disclaimer-border: #ca8a04;
+            --disclaimer-title: #a16207;
+        }
+
+        /* ==========================================================
+           2. GLOBAL STYLES
+           ========================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            font-size: 1.05rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        /* ==========================================================
+           3. HEADER SECTION
+           ========================================================== */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            border-bottom: 3px solid var(--border-card);
+            padding: 20px 32px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .logo-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .logo-img {
+            height: 95px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 16px;
+            background-color: var(--bg-logo-card);
+            padding: 8px;
+            border: 2px solid var(--border-card);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+
+        .title-group .sub-header {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .title-group h1 {
+            font-family: var(--font-heading);
+            font-size: 2.1rem;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #38bdf8, #facc15, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .theme-toggle-btn {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--toggle-bg);
+            color: var(--toggle-text);
+            border: 2px solid var(--border-card);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+            white-space: nowrap;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* ==========================================================
+           4. MAIN CONTENT & HERO BANNER
+           ========================================================== */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 36px 24px;
+        }
+
+        .hero-banner {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 32px 24px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-card);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .hero-banner h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .hero-banner p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 780px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .disclaimer-box {
+            margin-top: 24px;
+            padding: 18px 22px;
+            background: var(--disclaimer-bg);
+            border: 2px dashed var(--disclaimer-border);
+            border-radius: 16px;
+            text-align: left;
+            font-size: 1rem;
+            color: var(--text-main);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .disclaimer-title {
+            font-family: var(--font-heading);
+            color: var(--disclaimer-title);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .disclaimer-box p + p {
+            margin-top: 8px;
+        }
+
+        /* ==========================================================
+           5. GRADE SECTIONS & TILES GRID
+           ========================================================== */
+        .grade-section {
+            margin-bottom: 48px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid var(--border-card);
+        }
+
+        .section-header h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-badge {
+            font-family: var(--font-heading);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .grade-6 .section-header { border-color: var(--color-6th); }
+        .grade-6 h3 { color: var(--color-6th); }
+        .grade-6 .section-badge { background: var(--color-6th); color: #0f172a; }
+
+        .grade-7 .section-header { border-color: var(--color-7th); }
+        .grade-7 h3 { color: var(--color-7th); }
+        .grade-7 .section-badge { background: var(--color-7th); color: #0f172a; }
+
+        .grade-8 .section-header { border-color: var(--color-8th); }
+        .grade-8 h3 { color: var(--color-8th); }
+        .grade-8 .section-badge { background: var(--color-8th); color: #0f172a; }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .game-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-card);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            background-color: var(--bg-card-hover);
+        }
+
+        .grade-6 .game-card:hover { border-color: var(--color-6th); box-shadow: 0 10px 25px var(--color-6th-glow); }
+        .grade-7 .game-card:hover { border-color: var(--color-7th); box-shadow: 0 10px 25px var(--color-7th-glow); }
+        .grade-8 .game-card:hover { border-color: var(--color-8th); box-shadow: 0 10px 25px var(--color-8th-glow); }
+
+        .game-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .game-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .game-tag {
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.15);
+            color: var(--text-muted);
+            border: 1px solid var(--border-card);
+        }
+
+        .game-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .game-description {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            flex-grow: 1;
+            line-height: 1.5;
+        }
+
+        .play-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            text-decoration: none;
+            color: #0f172a;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .grade-6 .play-btn { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #ffffff; }
+        .grade-7 .play-btn { background: linear-gradient(135deg, #facc15 0%, #eab308 100%); color: #0f172a; }
+        .grade-8 .play-btn { background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%); color: #ffffff; }
+
+        .play-btn:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        /* ==========================================================
+           6. FOOTER
+           ========================================================== */
+        footer {
+            text-align: center;
+            padding: 28px 20px;
+            border-top: 2px solid var(--border-card);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            background: var(--bg-card);
+            margin-top: auto;
+            line-height: 1.6;
+        }
+
+        .footer-subtext {
+            font-size: 0.9rem;
+            margin-top: 6px;
+            opacity: 0.95;
+        }
+
+        /* ==========================================================
+           7. RESPONSIVE BREAKPOINTS
+           ========================================================== */
+        @media (max-width: 900px) {
+            .logo-img { height: 80px; }
+            .title-group h1 { font-size: 1.8rem; }
+            .title-group .sub-header { font-size: 0.85rem; }
+        }
+
+        @media (max-width: 680px) {
+            .header-container {
+                flex-direction: column;
+                padding-top: 35px;
+            }
+            .theme-toggle-btn {
+                top: 0;
+                right: 0;
+                transform: none;
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+            .logo-group {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            .logo-img { height: 75px; }
+            .title-group h1 { font-size: 1.5rem; }
+            .hero-banner h2 { font-size: 1.5rem; }
+            .games-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================================
+         HEADER SECTION
+         ========================================================== -->
+    <header>
+        <div class="header-container">
+            
+            <div class="logo-group">
+                <img src="https://lh3.googleusercontent.com/d/1M8dDDCjYhiwtso7yNMWYVHh2HLpPpQ_x" alt="Lincoln International Academy Logo" class="logo-img">
+                <div class="title-group">
+                    <div class="sub-header">Lincoln International Academy</div>
+                    <h1>Middle School Math Arcade</h1>
+                </div>
+            </div>
+
+            <button class="theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </button>
+
+        </div>
+    </header>
+
+    <!-- ==========================================================
+         MAIN CONTENT AREA
+         ========================================================== -->
+    <main>
+
+        <section class="hero-banner">
+            <h2>Welcome to the Arcade! 🚀</h2>
+            <p>Ready to level up your math skills? This is your ultimate math playground where you can practice, challenge yourself, and master math concepts while having fun playing interactive games. Select your grade below to start playing!</p>
+
+            <div class="disclaimer-box">
+                <div class="disclaimer-title">⚠️ Arcade Pro-Tip & Progress Notice</div>
+                <p>These games are created for single-session play, meaning <strong>your progress is not saved automatically</strong>. If you refresh, close, or leave the page, your game will restart from the beginning!</p>
+                <p>📸 <strong>Need proof of completion for class?</strong> Make sure to snap a screenshot of your final score or victory screen when you finish so you can share it with your teacher!</p>
+            </div>
+        </section>
+
+        <!-- SECTION 1: 6TH GRADE GAMES -->
+        <section class="grade-section grade-6">
+            <div class="section-header">
+                <h3>6th Grade Arena</h3>
+                <span class="section-badge">6th Grade</span>
+            </div>
+
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🌉</span>
+                        <span class="game-tag">Quest</span>
+                    </div>
+                    <h4 class="game-title">Bridge to 6th Grade</h4>
+                    <p class="game-description">Conquer 4 interactive levels of multi-digit whole numbers, decimals, fractions, and 3D shapes!</p>
+                    <a href="https://sites.google.com/lincoln.edu.ni/matharcade/home/Bridge-to-6th-Grade?authuser=0" class="play-btn" target="_blank" rel="noopener">
+                        Play Game 🎮
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: 7TH GRADE GAMES -->
+        <section class="grade-section grade-7">
+            <div class="section-header">
+                <h3>7th Grade Arena</h3>
+                <span class="section-badge">7th Grade</span>
+            </div>
+
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🎰</span>
+                        <span class="game-tag">Jeopardy Style</span>
+                    </div>
+                    <h4 class="game-title">7th Grade Readiness Challenge</h4>
+                    <p class="game-description">A high-stakes review board covering coordinates, integers, PEMDAS, ratios, percents, and geometry!</p>
+                    <a href="https://sites.google.com/lincoln.edu.ni/matharcade/home/7th-Grade-Readiness-Challenge?authuser=0" class="play-btn" target="_blank" rel="noopener">
+                        Play Game 🎮
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: 8TH GRADE GAMES -->
+        <section class="grade-section grade-8">
+            <div class="section-header">
+                <h3>8th Grade Arena</h3>
+                <span class="section-badge">8th Grade</span>
+            </div>
+
+            <div class="games-grid">
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">⚔️</span>
+                        <span class="game-tag">Quest</span>
+                    </div>
+                    <h4 class="game-title">Algebra Quest: Cyber Escape</h4>
+                    <p class="game-description">Conquer 13 math dungeons covering coordinate planes, scientific notation, equations, and inequalities to escape the cyber grid!</p>
+                    <a href="https://sites.google.com/lincoln.edu.ni/matharcade/home/Algebra-Quest-Cyber-Escape" class="play-btn" target="_blank" rel="noopener">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🏛️</span>
+                        <span class="game-tag">Auction</span>
+                    </div>
+                    <h4 class="game-title">The Grand Math Auction</h4>
+                    <p class="game-description">Bid your investment capital, solve high-stakes algebra problems, and build your fortune in this strategic math auction!</p>
+                    <a href="https://sites.google.com/lincoln.edu.ni/matharcade/home/The-Grand-Math-Auction" class="play-btn" target="_blank" rel="noopener">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🕵️‍♂️</span>
+                        <span class="game-tag">Investigation</span>
+                    </div>
+                    <h4 class="game-title">Cold Case Noir</h4>
+                    <p class="game-description">Analyze the precinct evidence wall across unsolved case files involving coordinate geometry, scientific notation, and keyword ciphers!</p>
+                    <a href="https://sites.google.com/lincoln.edu.ni/matharcade/home/Cold-Case-Noir" class="play-btn" target="_blank" rel="noopener">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">📡</span>
+                        <span class="game-tag">Tactical</span>
+                    </div>
+                    <h4 class="game-title">Quadrant Fleet</h4>
+                    <p class="game-description">Lock onto target coordinates and navigate the tactical cyber radar grid using precision coordinate geometry!</p>
+                    <a href="https://sites.google.com/lincoln.edu.ni/matharcade/home/Quadrant-Fleet" class="play-btn" target="_blank" rel="noopener">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-card-header">
+                        <span class="game-icon">🎰</span>
+                        <span class="game-tag">Probability</span>
+                    </div>
+                    <h4 class="game-title">Probability Casino</h4>
+                    <p class="game-description">Test your mathematical odds and master theoretical and experimental probability in interactive casino challenges!</p>
+                    <a href="https://sites.google.com/lincoln.edu.ni/matharcade/home/Probability-Casino" class="play-btn" target="_blank" rel="noopener">
+                        Play Game 🎮
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==========================================================
+         FOOTER
+         ========================================================== -->
+    <footer>
+        <p>🎮 <strong>Lincoln International Academy &bull; Middle School Math Arcade</strong></p>
+        <p class="footer-subtext">Created for <strong>Math Department - Middle School - Lincoln International Academy</strong> by <strong>Rodrigo Vasquez</strong>. <br><em>(Crafted with ☕, pixel magic, and zero broken calculators. Game over? Just hit refresh!) 🚀</em></p>
+    </footer>
+
+    <!-- ==========================================================
+         JAVASCRIPT
+         ========================================================== -->
+    <script>
+        function initTheme() {
+            const savedTheme = localStorage.getItem('arcadeTheme');
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setTheme(prefersDark ? 'dark' : 'light');
+            }
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('arcadeTheme', theme);
+
+            const iconSpan = document.getElementById('theme-icon');
+            const textSpan = document.getElementById('theme-text');
+
+            if (theme === 'dark') {
+                iconSpan.innerText = '🌙';
+                textSpan.innerText = 'Dark Mode';
+            } else {
+                iconSpan.innerText = '☀️';
+                textSpan.innerText = 'Light Mode';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(nextTheme);
+        }
+
+        initTheme();
+    </script>
+</body>
+</html>

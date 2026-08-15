@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability Casino: High-Roller Gaming Table</title>
+
+    <!-- Google Fonts for High-Roller Arcade Casino -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Engine Setup -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --bg-casino: #05140d;
+            --felt-green: #0a3a22;
+            --felt-border: #145835;
+            --card-bg: #0f2218;
+            --gold-primary: #ffd700;
+            --gold-glow: rgba(255, 215, 0, 0.35);
+            --neon-cyan: #00f0ff;
+            --neon-pink: #ff0055;
+            --neon-green: #00ff66;
+            --text-light: #f8fafc;
+            --text-muted: #a3b8cc;
+            --font-casino: 'Cinzel', serif;
+            --font-arcade: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-mono: 'Share Tech Mono', monospace;
+            --shadow-deep: rgba(0, 0, 0, 0.85);
+        }
+
+        body.light-mode {
+            --bg-casino: #1a0f07;
+            --felt-green: #2d180b;
+            --felt-border: #4a2b16;
+            --card-bg: #231207;
+            --gold-primary: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.25);
+            --neon-cyan: #0284c7;
+            --neon-pink: #e11d48;
+            --neon-green: #16a34a;
+            --text-light: #fef3c7;
+            --text-muted: #d4d4d8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-casino);
+            background-image: radial-gradient(circle at center, #0e3320 0%, #030d08 100%);
+            color: var(--text-light);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        /* Top Controls */
+        .top-controls {
+            position: fixed;
+            top: 16px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn {
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--gold-primary);
+            border: 2px solid var(--gold-primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--gold-glow);
+            letter-spacing: 1px;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--gold-primary);
+            color: #000;
+        }
+
+        /* Main Casino Table Container */
+        .casino-table {
+            width: 100%;
+            max-width: 1050px;
+            background: var(--felt-green);
+            border: 10px solid #2d1b0e;
+            outline: 3px solid var(--gold-primary);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 50px var(--shadow-deep), inset 0 0 80px rgba(0, 0, 0, 0.6);
+            position: relative;
+            min-height: 660px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .casino-title {
+            font-family: var(--font-casino);
+            font-size: 2.2rem;
+            color: var(--gold-primary);
+            text-align: center;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px var(--gold-glow), 2px 2px 4px #000;
+            text-transform: uppercase;
+        }
+
+        .casino-subtitle {
+            font-family: var(--font-mono);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Status HUD Bar */
+        .hud-status-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--felt-border);
+            padding: 10px 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hud-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .hud-value {
+            font-family: var(--font-arcade);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--gold-primary);
+            text-shadow: 0 0 8px var(--gold-glow);
+        }
+
+        /* Layout Grid */
+        .table-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            align-items: center;
+        }
+
+        @media (max-width: 880px) {
+            .table-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Canvas Wheel Wrapper */
+        .wheel-wrapper {
+            position: relative;
+            width: 330px;
+            height: 330px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            padding: 10px;
+            border: 4px solid var(--gold-primary);
+            box-shadow: 0 0 25px var(--gold-glow);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 26px solid var(--neon-pink);
+            z-index: 10;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.9));
+        }
+
+        /* Dealer Terminal Panel */
+        .terminal-panel {
+            background: var(--card-bg);
+            border: 2px solid var(--felt-border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 8px 24px var(--shadow-deep);
+        }
+
+        .dealer-prompt-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--gold-primary);
+            border-left: 5px solid var(--gold-primary);
+            padding: 14px 18px;
+            border-radius: 6px;
+        }
+
+        .dealer-title {
+            font-family: var(--font-casino);
+            font-size: 0.85rem;
+            color: var(--gold-primary);
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .dealer-text {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        /* Calibration Grid Buttons */
+        .prob-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .prob-btn {
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--text-light);
+            border: 1px solid var(--felt-border);
+            padding: 12px;
+            border-radius: 6px;
+            font-family: var(--font-arcade);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .prob-btn:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .prob-btn.selected {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Betting Table Board */
+        .betting-board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .bet-spot {
+            background: rgba(0,0,0,0.35);
+            border: 2px dashed var(--felt-border);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .bet-spot:hover {
+            border-color: var(--gold-primary);
+        }
+
+        .bet-spot.active {
+            border: 2px solid var(--gold-primary);
+            background: var(--gold-glow);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .bet-spot-title {
+            font-family: var(--font-casino);
+            font-size: 0.95rem;
+            color: var(--gold-primary);
+            margin-bottom: 2px;
+        }
+
+        .bet-spot-odds {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Chips Controls */
+        .chip-selector {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .chip-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px dashed #ffffff;
+            background: radial-gradient(circle, #2a1003 0%, #0f0501 100%);
+            color: var(--gold-primary);
+            font-family: var(--font-arcade);
+            font-size: 0.85rem;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px var(--shadow-deep);
+        }
+
+        .chip-btn.selected {
+            border-style: solid;
+            background: radial-gradient(circle, #ffd700 0%, #b45309 100%);
+            color: #000;
+            box-shadow: 0 0 16px var(--gold-glow);
+            transform: scale(1.08);
+        }
+
+        /* Action Spin Button */
+        .spin-btn {
+            background: linear-gradient(135deg, #ff0055 0%, #b3003b 100%);
+            color: #ffffff;
+            border: none;
+            padding: 16px;
+            font-family: var(--font-arcade);
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 6px;
+            box-shadow: 0 4px 18px rgba(255, 0, 85, 0.4);
+            width: 100%;
+        }
+
+        .spin-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+        }
+
+        .spin-btn:disabled {
+            background: var(--felt-border);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Feedback Status */
+        .feedback-line {
+            font-family: var(--font-mono);
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            min-height: 24px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .text-success { color: var(--neon-green); }
+        .text-error { color: var(--neon-pink); }
+
+        /* MODAL / EXPLANATION CARD STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .audit-card {
+            background: #0f1c15;
+            border: 3px solid var(--gold-primary);
+            border-radius: 12px;
+            max-width: 580px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 0 35px var(--gold-glow);
+            font-family: var(--font-body);
+            position: relative;
+        }
+
+        .audit-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-family: var(--font-arcade);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .badge-correct {
+            background: var(--neon-green);
+            color: #000;
+        }
+
+        .badge-incorrect {
+            background: var(--neon-pink);
+            color: #fff;
+        }
+
+        .audit-title {
+            font-family: var(--font-casino);
+            color: var(--gold-primary);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--felt-border);
+            padding-bottom: 8px;
+        }
+
+        .audit-math-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--felt-border);
+            padding: 14px;
+            border-radius: 6px;
+            margin: 14px 0;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .audit-close-btn {
+            background: var(--gold-primary);
+            color: #000;
+            border: none;
+            padding: 12px 28px;
+            font-family: var(--font-arcade);
+            font-weight: 900;
+            font-size: 0.95rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .audit-close-btn:hover {
+            background: #fff;
+        }
+
+        /* Screens Helpers */
+        .screen-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .primary-btn {
+            background: var(--gold-primary);
+            color: #000000;
+            border: none;
+            padding: 14px 40px;
+            font-family: var(--font-arcade);
+            font-size: 1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 16px var(--gold-glow);
+        }
+
+        .briefing-box {
+            background: var(--card-bg);
+            border: 1px solid var(--felt-border);
+            padding: 22px 28px;
+            text-align: left;
+            margin: 20px 0;
+            max-width: 680px;
+            line-height: 1.7;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
+        .briefing-box ul { padding-left: 20px; }
+        .briefing-box li { margin-bottom: 8px; }
+
+        .disclaimer-card {
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px dashed var(--gold-primary);
+            padding: 22px 26px;
+            margin: 20px 0;
+            text-align: center;
+            max-width: 680px;
+            border-radius: 8px;
+        }
+
+        .disclaimer-card h3 {
+            font-family: var(--font-casino);
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Right Switch Theme -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">[ VELVET VIP THEME ]</button>
+    </div>
+
+    <!-- Main Casino Table Container -->
+    <div class="casino-table">
+
+        <!-- 1. CASINO WELCOME SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <h1 class="casino-title">Probability Casino</h1>
+            <p class="casino-subtitle">High-Roller Wheel & Gaming Table // 10 Random Floor Rounds</p>
+
+            <div class="briefing-box">
+                <p style="margin-bottom: 10px;"><strong>CASINO OPERATIONAL RULES:</strong></p>
+                <ul>
+                    <li><strong>Dynamic Question Bank:</strong> 10 questions are randomly sampled from a bank of 20 probability challenges every game session.</li>
+                    <li><strong>Initial Bankroll:</strong> Start with <strong>$1,000 Chips</strong>. Survive all 10 rounds to complete your casino shift.</li>
+                    <li><strong>Step 1 - Odds Calibration:</strong> Select the exact probability $P(E)$ or complement $P(E') = 1 - P(E)$. A correct calculation unlocks a <strong>Dealer Audit Card</strong> and grants a <strong>1.5x Multiplier</strong>!</li>
+                    <li><strong>Step 2 - Table Betting:</strong> Select chip size ($100, $250, $500) and bet on <strong>Target $E$</strong> or <strong>Complement $E'$</strong>.</li>
+                    <li><strong>Step 3 - Real-Time Wheel Spin:</strong> Spin the wheel! Winning pays out instantly.</li>
+                </ul>
+            </div>
+
+            <button class="primary-btn" onclick="startCasinoSession()">ENTER CASINO FLOOR</button>
+        </div>
+
+        <!-- 2. GAMEPLAY ARENA SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <h2 id="roundHeader" class="casino-title" style="font-size: 1.4rem; text-align: left;">Round 01: Table Setup</h2>
+            <p class="casino-subtitle" style="text-align: left; margin-bottom: 12px;">CALCULATE ODDS & PLACE CHIP WAGERS</p>
+
+            <!-- Status HUD Bar -->
+            <div class="hud-status-bar">
+                <div class="hud-item">
+                    <span class="hud-label">Casino Shift</span>
+                    <span id="roundCounter" class="hud-value">01 / 10</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Chip Bankroll</span>
+                    <span id="bankrollDisplay" class="hud-value">$1,000</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Payout Multiplier</span>
+                    <span id="multiplierDisplay" class="hud-value" style="color: var(--neon-cyan);">1.0x</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Current Wager</span>
+                    <span id="currentBetDisplay" class="hud-value" style="color: var(--neon-pink);">$100</span>
+                </div>
+            </div>
+
+            <!-- Table Layout Grid -->
+            <div class="table-grid">
+                
+                <!-- Canvas Wheel Left -->
+                <div class="wheel-wrapper">
+                    <div class="wheel-pointer"></div>
+                    <canvas id="wheelCanvas" width="330" height="330"></canvas>
+                </div>
+
+                <!-- Dealer Terminal Right -->
+                <div class="terminal-panel">
+                    
+                    <!-- Dealer Prompt Box -->
+                    <div class="dealer-prompt-box">
+                        <div class="dealer-title">Dealer Probability Challenge</div>
+                        <div id="dealerPromptText" class="dealer-text">
+                            Loading floor probability challenge...
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Odds Calibration -->
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
+                            STEP 1: SELECT PROBABILITY CALIBRATION
+                        </div>
+                        <div id="probOptionsGrid" class="prob-options-grid">
+                            <!-- Dynamic Probability Buttons -->
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Table Wager Board -->
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
+                            STEP 2: PLACE TABLE BET
+                        </div>
+                        <div class="betting-board">
+                            <div id="betSpotE" class="bet-spot active" onclick="selectBetSpot('E')">
+                                <div id="labelEventE" class="bet-spot-title">Target Event E</div>
+                                <div class="bet-spot-odds">Win On Target Slices</div>
+                            </div>
+                            <div id="betSpotEPrime" class="bet-spot" onclick="selectBetSpot('E_PRIME')">
+                                <div id="labelEventEPrime" class="bet-spot-title">Complement E'</div>
+                                <div class="bet-spot-odds">Win On Complement Slices</div>
+                            </div>
+                        </div>
+
+                        <!-- Chip Selector -->
+                        <div class="chip-selector" style="margin-top: 10px;">
+                            <button class="chip-btn selected" onclick="selectChipValue(100, this)">$100</button>
+                            <button class="chip-btn" onclick="selectChipValue(250, this)">$250</button>
+                            <button class="chip-btn" onclick="selectChipValue(500, this)">$500</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Button & Output Feedback -->
+                    <div>
+                        <button id="spinBtn" class="spin-btn" onclick="spinWheel()" disabled>SELECT CALIBRATION FIRST</button>
+                        <div id="feedbackLine" class="feedback-line" style="margin-top: 8px;"></div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 3. BANKROLL BUSTED SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <h1 class="casino-title" style="color: var(--neon-pink);">BANKROLL BUSTED // HOUSE WINS</h1>
+            <p class="casino-subtitle">Your chip bankroll was completely exhausted on the floor.</p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Chips Remaining: $0</p>
+            <button class="primary-btn" style="background: var(--neon-pink); color: white;" onclick="restartSession()">REBUY CHIPS & RESTART</button>
+        </div>
+
+        <!-- 4. HIGH-ROLLER VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <h1 class="casino-title">HIGH-ROLLER VICTORY</h1>
+            <p class="casino-subtitle">Casino Theoretical Probability Mastery</p>
+
+            <p style="font-size: 1.15rem; max-width: 640px; line-height: 1.6; margin-bottom: 16px; font-weight: 600;">
+                Outstanding casino play! You navigated all 10 floor rounds, demonstrating complete mastery over theoretical probabilities $P(E)$ and complementary events $P(E') = 1 - P(E)$!
+            </p>
+
+            <div style="font-family: var(--font-arcade); font-size: 1.3rem; background: var(--card-bg); padding: 12px 28px; border: 1px solid var(--felt-border); margin-bottom: 10px; border-radius: 6px;">
+                Final Chip Cash-Out: <span id="victoryChips" style="color: var(--gold-primary); font-weight: 900;">$0</span>
+            </div>
+
+            <!-- MANDATORY PROOF OF PROGRESS DISCLAIMER -->
+            <div class="disclaimer-card">
+                <h3>PROOF OF PROGRESS REQUIRED</h3>
+                <p>
+                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this completed victory screen now to submit to your instructor as proof of mission completion.
+                    <br><br>
+                    <span style="color: var(--neon-pink); font-weight: 700;">Warning:</span> Reloading this browser page resets your chip balance to zero and regenerates a new random 10-round deck.
+                </p>
+            </div>
+
+            <button class="primary-btn" onclick="restartSession()">NEW CASINO SESSION</button>
+        </div>
+
+    </div>
+
+    <!-- DEALER AUDIT EXPLANATION CARD MODAL -->
+    <div id="auditModal" class="modal-overlay" style="display: none;">
+        <div class="audit-card">
+            <div id="auditBadge" class="audit-badge badge-correct">CALIBRATION SUCCESSFUL</div>
+            <h3 id="auditTitle" class="audit-title">Dealer Probability Audit Card</h3>
+            
+            <div class="audit-math-box">
+                <div id="auditMathContent">
+                    <!-- Dynamic Mathematical Breakdown HTML -->
+                </div>
+            </div>
+
+            <button class="audit-close-btn" onclick="closeAuditModal()">CONTINUE TO WHEEL SPIN 🎰</button>
+        </div>
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Commander Rodrigo Vasquez
+    </footer>
+
+    <script>
+        // EXPANDED QUESTION BANK (20 PROBABILITY PROBLEMS)
+        const allCasinoRounds = [
+            {
+                title: "Even Outcome Complement",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8],
+                eventFilter: (num) => num % 2 === 0,
+                eventName: "Even Numbers",
+                prompt: "Target Event \\( E \\): Landing on an Even number. Calculate the complementary probability \\( P(E') \\) of NOT landing on an Even number.",
+                correctProb: "1/2",
+                options: ["1/2", "1/4", "3/8", "3/4"],
+                sampleSpace: "{1, 2, 3, 4, 5, 6, 7, 8}",
+                targetSet: "{2, 4, 6, 8}",
+                explanation: "Total outcomes \\( |S| = 8 \\). Target Event \\( E = \\{2, 4, 6, 8\\} \\), so \\( |E| = 4 \\). Thus, \\( P(E) = \\frac{4}{8} = \\frac{1}{2} \\). The complementary probability is \\( P(E') = 1 - P(E) = 1 - \\frac{1}{2} = \\frac{1}{2} \\)."
+            },
+            {
+                title: "Prime Target Lock",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                eventFilter: (num) => [2, 3, 5, 7].includes(num),
+                eventName: "Prime Numbers",
+                prompt: "Target Event \\( E \\): Landing on a Prime number \\( \\{2, 3, 5, 7\\} \\). Calculate the complement probability \\( P(E') \\).",
+                correctProb: "3/5",
+                options: ["3/5", "2/5", "1/2", "7/10"],
+                sampleSpace: "{1, 2, ..., 10}",
+                targetSet: "{2, 3, 5, 7}",
+                explanation: "Total outcomes \\( |S| = 10 \\). Prime outcomes \\( |E| = 4 \\), so \\( P(E) = \\frac{4}{10} = \\frac{2}{5} \\). Complement \\( P(E') = 1 - \\frac{2}{5} = \\frac{3}{5} \\)."
+            },
+            {
+                title: "Multiples of 3 Calibration",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                eventFilter: (num) => num % 3 === 0,
+                eventName: "Multiples of 3",
+                prompt: "Target Event \\( E \\): Landing on a Multiple of 3. What is the theoretical probability \\( P(E) \\)?",
+                correctProb: "1/3",
+                options: ["1/3", "2/3", "1/4", "5/12"],
+                sampleSpace: "{1, 2, ..., 12}",
+                targetSet: "{3, 6, 9, 12}",
+                explanation: "Total outcomes \\( |S| = 12 \\). Multiples of 3 are \\( \\{3, 6, 9, 12\\} \\) giving \\( |E| = 4 \\). Theoretical probability \\( P(E) = \\frac{4}{12} = \\frac{1}{3} \\)."
+            },
+            {
+                title: "Upper Range Complement",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                eventFilter: (num) => num > 8,
+                eventName: "Numbers > 8",
+                prompt: "Target Event \\( E \\): Landing on a number greater than 8. Calculate the complement probability \\( P(E') \\).",
+                correctProb: "2/3",
+                options: ["2/3", "1/3", "3/4", "1/2"],
+                sampleSpace: "{1, 2, ..., 12}",
+                targetSet: "{9, 10, 11, 12}",
+                explanation: "Total outcomes \\( |S| = 12 \\). Target outcomes \\( |E| = 4 \\), so \\( P(E) = \\frac{4}{12} = \\frac{1}{3} \\). Complement \\( P(E') = 1 - \\frac{1}{3} = \\frac{2}{3} \\)."
+            },
+            {
+                title: "Perfect Squares Sector",
+                wheelSectors: Array.from({length: 16}, (_, i) => i + 1),
+                eventFilter: (num) => [1, 4, 9, 16].includes(num),
+                eventName: "Perfect Squares",
+                prompt: "Target Event \\( E \\): Landing on a Perfect Square \\( \\{1, 4, 9, 16\\} \\). Calculate the complement probability \\( P(E') \\).",
+                correctProb: "3/4",
+                options: ["3/4", "1/4", "1/2", "5/8"],
+                sampleSpace: "{1, 2, ..., 16}",
+                targetSet: "{1, 4, 9, 16}",
+                explanation: "Total outcomes \\( |S| = 16 \\). Perfect squares count \\( |E| = 4 \\), so \\( P(E) = \\frac{4}{16} = \\frac{1}{4} \\). Complement \\( P(E') = 1 - \\frac{1}{4} = \\frac{3}{4} \\)."
+            },
+            {
+                title: "Factors of 10",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                eventFilter: (num) => [1, 2, 5, 10].includes(num),
+                eventName: "Factors of 10",
+                prompt: "Target Event \\( E \\): Landing on a factor of 10 \\( \\{1, 2, 5, 10\\} \\). Calculate theoretical probability \\( P(E) \\).",
+                correctProb: "2/5",
+                options: ["2/5", "3/5", "1/2", "3/10"],
+                sampleSpace: "{1, 2, ..., 10}",
+                targetSet: "{1, 2, 5, 10}",
+                explanation: "Total outcomes \\( |S| = 10 \\). Factors of 10 count \\( |E| = 4 \\). Thus \\( P(E) = \\frac{4}{10} = \\frac{2}{5} \\)."
+            },
+            {
+                title: "Multiples of 5 Sector",
+                wheelSectors: Array.from({length: 15}, (_, i) => i + 1),
+                eventFilter: (num) => num % 5 === 0,
+                eventName: "Multiples of 5",
+                prompt: "Target Event \\( E \\): Landing on a multiple of 5. Calculate the complement probability \\( P(E') \\).",
+                correctProb: "4/5",
+                options: ["4/5", "1/5", "2/3", "3/5"],
+                sampleSpace: "{1, 2, ..., 15}",
+                targetSet: "{5, 10, 15}",
+                explanation: "Total outcomes \\( |S| = 15 \\). Multiples of 5 count \\( |E| = 3 \\), so \\( P(E) = \\frac{3}{15} = \\frac{1}{5} \\). Complement \\( P(E') = 1 - \\frac{1}{5} = \\frac{4}{5} \\)."
+            },
+            {
+                title: "Grand High-Roller Odd Lock",
+                wheelSectors: Array.from({length: 16}, (_, i) => i + 1),
+                eventFilter: (num) => (num % 2 !== 0) && (num < 10),
+                eventName: "Odd Numbers < 10",
+                prompt: "Target Event \\( E \\): Landing on an Odd number less than 10. Calculate the complement probability \\( P(E') \\).",
+                correctProb: "11/16",
+                options: ["11/16", "5/16", "9/16", "3/8"],
+                sampleSpace: "{1, 2, ..., 16}",
+                targetSet: "{1, 3, 5, 7, 9}",
+                explanation: "Total outcomes \\( |S| = 16 \\). Target set \\( E = \\{1, 3, 5, 7, 9\\} \\) gives \\( |E| = 5 \\), so \\( P(E) = \\frac{5}{16} \\). Complement \\( P(E') = 1 - \\frac{5}{16} = \\frac{11}{16} \\)."
+            },
+            // ADDITIONAL NEW QUESTIONS (9 TO 20)
+            {
+                title: "Factors of 12",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                eventFilter: (num) => [1, 2, 3, 4, 6, 12].includes(num),
+                eventName: "Factors of 12",
+                prompt: "Target Event \\( E \\): Landing on a factor of 12. Calculate theoretical probability \\( P(E) \\).",
+                correctProb: "1/2",
+                options: ["1/2", "5/12", "7/12", "1/3"],
+                sampleSpace: "{1, 2, ..., 12}",
+                targetSet: "{1, 2, 3, 4, 6, 12}",
+                explanation: "Total outcomes \\( |S| = 12 \\). Factors of 12 are 6 total numbers: \\( |E| = 6 \\). Therefore \\( P(E) = \\frac{6}{12} = \\frac{1}{2} \\)."
+            },
+            {
+                title: "Divisibility by 4",
+                wheelSectors: Array.from({length: 20}, (_, i) => i + 1),
+                eventFilter: (num) => num % 4 === 0,
+                eventName: "Multiples of 4",
+                prompt: "Target Event \\( E \\): Landing on a multiple of 4 on a 20-sector wheel. Calculate complement \\( P(E') \\).",
+                correctProb: "3/4",
+                options: ["3/4", "1/4", "1/2", "4/5"],
+                sampleSpace: "{1, 2, ..., 20}",
+                targetSet: "{4, 8, 12, 16, 20}",
+                explanation: "Total outcomes \\( |S| = 20 \\). Multiples of 4 count \\( |E| = 5 \\), so \\( P(E) = \\frac{5}{20} = \\frac{1}{4} \\). Complement \\( P(E') = 1 - \\frac{1}{4} = \\frac{3}{4} \\)."
+            },
+            {
+                title: "Single Digit Lock",
+                wheelSectors: Array.from({length: 15}, (_, i) => i + 1),
+                eventFilter: (num) => num <= 9,
+                eventName: "Single Digit (<= 9)",
+                prompt: "Target Event \\( E \\): Landing on a single-digit number \\( (1-9) \\). Calculate complement \\( P(E') \\).",
+                correctProb: "2/5",
+                options: ["2/5", "3/5", "1/3", "4/15"],
+                sampleSpace: "{1, 2, ..., 15}",
+                targetSet: "{1, 2, 3, 4, 5, 6, 7, 8, 9}",
+                explanation: "Total outcomes \\( |S| = 15 \\). Single digits count \\( |E| = 9 \\), so \\( P(E) = \\frac{9}{15} = \\frac{3}{5} \\). Complement \\( P(E') = 1 - \\frac{3}{5} = \\frac{2}{5} \\)."
+            },
+            {
+                title: "Multiples of 2 or 5",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                eventFilter: (num) => (num % 2 === 0) || (num % 5 === 0),
+                eventName: "Multiples of 2 or 5",
+                prompt: "Target Event \\( E \\): Landing on a multiple of 2 or 5. Calculate theoretical probability \\( P(E) \\).",
+                correctProb: "3/5",
+                options: ["3/5", "1/2", "7/10", "4/5"],
+                sampleSpace: "{1, 2, ..., 10}",
+                targetSet: "{2, 4, 5, 6, 8, 10}",
+                explanation: "Total outcomes \\( |S| = 10 \\). Favorable outcomes count \\( |E| = 6 \\). Probability \\( P(E) = \\frac{6}{10} = \\frac{3}{5} \\)."
+            },
+            {
+                title: "Greater Than 5 Sector",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8],
+                eventFilter: (num) => num > 5,
+                eventName: "Numbers > 5",
+                prompt: "Target Event \\( E \\): Landing on a number greater than 5. Calculate complement \\( P(E') \\).",
+                correctProb: "5/8",
+                options: ["5/8", "3/8", "1/2", "1/4"],
+                sampleSpace: "{1, 2, ..., 8}",
+                targetSet: "{6, 7, 8}",
+                explanation: "Total outcomes \\( |S| = 8 \\). Numbers greater than 5 count \\( |E| = 3 \\), so \\( P(E) = \\frac{3}{8} \\). Complement \\( P(E') = 1 - \\frac{3}{8} = \\frac{5}{8} \\)."
+            },
+            {
+                title: "Factors of 8",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8],
+                eventFilter: (num) => [1, 2, 4, 8].includes(num),
+                eventName: "Factors of 8",
+                prompt: "Target Event \\( E \\): Landing on a factor of 8. Calculate theoretical probability \\( P(E) \\).",
+                correctProb: "1/2",
+                options: ["1/2", "3/8", "5/8", "1/4"],
+                sampleSpace: "{1, 2, ..., 8}",
+                targetSet: "{1, 2, 4, 8}",
+                explanation: "Total outcomes \\( |S| = 8 \\). Factors of 8 count \\( |E| = 4 \\). Thus \\( P(E) = \\frac{4}{8} = \\frac{1}{2} \\)."
+            },
+            {
+                title: "Composite Numbers",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                eventFilter: (num) => [4, 6, 8, 9, 10].includes(num),
+                eventName: "Composite Numbers",
+                prompt: "Target Event \\( E \\): Landing on a composite number \\( \\{4, 6, 8, 9, 10\\} \\). Calculate complement \\( P(E') \\).",
+                correctProb: "1/2",
+                options: ["1/2", "2/5", "3/5", "7/10"],
+                sampleSpace: "{1, 2, ..., 10}",
+                targetSet: "{4, 6, 8, 9, 10}",
+                explanation: "Total outcomes \\( |S| = 10 \\). Composite numbers count \\( |E| = 5 \\), so \\( P(E) = \\frac{5}{10} = \\frac{1}{2} \\). Complement \\( P(E') = 1 - \\frac{1}{2} = \\frac{1}{2} \\)."
+            },
+            {
+                title: "Multiples of 4 (12-Wheel)",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                eventFilter: (num) => num % 4 === 0,
+                eventName: "Multiples of 4",
+                prompt: "Target Event \\( E \\): Landing on a multiple of 4 on a 12-sector wheel. Calculate complement \\( P(E') \\).",
+                correctProb: "3/4",
+                options: ["3/4", "1/4", "2/3", "5/12"],
+                sampleSpace: "{1, 2, ..., 12}",
+                targetSet: "{4, 8, 12}",
+                explanation: "Total outcomes \\( |S| = 12 \\). Multiples of 4 count \\( |E| = 3 \\), so \\( P(E) = \\frac{3}{12} = \\frac{1}{4} \\). Complement \\( P(E') = 1 - \\frac{1}{4} = \\frac{3}{4} \\)."
+            },
+            {
+                title: "Low Values (<= 3)",
+                wheelSectors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                eventFilter: (num) => num <= 3,
+                eventName: "Numbers <= 3",
+                prompt: "Target Event \\( E \\): Landing on a number less than or equal to 3. Calculate theoretical probability \\( P(E) \\).",
+                correctProb: "1/4",
+                options: ["1/4", "3/4", "1/3", "1/6"],
+                sampleSpace: "{1, 2, ..., 12}",
+                targetSet: "{1, 2, 3}",
+                explanation: "Total outcomes \\( |S| = 12 \\). Favorable outcomes count \\( |E| = 3 \\). Probability \\( P(E) = \\frac{3}{12} = \\frac{1}{4} \\)."
+            },
+            {
+                title: "Powers of 2 Sector",
+                wheelSectors: Array.from({length: 16}, (_, i) => i + 1),
+                eventFilter: (num) => [1, 2, 4, 8, 16].includes(num),
+                eventName: "Powers of 2",
+                prompt: "Target Event \\( E \\): Landing on a Power of 2 \\( \\{1, 2, 4, 8, 16\\} \\). Calculate complement \\( P(E') \\).",
+                correctProb: "11/16",
+                options: ["11/16", "5/16", "3/8", "9/16"],
+                sampleSpace: "{1, 2, ..., 16}",
+                targetSet: "{1, 2, 4, 8, 16}",
+                explanation: "Total outcomes \\( |S| = 16 \\). Target set count \\( |E| = 5 \\), so \\( P(E) = \\frac{5}{16} \\). Complement \\( P(E') = 1 - \\frac{5}{16} = \\frac{11}{16} \\)."
+            },
+            {
+                title: "Multiples of 7",
+                wheelSectors: Array.from({length: 14}, (_, i) => i + 1),
+                eventFilter: (num) => num % 7 === 0,
+                eventName: "Multiples of 7",
+                prompt: "Target Event \\( E \\): Landing on a multiple of 7. Calculate theoretical probability \\( P(E) \\).",
+                correctProb: "1/7",
+                options: ["1/7", "2/7", "6/7", "3/14"],
+                sampleSpace: "{1, 2, ..., 14}",
+                targetSet: "{7, 14}",
+                explanation: "Total outcomes \\( |S| = 14 \\). Multiples of 7 count \\( |E| = 2 \\). Probability \\( P(E) = \\frac{2}{14} = \\frac{1}{7} \\)."
+            },
+            {
+                title: "Primes <= 12",
+                wheelSectors: Array.from({length: 12}, (_, i) => i + 1),
+                eventFilter: (num) => [2, 3, 5, 7, 11].includes(num),
+                eventName: "Primes <= 12",
+                prompt: "Target Event \\( E \\): Landing on a prime number less than or equal to 12. Calculate complement \\( P(E') \\).",
+                correctProb: "7/12",
+                options: ["7/12", "5/12", "1/2", "2/3"],
+                sampleSpace: "{1, 2, ..., 12}",
+                targetSet: "{2, 3, 5, 7, 11}",
+                explanation: "Total outcomes \\( |S| = 12 \\). Prime numbers count \\( |E| = 5 \\), so \\( P(E) = \\frac{5}{12} \\). Complement \\( P(E') = 1 - \\frac{5}{12} = \\frac{7}{12} \\)."
+            }
+        ];
+
+        // GAME PLAY SESSION STATE
+        let activeSessionRounds = [];
+        let currentRoundIndex = 0;
+        let bankroll = 1000;
+        let activeBetAmount = 100;
+        let activeBetSpot = 'E'; // 'E' or 'E_PRIME'
+        let selectedProb = null;
+        let isDarkMode = true;
+        let isSpinning = false;
+
+        // Canvas & Wheel Physics
+        let canvas, ctx;
+        let currentWheelRotation = 0;
+
+        // Shuffle Utility
+        function shuffleArray(arr) {
+            const temp = [...arr];
+            for (let i = temp.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [temp[i], temp[j]] = [temp[j], temp[i]];
+            }
+            return temp;
+        }
+
+        // Theme Switch
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+
+            if (isDarkMode) {
+                body.classList.remove('light-mode');
+                btn.innerText = '[ VELVET VIP THEME ]';
+            } else {
+                body.classList.add('light-mode');
+                btn.innerText = '[ EMERALD SUITE THEME ]';
+            }
+            drawWheel();
+        }
+
+        function renderMath() {
+            if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+                MathJax.typesetPromise().catch(err => console.warn('MathJax error:', err));
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            canvas = document.getElementById('wheelCanvas');
+            ctx = canvas.getContext('2d');
+            drawWheel();
+        });
+
+        // Start New Casino Game Session (Pick 10 Random Questions)
+        function startCasinoSession() {
+            // Select 10 random rounds from 20 question pool
+            activeSessionRounds = shuffleArray(allCasinoRounds).slice(0, 10);
+
+            currentRoundIndex = 0;
+            bankroll = 1000;
+            activeBetAmount = 100;
+            activeBetSpot = 'E';
+
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('failScreen').style.display = 'none';
+            document.getElementById('victoryScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+
+            loadRound();
+        }
+
+        // Load Round Setup
+        function loadRound() {
+            isSpinning = false;
+            selectedProb = null;
+
+            const rData = activeSessionRounds[currentRoundIndex];
+
+            // Update Status HUD
+            document.getElementById('roundHeader').innerText = `Round ${currentRoundIndex + 1}: ${rData.title}`;
+            document.getElementById('roundCounter').innerText = `${(currentRoundIndex + 1).toString().padStart(2, '0')} / 10`;
+            document.getElementById('bankrollDisplay').innerText = `$${bankroll.toLocaleString()}`;
+            document.getElementById('multiplierDisplay').innerText = `1.0x`;
+            document.getElementById('multiplierDisplay').style.color = 'var(--neon-cyan)';
+            document.getElementById('currentBetDisplay').innerText = `$${activeBetAmount}`;
+
+            // Betting spot titles
+            document.getElementById('labelEventE').innerText = `Target: ${rData.eventName}`;
+            document.getElementById('labelEventEPrime').innerText = `Complement (NOT ${rData.eventName})`;
+
+            // Prompt text
+            document.getElementById('dealerPromptText').innerHTML = rData.prompt;
+
+            // Render buttons
+            const probGrid = document.getElementById('probOptionsGrid');
+            probGrid.innerHTML = '';
+
+            const shuffledOpts = shuffleArray(rData.options);
+            shuffledOpts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'prob-btn';
+                btn.innerText = opt;
+                btn.onclick = () => selectProbabilityOption(opt, btn);
+                probGrid.appendChild(btn);
+            });
+
+            const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = true;
+            spinBtn.innerText = 'SELECT CALIBRATION FIRST';
+            document.getElementById('feedbackLine').innerText = '';
+
+            renderMath();
+            drawWheel();
+        }
+
+        // Select Probability Answer & Trigger Dealer Audit Explanation Card
+        function selectProbabilityOption(optValue, btnEl) {
+            if (isSpinning) return;
+
+            document.querySelectorAll('.prob-btn').forEach(b => b.classList.remove('selected'));
+            btnEl.classList.add('selected');
+            selectedProb = optValue;
+
+            const rData = activeSessionRounds[currentRoundIndex];
+            const isCorrect = (selectedProb === rData.correctProb);
+            const multDisplay = document.getElementById('multiplierDisplay');
+
+            if (isCorrect) {
+                multDisplay.innerText = '1.5x (BONUS!)';
+                multDisplay.style.color = 'var(--neon-green)';
+            } else {
+                multDisplay.innerText = '1.0x (STANDARD)';
+                multDisplay.style.color = 'var(--gold-primary)';
+            }
+
+            const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = false;
+            spinBtn.innerText = 'SPIN WHEEL 🎰';
+
+            // SHOW EXPLANATION AUDIT CARD MODAL
+            showAuditCard(isCorrect, optValue, rData);
+        }
+
+        // Show Explanation Modal Card
+        function showAuditCard(isCorrect, userChoice, rData) {
+            const modal = document.getElementById('auditModal');
+            const badge = document.getElementById('auditBadge');
+            const title = document.getElementById('auditTitle');
+            const content = document.getElementById('auditMathContent');
+
+            if (isCorrect) {
+                badge.className = 'audit-badge badge-correct';
+                badge.innerText = 'CALIBRATION SUCCESSFUL (+1.5x MULTIPLIER)';
+                title.innerText = 'Dealer Audit: Correct Calculation!';
+            } else {
+                badge.className = 'audit-badge badge-incorrect';
+                badge.innerText = 'CALIBRATION ERROR (1.0x MULTIPLIER)';
+                title.innerText = 'Dealer Audit: Calculation Breakdown';
+            }
+
+            content.innerHTML = `
+                <p style="margin-bottom: 8px;"><strong>Your Choice:</strong> \\( ${userChoice} \\) &nbsp;|&nbsp; <strong>Exact Value:</strong> \\( ${rData.correctProb} \\)</p>
+                <p style="margin-bottom: 8px;"><strong>Sample Space \\( S \\):</strong> ${rData.sampleSpace}</p>
+                <p style="margin-bottom: 8px;"><strong>Target Event \\( E \\):</strong> ${rData.targetSet}</p>
+                <div style="margin-top: 10px; border-top: 1px dashed var(--felt-border); padding-top: 8px;">
+                    <strong>Mathematical Solution:</strong><br>
+                    ${rData.explanation}
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+            renderMath();
+        }
+
+        function closeAuditModal() {
+            document.getElementById('auditModal').style.display = 'none';
+        }
+
+        // Select Wager Spot
+        function selectBetSpot(spot) {
+            if (isSpinning) return;
+            activeBetSpot = spot;
+            document.getElementById('betSpotE').classList.toggle('active', spot === 'E');
+            document.getElementById('betSpotEPrime').classList.toggle('active', spot === 'E_PRIME');
+        }
+
+        // Select Chip Value
+        function selectChipValue(val, btnEl) {
+            if (isSpinning) return;
+
+            if (val > bankroll) {
+                document.getElementById('feedbackLine').className = 'feedback-line text-error';
+                document.getElementById('feedbackLine').innerText = 'INSUFFICIENT CHIPS FOR THIS WAGER';
+                return;
+            }
+
+            activeBetAmount = val;
+            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
+            btnEl.classList.add('selected');
+            document.getElementById('currentBetDisplay').innerText = `$${activeBetAmount}`;
+            document.getElementById('feedbackLine').innerText = '';
+        }
+
+        // Draw Canvas Wheel
+        function drawWheel() {
+            if (!canvas || activeSessionRounds.length === 0) return;
+            const rData = activeSessionRounds[currentRoundIndex];
+            const sectors = rData.wheelSectors;
+            const totalSlices = sectors.length;
+            const sliceAngle = (2 * Math.PI) / totalSlices;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const radius = w / 2 - 6;
+
+            ctx.clearRect(0, 0, w, h);
+
+            ctx.save();
+            ctx.translate(w / 2, h / 2);
+            ctx.rotate(currentWheelRotation);
+
+            for (let i = 0; i < totalSlices; i++) {
+                const angle = i * sliceAngle;
+                const sectorVal = sectors[i];
+                const isTarget = rData.eventFilter(sectorVal);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, angle, angle + sliceAngle);
+                ctx.closePath();
+
+                if (isTarget) {
+                    ctx.fillStyle = isDarkMode ? '#ff0055' : '#e11d48';
+                } else {
+                    ctx.fillStyle = isDarkMode ? '#0f2218' : '#3f2212';
+                }
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = isDarkMode ? '#145835' : '#6b3a19';
+                ctx.stroke();
+
+                // Numbers
+                ctx.save();
+                ctx.rotate(angle + sliceAngle / 2);
+                ctx.fillStyle = isTarget ? '#ffffff' : (isDarkMode ? '#00f0ff' : '#fef3c7');
+                ctx.font = 'bold 12px "Orbitron", sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(sectorVal.toString(), radius - 14, 4);
+                ctx.restore();
+            }
+
+            // Center Pin
+            ctx.beginPath();
+            ctx.arc(0, 0, 22, 0, 2 * Math.PI);
+            ctx.fillStyle = isDarkMode ? '#ffd700' : '#f59e0b';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // Spin Physics
+        function spinWheel() {
+            if (isSpinning || !selectedProb) return;
+
+            if (activeBetAmount > bankroll) {
+                document.getElementById('feedbackLine').className = 'feedback-line text-error';
+                document.getElementById('feedbackLine').innerText = 'INSUFFICIENT CHIPS IN BANKROLL!';
+                return;
+            }
+
+            isSpinning = true;
+            document.getElementById('spinBtn').disabled = true;
+
+            const rData = activeSessionRounds[currentRoundIndex];
+            const sectors = rData.wheelSectors;
+            const totalSlices = sectors.length;
+            const sliceAngle = (2 * Math.PI) / totalSlices;
+
+            const winningIndex = Math.floor(Math.random() * totalSlices);
+            const winningSector = sectors[winningIndex];
+
+            const targetSectorAngle = winningIndex * sliceAngle + (sliceAngle / 2);
+            const targetRotation = (3 * Math.PI / 2) - targetSectorAngle + (Math.PI * 2 * 5);
+
+            const startTime = performance.now();
+            const duration = 3500;
+            const startRotation = currentWheelRotation % (Math.PI * 2);
+
+            function animateSpin(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                
+                currentWheelRotation = startRotation + (targetRotation - startRotation) * easeOut;
+                drawWheel();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateSpin);
+                } else {
+                    evaluateWheelResult(winningSector);
+                }
+            }
+
+            requestAnimationFrame(animateSpin);
+        }
+
+        // Evaluate Result
+        function evaluateWheelResult(winningSector) {
+            const rData = activeSessionRounds[currentRoundIndex];
+            const isTargetEvent = rData.eventFilter(winningSector);
+            const feedback = document.getElementById('feedbackLine');
+
+            const isProbCorrect = (selectedProb === rData.correctProb);
+            const oddsMultiplier = isProbCorrect ? 1.5 : 1.0;
+
+            let wonBet = false;
+            if (activeBetSpot === 'E' && isTargetEvent) wonBet = true;
+            if (activeBetSpot === 'E_PRIME' && !isTargetEvent) wonBet = true;
+
+            if (wonBet) {
+                const payout = Math.round(activeBetAmount * 2 * oddsMultiplier);
+                bankroll += payout;
+                feedback.className = 'feedback-line text-success';
+                feedback.innerText = `🎰 WINNER! Landed on ${winningSector}. Won +$${payout.toLocaleString()} Chips!`;
+            } else {
+                bankroll -= activeBetAmount;
+                feedback.className = 'feedback-line text-error';
+                feedback.innerText = `❌ HOUSE WINS! Landed on ${winningSector}. Lost -$${activeBetAmount} Chips.`;
+            }
+
+            document.getElementById('bankrollDisplay').innerText = `$${bankroll.toLocaleString()}`;
+
+            if (bankroll <= 0) {
+                setTimeout(triggerFail, 1500);
+            } else {
+                setTimeout(() => {
+                    currentRoundIndex++;
+                    if (currentRoundIndex >= activeSessionRounds.length) {
+                        triggerVictory();
+                    } else {
+                        loadRound();
+                    }
+                }, 2000);
+            }
+        }
+
+        function triggerFail() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('failScreen').style.display = 'flex';
+        }
+
+        function triggerVictory() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('victoryScreen').style.display = 'flex';
+            document.getElementById('victoryChips').innerText = `$${bankroll.toLocaleString()}`;
+        }
+
+        function restartSession() {
+            startCasinoSession();
+        }
+    </script>
+</body>
+</html>
