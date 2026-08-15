@@ -1,6 +1,27 @@
         /* Standardized Baseline Typography */
         html {
-            font-size: 16px; 
+            font-size: 16px;
+        }
+
+        /* Shared kit mapping */
+        :root {
+            --kit-accent: #6366f1;
+            --kit-accent-ink: #ffffff;
+            --kit-accent-glow: rgba(99, 102, 241, 0.3);
+            --kit-surface: #0f172a;
+            --kit-border: #334155;
+            --kit-input-bg: #1e293b;
+            --kit-error: #ef4444;
+        }
+
+        body.light-mode {
+            --kit-accent: #4338ca;
+            --kit-accent-ink: #ffffff;
+            --kit-accent-glow: rgba(67, 56, 202, 0.25);
+            --kit-surface: #ffffff;
+            --kit-border: #cbd5e1;
+            --kit-input-bg: #f8fafc;
+            --kit-error: #dc2626;
         }
 
         body {

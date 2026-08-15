@@ -27,12 +27,16 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
     <!-- Top Right Switch Theme -->
     <div class="top-controls">
-        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">[ VELVET VIP THEME ]</button>
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
     </div>
 
     <!-- Main Casino Table Container -->
@@ -52,6 +56,12 @@
                     <li><strong>Step 2 - Table Betting:</strong> Select chip size ($100, $250, $500) and bet on <strong>Target $E$</strong> or <strong>Complement $E'$</strong>.</li>
                     <li><strong>Step 3 - Real-Time Wheel Spin:</strong> Spin the wheel! Winning pays out instantly.</li>
                 </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before entering the floor!</div>
             </div>
 
             <button class="primary-btn" onclick="startCasinoSession()">ENTER CASINO FLOOR</button>
@@ -152,6 +162,13 @@
             <h1 class="casino-title" style="color: var(--neon-pink);">BANKROLL BUSTED // HOUSE WINS</h1>
             <p class="casino-subtitle">Your chip bankroll was completely exhausted on the floor.</p>
             <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Chips Remaining: $0</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'probability-casino', playerName: playerName, score: 0})">📸 Save Screenshot</button>
+            </div>
+
             <button class="primary-btn" style="background: var(--neon-pink); color: white;" onclick="restartSession()">REBUY CHIPS & RESTART</button>
         </div>
 
@@ -168,14 +185,10 @@
                 Final Chip Cash-Out: <span id="victoryChips" style="color: var(--gold-primary); font-weight: 900;">$0</span>
             </div>
 
-            <!-- MANDATORY PROOF OF PROGRESS DISCLAIMER -->
-            <div class="disclaimer-card">
-                <h3>PROOF OF PROGRESS REQUIRED</h3>
-                <p>
-                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this completed victory screen now to submit to your instructor as proof of mission completion.
-                    <br><br>
-                    <span style="color: var(--neon-pink); font-weight: 700;">Warning:</span> Reloading this browser page resets your chip balance to zero and regenerates a new random 10-round deck.
-                </p>
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your instructor.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'probability-casino', playerName: playerName, score: bankroll})">📸 Save Screenshot</button>
             </div>
 
             <button class="primary-btn" onclick="restartSession()">NEW CASINO SESSION</button>
@@ -203,6 +216,7 @@
         Lincoln International Academy // Department of Mathematics // Commander Rodrigo Vasquez
     </footer>
 
+    <script src="../shared/arcade-kit.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

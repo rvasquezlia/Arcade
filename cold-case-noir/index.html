@@ -27,6 +27,8 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -51,6 +53,12 @@
                     <li><strong>Evidence Randomization:</strong> Case files and lead options are shuffled upon each new investigation.</li>
                     <li><strong>Progress Disclaimer:</strong> This window maintains active memory only. Reloading or leaving the page resets all evidence logs completely.</li>
                 </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">DETECTIVE NAME:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before opening the case!</div>
             </div>
 
             <button class="action-btn" onclick="startInvestigation()">OPEN EVIDENCE BOARD</button>
@@ -99,6 +107,13 @@
             <h1 class="case-title" style="color: var(--accent-red);">CASE CLOSED // UNSOLVED</h1>
             <p class="case-subtitle">Your integrity rating dropped to zero. The evidence remains unverified.</p>
             <p style="font-family: var(--code-font); margin-bottom: 16px;">Final Evidence Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">DETECTIVE: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'cold-case-noir', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
             <button class="action-btn" style="background: var(--accent-red);" onclick="restartInvestigation()">REOPEN INVESTIGATION</button>
         </div>
 
@@ -115,14 +130,10 @@
                 Total Verified Score: <span id="victoryScore" style="color: var(--accent-amber);">1000</span> PTS
             </div>
 
-            <!-- MANDATORY PROOF DISCLAIMER -->
-            <div class="disclaimer-box">
-                <h3>OFFICIAL RECORD NOTICE: PROOF REQUIRED</h3>
-                <p>
-                    Please <strong>TAKE A PICTURE or SCREENSHOT</strong> of this entire screen now as official proof of case completion for your instructor.
-                    <br><br>
-                    <strong>Notice:</strong> Refreshing or closing this browser window resets all evidence logs and requires a complete re-investigation from Case File #1.
-                </p>
+            <div class="kit-submission-card">
+                <div class="kit-player-line">DETECTIVE: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as official proof of case completion for your instructor.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'cold-case-noir', playerName: playerName, score: score})">📸 Save Screenshot</button>
             </div>
 
             <button class="action-btn" onclick="restartInvestigation()">NEW CASE ASSIGNMENT</button>
@@ -134,6 +145,7 @@
         Lincoln International Academy // Department of Mathematics // Detective Rodrigo Vasquez
     </footer>
 
+    <script src="../shared/arcade-kit.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

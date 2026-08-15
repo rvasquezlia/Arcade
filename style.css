@@ -300,17 +300,17 @@ main {
     letter-spacing: 0.5px;
 }
 
-.grade-6 .section-header { border-color: var(--blue-btn-a); }
-.grade-6 h3 { color: var(--blue-ink); }
-.grade-6 .section-badge { background: linear-gradient(135deg, var(--blue-btn-a), var(--blue-btn-b)); color: #ffffff; }
+.track-math6 .section-header { border-color: var(--blue-btn-a); }
+.track-math6 h3 { color: var(--blue-ink); }
+.track-math6 .section-badge { background: linear-gradient(135deg, var(--blue-btn-a), var(--blue-btn-b)); color: #ffffff; }
 
-.grade-7 .section-header { border-color: var(--amber-btn-a); }
-.grade-7 h3 { color: var(--amber-ink); }
-.grade-7 .section-badge { background: linear-gradient(135deg, var(--amber-btn-a), var(--amber-btn-b)); color: var(--amber-btn-text); }
+.track-prealgebra .section-header { border-color: var(--amber-btn-a); }
+.track-prealgebra h3 { color: var(--amber-ink); }
+.track-prealgebra .section-badge { background: linear-gradient(135deg, var(--amber-btn-a), var(--amber-btn-b)); color: var(--amber-btn-text); }
 
-.grade-8 .section-header { border-color: var(--purple-btn-a); }
-.grade-8 h3 { color: var(--purple-ink); }
-.grade-8 .section-badge { background: linear-gradient(135deg, var(--purple-btn-a), var(--purple-btn-b)); color: #ffffff; }
+.track-algebra1 .section-header { border-color: var(--purple-btn-a); }
+.track-algebra1 h3 { color: var(--purple-ink); }
+.track-algebra1 .section-badge { background: linear-gradient(135deg, var(--purple-btn-a), var(--purple-btn-b)); color: #ffffff; }
 
 .games-grid {
     display: grid;
@@ -336,9 +336,9 @@ main {
     background-color: var(--bg-card-hover);
 }
 
-.grade-6 .game-card:hover { border-color: var(--blue-btn-a); box-shadow: 0 14px 30px -8px rgba(3, 105, 161, 0.35); }
-.grade-7 .game-card:hover { border-color: var(--amber-btn-a); box-shadow: 0 14px 30px -8px rgba(217, 119, 6, 0.32); }
-.grade-8 .game-card:hover { border-color: var(--purple-btn-a); box-shadow: 0 14px 30px -8px rgba(109, 40, 217, 0.35); }
+.track-math6 .game-card:hover { border-color: var(--blue-btn-a); box-shadow: 0 14px 30px -8px rgba(3, 105, 161, 0.35); }
+.track-prealgebra .game-card:hover { border-color: var(--amber-btn-a); box-shadow: 0 14px 30px -8px rgba(217, 119, 6, 0.32); }
+.track-algebra1 .game-card:hover { border-color: var(--purple-btn-a); box-shadow: 0 14px 30px -8px rgba(109, 40, 217, 0.35); }
 
 .game-card:hover .game-icon {
     transform: scale(1.15) rotate(-4deg);
@@ -367,9 +367,9 @@ main {
     white-space: nowrap;
 }
 
-.grade-6 .game-tag { background: var(--blue-soft-bg); color: var(--blue-ink); }
-.grade-7 .game-tag { background: var(--amber-soft-bg); color: var(--amber-ink); }
-.grade-8 .game-tag { background: var(--purple-soft-bg); color: var(--purple-ink); }
+.track-math6 .game-tag { background: var(--blue-soft-bg); color: var(--blue-ink); }
+.track-prealgebra .game-tag { background: var(--amber-soft-bg); color: var(--amber-ink); }
+.track-algebra1 .game-tag { background: var(--purple-soft-bg); color: var(--purple-ink); }
 
 .game-title {
     font-family: var(--font-heading);
@@ -406,9 +406,9 @@ main {
     letter-spacing: 0.3px;
 }
 
-.grade-6 .play-btn { background: linear-gradient(135deg, var(--blue-btn-a), var(--blue-btn-b)); color: #ffffff; }
-.grade-7 .play-btn { background: linear-gradient(135deg, var(--amber-btn-a), var(--amber-btn-b)); color: var(--amber-btn-text); }
-.grade-8 .play-btn { background: linear-gradient(135deg, var(--purple-btn-a), var(--purple-btn-b)); color: #ffffff; }
+.track-math6 .play-btn { background: linear-gradient(135deg, var(--blue-btn-a), var(--blue-btn-b)); color: #ffffff; }
+.track-prealgebra .play-btn { background: linear-gradient(135deg, var(--amber-btn-a), var(--amber-btn-b)); color: var(--amber-btn-text); }
+.track-algebra1 .play-btn { background: linear-gradient(135deg, var(--purple-btn-a), var(--purple-btn-b)); color: #ffffff; }
 
 .play-btn:hover {
     transform: scale(1.03);

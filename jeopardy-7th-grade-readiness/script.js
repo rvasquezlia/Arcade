@@ -48,6 +48,7 @@
 
         let currentScore = 0;
         let tilesAnswered = 0;
+        let playerName = '';
         let activeTile = null;
         let activePoints = 0;
         let activeQuestionObj = null;
@@ -78,6 +79,10 @@
         }
 
         function startGame() {
+            const name = ArcadeKit.requireName('playerNameInput', 'playerNameError');
+            if (!name) return;
+            playerName = name;
+
             document.getElementById('instruction-modal').style.display = 'none';
             buildBoard();
         }
@@ -225,6 +230,7 @@
         function showCompletionModal() {
             document.getElementById('final-score').innerText = currentScore.toLocaleString();
             document.getElementById('completion-modal').style.display = 'flex';
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
         }
 
         function restartGame() {

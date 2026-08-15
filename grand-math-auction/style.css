@@ -10,6 +10,15 @@
             --text-sub: #94a3b8;
             --input-bg: #0f172a;
             --accent-glow: rgba(245, 158, 11, 0.2);
+
+            /* Shared kit mapping */
+            --kit-accent: var(--gold-primary);
+            --kit-accent-ink: #1c1400;
+            --kit-accent-glow: var(--accent-glow);
+            --kit-surface: var(--input-bg);
+            --kit-border: var(--card-border);
+            --kit-input-bg: var(--card-bg);
+            --kit-error: var(--rose-red);
         }
 
         body.light-mode {

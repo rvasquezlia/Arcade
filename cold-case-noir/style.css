@@ -12,6 +12,15 @@
             --code-font: 'Courier Prime', monospace;
             --sans-font: 'Inter', sans-serif;
             --shadow-color: rgba(0, 0, 0, 0.5);
+
+            /* Shared kit mapping */
+            --kit-accent: var(--accent-amber);
+            --kit-accent-ink: #1c1400;
+            --kit-accent-glow: rgba(217, 119, 6, 0.25);
+            --kit-surface: var(--card-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
         }
 
         body.light-mode {

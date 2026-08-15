@@ -17,6 +17,8 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -39,6 +41,13 @@
                 <li><strong>Shuffled Choices:</strong> Answer options change position every time you play.</li>
                 <li>Pick the right choice to maximize your total score!</li>
             </ul>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting!</div>
+            </div>
+
             <button class="btn" onclick="startGame()">Start Game</button>
         </div>
     </div>
@@ -64,12 +73,11 @@
                 Final Score: $<span id="final-score">0</span>
             </p>
             <p>You have answered all 24 questions on the board!</p>
-            
-            <div class="screenshot-card">
-                <h3>📸 Student Verification</h3>
-                <p style="font-weight: 600; color: var(--text-color);">
-                    Take a screenshot of this screen right now to show your teacher as proof of completion!
-                </p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('completion-modal', {buttonEl: this, gameSlug: 'jeopardy-7th-grade', playerName: playerName, score: currentScore})">📸 Save Screenshot</button>
             </div>
 
             <button class="btn" style="margin-top: 10px;" onclick="restartGame()">Play Again 🔄</button>
@@ -79,6 +87,7 @@
     <!-- Game Board Grid -->
     <main class="board" id="board"></main>
 
+    <script src="../shared/arcade-kit.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

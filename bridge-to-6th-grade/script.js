@@ -137,6 +137,7 @@
         let isBossPhase = false;
         let currentShuffledOptions = [];
         let isDarkMode = true;
+        let playerName = '';
 
         function toggleTheme() {
             isDarkMode = !isDarkMode;
@@ -157,6 +158,10 @@
         }
 
         function startMission() {
+            const name = ArcadeKit.requireName('playerNameInput', 'playerNameError');
+            if (!name) return;
+            playerName = name;
+
             document.getElementById('intro-modal').classList.add('hidden');
             initGame();
         }
@@ -330,6 +335,7 @@
             document.getElementById('final-score').innerText = score;
             document.getElementById('progress-bar').style.width = '100%';
             playSound('correct');
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
         }
 
         function restartQuest() {

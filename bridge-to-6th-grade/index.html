@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
@@ -109,7 +111,13 @@
                 <span class="text-xs text-slate-400 text-sub-theme uppercase tracking-wider block font-black mb-1">Final Score</span>
                 <span id="final-score" class="text-4xl sm:text-5xl font-black text-indigo-400">0</span>
             </div>
-            <br>
+
+            <div class="kit-submission-card" style="margin-left: auto; margin-right: auto;">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victory-screen', {buttonEl: this, gameSlug: 'bridge-to-6th-grade', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
             <button onclick="restartQuest()" class="py-3.5 px-10 rounded-xl font-extrabold text-base sm:text-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-indigo-500/25">
                 Play Again
             </button>
@@ -143,6 +151,12 @@
                 </div>
             </div>
 
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting!</div>
+            </div>
+
             <button onclick="startMission()" class="w-full py-3.5 px-6 rounded-xl font-extrabold bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white transition-all shadow-md shadow-indigo-600/20 active:scale-[0.98] text-base">
                 Start Mission ➔
             </button>
@@ -169,6 +183,7 @@
     <!-- Web Audio Synthesizer -->
 
     <!-- Master Game Logic -->
+    <script src="../shared/arcade-kit.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>
