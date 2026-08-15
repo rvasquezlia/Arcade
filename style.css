@@ -1,411 +1,459 @@
-        /* ==========================================================
-           1. COLOR THEMES & VARIABLES
-           ========================================================== */
-        :root {
-            /* Base Fonts */
-            --font-heading: 'Russo One', sans-serif;
-            --font-body: 'Chakra Petch', sans-serif;
+/* ==========================================================
+   1. COLOR THEMES & VARIABLES
+   ========================================================== */
+:root {
+    /* Fonts — Fredoka (playful, bold display) + Nunito (warm, highly legible body).
+       Shared with Algebra Quest so the arcade feels like one connected site. */
+    --font-heading: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
 
-            /* Accent Colors per Grade */
-            --color-6th: #38bdf8;
-            --color-6th-glow: rgba(56, 189, 248, 0.35);
-            --color-7th: #facc15;
-            --color-7th-glow: rgba(250, 204, 21, 0.35);
-            --color-8th: #c084fc;
-            --color-8th-glow: rgba(192, 132, 252, 0.35);
-        }
+    /* Button/badge fills: chosen so their paired text color passes WCAG AA
+       contrast regardless of theme (button backgrounds don't change with
+       light/dark — only the page and card colors around them do). */
+    --blue-btn-a: #0369a1;
+    --blue-btn-b: #075985;
+    --amber-btn-a: #f59e0b;
+    --amber-btn-b: #d97706;
+    --purple-btn-a: #6d28d9;
+    --purple-btn-b: #4c1d95;
+}
 
-        /* Dark Theme Variables (Default) */
-        [data-theme="dark"] {
-            --bg-page: #0b0f19;
-            --bg-card: #151c2e;
-            --bg-card-hover: #1e293b;
-            --bg-logo-card: #1e293b;  
-            --border-card: #2a3654;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --header-bg: rgba(21, 28, 46, 0.95);
-            --toggle-bg: #1e293b;
-            --toggle-text: #facc15;
-            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            --disclaimer-bg: rgba(250, 204, 21, 0.08);
-            --disclaimer-border: #facc15;
-            --disclaimer-title: #facc15;
-        }
+/* Dark Theme Variables (Default) */
+[data-theme="dark"] {
+    --bg-page: #0a0e1a;
+    --bg-page-dot: rgba(148, 163, 184, 0.07);
+    --bg-card: #131a2c;
+    --bg-card-hover: #1c2540;
+    --bg-logo-card: #0f172a;
+    --border-card: #2b3554;
+    --ink: #f5f7ff;
+    --ink-soft: #aab3cc;
+    --header-bg: rgba(16, 22, 38, 0.92);
+    --toggle-bg: #1c2540;
+    --toggle-text: #facc15;
+    --card-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.6);
+    --disclaimer-bg: rgba(250, 204, 21, 0.1);
+    --disclaimer-border: #facc15;
+    --disclaimer-title: #fde68a;
+    --title-grad: linear-gradient(90deg, #38bdf8 0%, #facc15 50%, #c084fc 100%);
 
-        /* Light Theme Variables */
-        [data-theme="light"] {
-            --bg-page: #f0f4f8;
-            --bg-card: #f0f7ff;        
-            --bg-card-hover: #ffffff;  
-            --bg-logo-card: #1e293b;   
-            --border-card: #93c5fd;    
-            --text-main: #0f172a;
-            --text-muted: #334155;
-            --header-bg: rgba(240, 247, 255, 0.95);
-            --toggle-bg: #dbeafe;
-            --toggle-text: #1e40af;
-            --card-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.12);
-            --disclaimer-bg: rgba(234, 179, 8, 0.12);
-            --disclaimer-border: #ca8a04;
-            --disclaimer-title: #a16207;
-        }
+    --blue-ink: #7dd3fc;
+    --blue-soft-bg: rgba(56, 189, 248, 0.16);
+    --amber-ink: #fbbf24;
+    --amber-soft-bg: rgba(251, 191, 36, 0.16);
+    --purple-ink: #c4b5fd;
+    --purple-soft-bg: rgba(196, 181, 253, 0.16);
+    --amber-btn-text: #241900;
+}
 
-        /* ==========================================================
-           2. GLOBAL STYLES
-           ========================================================== */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-        }
+/* Light Theme Variables */
+[data-theme="light"] {
+    --bg-page: #eef2fb;
+    --bg-page-dot: rgba(3, 105, 161, 0.06);
+    --bg-card: #ffffff;
+    --bg-card-hover: #f6f9ff;
+    --bg-logo-card: #0f172a;
+    --border-card: #c7d5f0;
+    --ink: #101828;
+    --ink-soft: #48536b;
+    --header-bg: rgba(255, 255, 255, 0.92);
+    --toggle-bg: #e3ecff;
+    --toggle-text: #0353a4;
+    --card-shadow: 0 12px 28px -10px rgba(16, 24, 40, 0.16);
+    --disclaimer-bg: rgba(217, 119, 6, 0.09);
+    --disclaimer-border: #d97706;
+    --disclaimer-title: #92400e;
+    --title-grad: linear-gradient(90deg, #0369a1 0%, #92400e 50%, #6d28d9 100%);
 
-        body {
-            background-color: var(--bg-page);
-            color: var(--text-main);
-            font-family: var(--font-body);
-            font-size: 1.05rem;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.6;
-        }
+    --blue-ink: #075985;
+    --blue-soft-bg: #dbeeff;
+    --amber-ink: #92400e;
+    --amber-soft-bg: #fef3d9;
+    --purple-ink: #5b21b6;
+    --purple-soft-bg: #ede9fe;
+    --amber-btn-text: #241900;
+}
 
-        /* ==========================================================
-           3. HEADER SECTION
-           ========================================================== */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: var(--header-bg);
-            backdrop-filter: blur(16px);
-            border-bottom: 3px solid var(--border-card);
-            padding: 20px 32px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-        }
+/* ==========================================================
+   2. GLOBAL STYLES
+   ========================================================== */
+html {
+    font-size: 112.5%; /* ~18px base — bumped up for projector/classroom viewing */
+}
 
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            width: 100%;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
 
-        .logo-group {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 20px;
-            text-align: left;
-        }
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+}
 
-        .logo-img {
-            height: 95px;
-            width: auto;
-            object-fit: contain;
-            border-radius: 16px;
-            background-color: var(--bg-logo-card);
-            padding: 8px;
-            border: 2px solid var(--border-card);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-        }
+body {
+    background-color: var(--bg-page);
+    background-image: radial-gradient(var(--bg-page-dot) 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.65;
+}
 
-        .title-group .sub-header {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
+a { color: inherit; }
 
-        .title-group h1 {
-            font-family: var(--font-heading);
-            font-size: 2.1rem;
-            letter-spacing: 1px;
-            background: linear-gradient(90deg, #38bdf8, #facc15, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1.2;
-        }
+:focus-visible {
+    outline: 3px solid var(--blue-ink);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
 
-        .theme-toggle-btn {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: var(--toggle-bg);
-            color: var(--toggle-text);
-            border: 2px solid var(--border-card);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-family: var(--font-heading);
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-            white-space: nowrap;
-        }
+/* ==========================================================
+   3. HEADER SECTION
+   ========================================================== */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--header-bg);
+    backdrop-filter: blur(16px);
+    border-bottom: 3px solid var(--border-card);
+    padding: 20px 32px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
 
-        .theme-toggle-btn:hover {
-            transform: translateY(-50%) scale(1.05);
-        }
+.header-container {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
 
-        /* ==========================================================
-           4. MAIN CONTENT & HERO BANNER
-           ========================================================== */
-        main {
-            flex: 1;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 36px 24px;
-        }
+.logo-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 22px;
+    text-align: left;
+}
 
-        .hero-banner {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 32px 24px;
-            background: var(--bg-card);
-            border: 2px solid var(--border-card);
-            border-radius: 24px;
-            box-shadow: var(--card-shadow);
-        }
+.logo-img {
+    height: clamp(84px, 6vw + 60px, 128px);
+    width: auto;
+    object-fit: contain;
+    border-radius: 18px;
+    background-color: var(--bg-logo-card);
+    padding: 10px;
+    border: 2px solid var(--border-card);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
 
-        .hero-banner h2 {
-            font-family: var(--font-heading);
-            font-size: 2rem;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-        }
+.title-group .sub-header {
+    font-size: clamp(1rem, 0.4vw + 0.9rem, 1.15rem);
+    color: var(--ink-soft);
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
 
-        .hero-banner p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            max-width: 780px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
+.title-group h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 1.5vw + 1.5rem, 3.1rem);
+    letter-spacing: 0.3px;
+    background: var(--title-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.15;
+}
 
-        .disclaimer-box {
-            margin-top: 24px;
-            padding: 18px 22px;
-            background: var(--disclaimer-bg);
-            border: 2px dashed var(--disclaimer-border);
-            border-radius: 16px;
-            text-align: left;
-            font-size: 1rem;
-            color: var(--text-main);
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
-        }
+.theme-toggle-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--toggle-bg);
+    color: var(--toggle-text);
+    border: 2px solid var(--border-card);
+    padding: 12px 22px;
+    border-radius: 24px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(0.95rem, 0.3vw + 0.85rem, 1.1rem);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
 
-        .disclaimer-title {
-            font-family: var(--font-heading);
-            color: var(--disclaimer-title);
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            letter-spacing: 0.5px;
-        }
+.theme-toggle-btn:hover {
+    transform: translateY(-50%) scale(1.06);
+}
 
-        .disclaimer-box p + p {
-            margin-top: 8px;
-        }
+/* ==========================================================
+   4. MAIN CONTENT & HERO BANNER
+   ========================================================== */
+main {
+    flex: 1;
+    max-width: 1320px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 48px 28px;
+}
 
-        /* ==========================================================
-           5. GRADE SECTIONS & TILES GRID
-           ========================================================== */
-        .grade-section {
-            margin-bottom: 48px;
-        }
+.hero-banner {
+    text-align: center;
+    margin-bottom: 56px;
+    padding: clamp(32px, 3vw, 48px) clamp(24px, 4vw, 44px);
+    background: var(--bg-card);
+    border: 2px solid var(--border-card);
+    border-radius: 28px;
+    box-shadow: var(--card-shadow);
+}
 
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 8px;
-            border-bottom: 3px solid var(--border-card);
-        }
+.hero-banner h2 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 1.4vw + 1.3rem, 2.6rem);
+    margin-bottom: 16px;
+    letter-spacing: 0.3px;
+}
 
-        .section-header h3 {
-            font-family: var(--font-heading);
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+.hero-banner p {
+    font-size: clamp(1.08rem, 0.4vw + 1rem, 1.35rem);
+    color: var(--ink-soft);
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.65;
+}
 
-        .section-badge {
-            font-family: var(--font-heading);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-        }
+.disclaimer-box {
+    margin-top: 28px;
+    padding: 22px 26px;
+    background: var(--disclaimer-bg);
+    border: 3px dashed var(--disclaimer-border);
+    border-radius: 18px;
+    text-align: left;
+    font-size: clamp(1rem, 0.2vw + 0.95rem, 1.12rem);
+    color: var(--ink);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+}
 
-        .grade-6 .section-header { border-color: var(--color-6th); }
-        .grade-6 h3 { color: var(--color-6th); }
-        .grade-6 .section-badge { background: var(--color-6th); color: #0f172a; }
+.disclaimer-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--disclaimer-title);
+    margin-bottom: 10px;
+    font-size: clamp(1.1rem, 0.2vw + 1.05rem, 1.25rem);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+}
 
-        .grade-7 .section-header { border-color: var(--color-7th); }
-        .grade-7 h3 { color: var(--color-7th); }
-        .grade-7 .section-badge { background: var(--color-7th); color: #0f172a; }
+.disclaimer-box p + p {
+    margin-top: 10px;
+}
 
-        .grade-8 .section-header { border-color: var(--color-8th); }
-        .grade-8 h3 { color: var(--color-8th); }
-        .grade-8 .section-badge { background: var(--color-8th); color: #0f172a; }
+/* ==========================================================
+   5. GRADE SECTIONS & TILES GRID
+   ========================================================== */
+.grade-section {
+    margin-bottom: 56px;
+}
 
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
-        }
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 4px solid var(--border-card);
+}
 
-        .game-card {
-            background-color: var(--bg-card);
-            border: 2px solid var(--border-card);
-            border-radius: 20px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: var(--card-shadow);
-            position: relative;
-            overflow: hidden;
-        }
+.section-header h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 0.8vw + 1.15rem, 1.9rem);
+    letter-spacing: 0.3px;
+}
 
-        .game-card:hover {
-            transform: translateY(-6px);
-            background-color: var(--bg-card-hover);
-        }
+.section-badge {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 24px;
+    font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.92rem);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-        .grade-6 .game-card:hover { border-color: var(--color-6th); box-shadow: 0 10px 25px var(--color-6th-glow); }
-        .grade-7 .game-card:hover { border-color: var(--color-7th); box-shadow: 0 10px 25px var(--color-7th-glow); }
-        .grade-8 .game-card:hover { border-color: var(--color-8th); box-shadow: 0 10px 25px var(--color-8th-glow); }
+.grade-6 .section-header { border-color: var(--blue-btn-a); }
+.grade-6 h3 { color: var(--blue-ink); }
+.grade-6 .section-badge { background: linear-gradient(135deg, var(--blue-btn-a), var(--blue-btn-b)); color: #ffffff; }
 
-        .game-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
+.grade-7 .section-header { border-color: var(--amber-btn-a); }
+.grade-7 h3 { color: var(--amber-ink); }
+.grade-7 .section-badge { background: linear-gradient(135deg, var(--amber-btn-a), var(--amber-btn-b)); color: var(--amber-btn-text); }
 
-        .game-icon {
-            font-size: 2.5rem;
-            line-height: 1;
-        }
+.grade-8 .section-header { border-color: var(--purple-btn-a); }
+.grade-8 h3 { color: var(--purple-ink); }
+.grade-8 .section-badge { background: linear-gradient(135deg, var(--purple-btn-a), var(--purple-btn-b)); color: #ffffff; }
 
-        .game-tag {
-            font-family: var(--font-body);
-            font-weight: 700;
-            font-size: 0.85rem;
-            padding: 4px 10px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.15);
-            color: var(--text-muted);
-            border: 1px solid var(--border-card);
-        }
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
+}
 
-        .game-title {
-            font-family: var(--font-heading);
-            font-size: 1.25rem;
-            margin-bottom: 8px;
-            color: var(--text-main);
-            letter-spacing: 0.5px;
-        }
+.game-card {
+    background-color: var(--bg-card);
+    border: 2px solid var(--border-card);
+    border-radius: 22px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
+}
 
-        .game-description {
-            font-size: 1rem;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-            flex-grow: 1;
-            line-height: 1.5;
-        }
+.game-card:hover {
+    transform: translateY(-6px);
+    background-color: var(--bg-card-hover);
+}
 
-        .play-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            font-family: var(--font-heading);
-            font-size: 1rem;
-            text-decoration: none;
-            color: #0f172a;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            gap: 8px;
-            letter-spacing: 0.5px;
-        }
+.grade-6 .game-card:hover { border-color: var(--blue-btn-a); box-shadow: 0 14px 30px -8px rgba(3, 105, 161, 0.35); }
+.grade-7 .game-card:hover { border-color: var(--amber-btn-a); box-shadow: 0 14px 30px -8px rgba(217, 119, 6, 0.32); }
+.grade-8 .game-card:hover { border-color: var(--purple-btn-a); box-shadow: 0 14px 30px -8px rgba(109, 40, 217, 0.35); }
 
-        .grade-6 .play-btn { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #ffffff; }
-        .grade-7 .play-btn { background: linear-gradient(135deg, #facc15 0%, #eab308 100%); color: #0f172a; }
-        .grade-8 .play-btn { background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%); color: #ffffff; }
+.game-card:hover .game-icon {
+    transform: scale(1.15) rotate(-4deg);
+}
 
-        .play-btn:hover {
-            transform: scale(1.02);
-            filter: brightness(1.1);
-        }
+.game-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
 
-        /* ==========================================================
-           6. FOOTER
-           ========================================================== */
-        footer {
-            text-align: center;
-            padding: 28px 20px;
-            border-top: 2px solid var(--border-card);
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            background: var(--bg-card);
-            margin-top: auto;
-            line-height: 1.6;
-        }
+.game-icon {
+    font-size: clamp(2.6rem, 1.2vw + 2.2rem, 3.2rem);
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.25s ease;
+}
 
-        .footer-subtext {
-            font-size: 0.9rem;
-            margin-top: 6px;
-            opacity: 0.95;
-        }
+.game-tag {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.92rem);
+    padding: 6px 14px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
 
-        /* ==========================================================
-           7. RESPONSIVE BREAKPOINTS
-           ========================================================== */
-        @media (max-width: 900px) {
-            .logo-img { height: 80px; }
-            .title-group h1 { font-size: 1.8rem; }
-            .title-group .sub-header { font-size: 0.85rem; }
-        }
+.grade-6 .game-tag { background: var(--blue-soft-bg); color: var(--blue-ink); }
+.grade-7 .game-tag { background: var(--amber-soft-bg); color: var(--amber-ink); }
+.grade-8 .game-tag { background: var(--purple-soft-bg); color: var(--purple-ink); }
 
-        @media (max-width: 680px) {
-            .header-container {
-                flex-direction: column;
-                padding-top: 35px;
-            }
-            .theme-toggle-btn {
-                top: 0;
-                right: 0;
-                transform: none;
-                padding: 6px 12px;
-                font-size: 0.75rem;
-            }
-            .logo-group {
-                flex-direction: column;
-                text-align: center;
-                gap: 12px;
-            }
-            .logo-img { height: 75px; }
-            .title-group h1 { font-size: 1.5rem; }
-            .hero-banner h2 { font-size: 1.5rem; }
-            .games-grid { grid-template-columns: 1fr; }
-        }
+.game-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.25rem, 0.5vw + 1.1rem, 1.5rem);
+    margin-bottom: 10px;
+    color: var(--ink);
+    letter-spacing: 0.2px;
+}
+
+.game-description {
+    font-size: clamp(1rem, 0.2vw + 0.95rem, 1.12rem);
+    color: var(--ink-soft);
+    margin-bottom: 26px;
+    flex-grow: 1;
+    line-height: 1.55;
+}
+
+.play-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.05rem, 0.2vw + 1rem, 1.2rem);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    gap: 8px;
+    letter-spacing: 0.3px;
+}
+
+.grade-6 .play-btn { background: linear-gradient(135deg, var(--blue-btn-a), var(--blue-btn-b)); color: #ffffff; }
+.grade-7 .play-btn { background: linear-gradient(135deg, var(--amber-btn-a), var(--amber-btn-b)); color: var(--amber-btn-text); }
+.grade-8 .play-btn { background: linear-gradient(135deg, var(--purple-btn-a), var(--purple-btn-b)); color: #ffffff; }
+
+.play-btn:hover {
+    transform: scale(1.03);
+    filter: brightness(1.15);
+}
+
+/* ==========================================================
+   6. FOOTER
+   ========================================================== */
+footer {
+    text-align: center;
+    padding: 32px 20px;
+    border-top: 2px solid var(--border-card);
+    color: var(--ink-soft);
+    font-size: clamp(0.95rem, 0.2vw + 0.9rem, 1.05rem);
+    background: var(--bg-card);
+    margin-top: auto;
+    line-height: 1.65;
+}
+
+.footer-subtext {
+    font-size: clamp(0.88rem, 0.2vw + 0.84rem, 0.98rem);
+    margin-top: 8px;
+    opacity: 0.95;
+}
+
+/* ==========================================================
+   7. RESPONSIVE BREAKPOINTS
+   ========================================================== */
+@media (max-width: 680px) {
+    .header-container {
+        flex-direction: column;
+        padding-top: 38px;
+    }
+    .theme-toggle-btn {
+        top: 0;
+        right: 0;
+        transform: none;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
+    .logo-group {
+        flex-direction: column;
+        text-align: center;
+        gap: 14px;
+    }
+    .games-grid { grid-template-columns: 1fr; }
+}
