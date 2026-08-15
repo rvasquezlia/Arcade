@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Flight Path Plotter</title>
+
+    <!-- Google Fonts for Autonomous Flight / Aviation HUD Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Titillium+Web:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Control Button -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Flight Deck Container -->
+    <div class="deck-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <div class="deck-icon">🛸</div>
+            <h1 class="deck-title">Drone Flight Path Plotter</h1>
+            <p class="deck-subtitle">Autonomous Flight Systems // Linear Equation Charting</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>FLIGHT COMPUTER BRIEFING:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Adjust the slope (m) and starting altitude (b) sliders so the plotted flight path <code>y = mx + b</code> matches the mission's target course.</li>
+                    <li><strong>Live Grid Draw:</strong> Your flight path is drawn in real time on the coordinate grid as you move the sliders — no target line is shown, so chart carefully.</li>
+                    <li><strong>Drone Battery:</strong> You launch at 100% battery. Exact course matches restore battery (+15%); missed courses drain battery based on how far off your m and b were.</li>
+                    <li><strong>Route Randomization:</strong> Missions are pulled from a larger route bank and shuffled every flight.</li>
+                    <li><strong>Progress Disclaimer:</strong> This terminal holds session memory only. Reloading or leaving the page wipes the flight log completely.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍✈️ Pilot Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before launching!</div>
+            </div>
+
+            <button class="action-btn" onclick="startFlight()">LAUNCH DRONE</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <h2 id="missionHeader" class="deck-title" style="font-size: 1.25rem; text-align: left; margin-bottom: 6px;">Route 01</h2>
+
+            <!-- Status HUD -->
+            <div class="hud-status-bar">
+                <div class="hud-item">
+                    <span class="hud-label">Route</span>
+                    <span id="routeCounter" class="hud-value">01 / 12</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Drone Battery</span>
+                    <div class="battery-container">
+                        <div id="batteryFill" class="battery-fill"></div>
+                    </div>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Current Path</span>
+                    <span id="currentPathDisplay" class="hud-value">y = 0x + 0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Score</span>
+                    <span id="scoreDisplay" class="hud-value">0 PTS</span>
+                </div>
+            </div>
+
+            <!-- Flight Arena -->
+            <div class="arena-grid">
+                <div class="canvas-wrapper">
+                    <canvas id="flightCanvas" width="400" height="400"></canvas>
+                </div>
+
+                <div class="terminal-panel">
+                    <div>
+                        <div class="mission-box">
+                            <div class="mission-title">Mission Brief</div>
+                            <div id="missionPromptText" class="mission-prompt">Awaiting flight plan...</div>
+                        </div>
+
+                        <div class="slider-control-group">
+                            <div class="slider-row">
+                                <span class="slider-label">SLOPE (m):</span>
+                                <input type="range" id="sliderM" class="flight-slider" min="-5" max="5" value="0" step="0.5" oninput="updateFromSliders()">
+                                <span id="valMDisplay" class="slider-val-display">0</span>
+                            </div>
+                            <div class="slider-row">
+                                <span class="slider-label">ALTITUDE (b):</span>
+                                <input type="range" id="sliderB" class="flight-slider" min="-10" max="10" value="0" step="1" oninput="updateFromSliders()">
+                                <span id="valBDisplay" class="slider-val-display">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="chart-btn" onclick="chartCourse()">CHART COURSE 🧭</button>
+                        <div id="feedbackLine" class="feedback-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. DRONE DOWN / FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <div class="deck-icon">📉</div>
+            <h1 class="deck-title" style="color: var(--accent-red);">DRONE BATTERY DEPLETED</h1>
+            <p class="deck-subtitle">Too many off-course flight paths drained the battery to zero.</p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Flight Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍✈️ Pilot: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'drone-flight-path-plotter', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartFlight()">RECHARGE & RELAUNCH</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <div class="deck-icon">🏁</div>
+            <h1 class="deck-title" style="color: var(--accent-green);">FLIGHT PLAN COMPLETE</h1>
+            <p class="deck-subtitle">Master Flight Navigator Distinction Awarded</p>
+
+            <p style="font-size: 1.05rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Excellent navigation! Every flight path was charted to match its mission course across the full route list.
+            </p>
+
+            <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px;">
+                Total Flight Score: <span id="victoryScore" style="color: var(--accent-green);">1200</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍✈️ Pilot: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'drone-flight-path-plotter', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartFlight()">NEW ROUTE LIST</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Autonomous Flight Division
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

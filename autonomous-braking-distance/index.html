@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Braking Distance: Test Track HUD</title>
+
+    <!-- Google Fonts for Autonomous Vehicle HUD Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Titillium+Web:wght@400;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Engine Configuration -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Toggle -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main HUD Container -->
+    <div class="hud-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <h1 class="hud-title">🚗 Autonomous Braking Distance</h1>
+            <p class="hud-subtitle">Test Track HUD // Quadratic Formula &amp; Discriminant</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>SYSTEMS ENGINEER BRIEFING:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Clear 12 test-track diagnostics by computing the discriminant \( b^2 - 4ac \) and solving braking equations with the quadratic formula \( x = \dfrac{-b \pm \sqrt{b^2-4ac}}{2a} \).</li>
+                    <li><strong>System Integrity:</strong> You start with 3 Integrity Cores. Each incorrect diagnostic drains 1 core. Losing all 3 halts the test vehicle.</li>
+                    <li><strong>Test Randomization:</strong> Track equations and answer choices are shuffled every test session.</li>
+                    <li><strong>Session Memory:</strong> This console holds data only in active memory. Reloading the page resets the test log completely.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting the test track!</div>
+            </div>
+
+            <button class="action-btn" onclick="startTestSession()">START TEST TRACK</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <div>
+                <h2 id="testHeader" class="hud-title" style="font-size: 1.3rem; text-align: left;">Test #1: Braking Diagnostic</h2>
+
+                <!-- Status HUD Bar -->
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-label">Test:</span>
+                        <span id="testCounter" class="status-value">1 / 12</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">System Integrity:</span>
+                        <span id="livesDisplay" class="status-value">⚙️⚙️⚙️</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Score:</span>
+                        <span id="scoreDisplay" class="status-value">0 PTS</span>
+                    </div>
+                </div>
+
+                <!-- Discriminant Status Light + Equation -->
+                <div class="calc-pad">
+                    <div class="status-light-row">
+                        <div id="statusLight" class="status-light light-neutral"></div>
+                        <span id="statusLightLabel" class="status-light-label">DISCRIMINANT STANDBY</span>
+                    </div>
+                    <div class="equation-card">
+                        <div class="equation-tag">Braking Equation</div>
+                        <div id="equationText" class="equation-text">Loading test equation...</div>
+                    </div>
+                </div>
+
+                <!-- Prompt + Option Choices Grid -->
+                <div class="prompt-line" id="promptLine">Solve the diagnostic below.</div>
+                <div id="optionsGrid" class="options-grid">
+                    <!-- Dynamic option buttons -->
+                </div>
+            </div>
+
+            <div id="feedbackLine" class="feedback-line"></div>
+        </div>
+
+        <!-- 3. SYSTEM HALT / FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <h1 class="hud-title" style="color: var(--accent-red);">VEHICLE HALTED // INTEGRITY LOST</h1>
+            <p class="hud-subtitle">All 3 system integrity cores were drained by incorrect diagnostics.</p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Diagnostic Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'autonomous-braking-distance', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartTestSession()">REBOOT &amp; RESTART</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <h1 class="hud-title" style="color: var(--accent-green);">TEST TRACK CLEARED</h1>
+            <p class="hud-subtitle">Certified Autonomous Systems Analyst</p>
+
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Outstanding systems work! You correctly computed every discriminant and solved every braking equation with the quadratic formula.
+            </p>
+
+            <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); margin-bottom: 10px; border-radius: 6px;">
+                Total Diagnostic Score: <span id="victoryScore" style="color: var(--accent-green);">1200</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'autonomous-braking-distance', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartTestSession()">NEW TEST SESSION</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Autonomous Systems Lab
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

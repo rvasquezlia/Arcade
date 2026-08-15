@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submarine Trench Navigator: Sonar Command Deck</title>
+
+    <!-- Google Fonts for Nautical Sonar Command Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Exo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Control -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">🌙 Dark Mode</button>
+    </div>
+
+    <!-- Main Sonar Deck Container -->
+    <div class="sonar-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <div class="hero-icon">⚓</div>
+            <h1 class="sonar-title">Submarine Trench Navigator</h1>
+            <p class="sonar-subtitle">Sonar Command Deck // Integers &amp; Absolute Value</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>NAVIGATOR ORDERS:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Complete 12 dive orders across the trench, mixing depth-gauge dives with distance calculations.</li>
+                    <li><strong>Depth Dives:</strong> Drag the depth gauge slider to the exact requested depth (a negative integer between 0 m and -100 m) and lock it in.</li>
+                    <li><strong>Distance Logs:</strong> Some orders ask you to compute distance traveled between two depths using absolute value — pick the correct answer from four choices.</li>
+                    <li><strong>Hull Integrity:</strong> You start at 100% Hull Integrity. Inaccurate dives and wrong distance logs drain the hull. Reaching 0% causes a hull breach.</li>
+                    <li><strong>Dive Log Randomization:</strong> Orders and their sequence are shuffled at the start of every dive.</li>
+                    <li><strong>Session Memory:</strong> This console only holds progress in active memory. Reloading the page resets the entire dive log.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍✈️ Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before diving!</div>
+            </div>
+
+            <button class="action-btn" onclick="startGame()">BEGIN DIVE SEQUENCE</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <h2 id="diveHeader" class="sonar-title" style="font-size: 1.3rem; text-align: left;">Dive Order 1: Reef Avoidance</h2>
+
+            <!-- HUD Bar -->
+            <div class="hud-bar">
+                <div class="hud-item">
+                    <span class="hud-label">Dive Log</span>
+                    <span id="roundCounter" class="hud-value">1 / 12</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Hull Integrity</span>
+                    <div class="hull-container">
+                        <div id="hullFill" class="hull-fill"></div>
+                    </div>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Score</span>
+                    <span id="scoreDisplay" class="hud-value">0 PTS</span>
+                </div>
+            </div>
+
+            <!-- Mission Prompt -->
+            <div class="order-card">
+                <div class="order-tag">Command Order</div>
+                <div id="orderText" class="order-text">Loading dive order...</div>
+            </div>
+
+            <!-- SLIDER MODE PANEL -->
+            <div id="sliderPanel" class="interaction-panel">
+                <div class="depth-gauge-wrap">
+                    <div class="depth-scale">
+                        <span>0 m</span>
+                        <span>-25 m</span>
+                        <span>-50 m</span>
+                        <span>-75 m</span>
+                        <span>-100 m</span>
+                    </div>
+                    <div class="slider-rotate-wrap">
+                        <input type="range" id="depthSlider" class="depth-slider" min="-100" max="0" step="1" value="-50" oninput="updateDepthReadout()">
+                    </div>
+                    <div class="depth-readout-box">
+                        <span class="depth-readout-label">Current Depth</span>
+                        <span id="depthReadout" class="depth-readout-value">-50 m</span>
+                    </div>
+                </div>
+                <button class="fire-btn" onclick="lockDepth()">LOCK DEPTH &amp; DIVE 🌊</button>
+            </div>
+
+            <!-- MC MODE PANEL -->
+            <div id="mcPanel" class="interaction-panel" style="display: none;">
+                <div id="optionsGrid" class="options-grid"></div>
+            </div>
+
+            <div id="feedbackLine" class="feedback-line"></div>
+        </div>
+
+        <!-- 3. FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <div class="hero-icon">💥</div>
+            <h1 class="sonar-title" style="color: var(--accent-red);">HULL BREACH</h1>
+            <p class="sonar-subtitle">Hull Integrity reached 0%. Emergency ballast blow initiated.</p>
+            <p style="font-family: var(--mono-font); margin-bottom: 16px;">Final Dive Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍✈️ Navigator: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'submarine-trench-navigator', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartGame()">RESURFACE &amp; RETRY</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <div class="hero-icon">🐋</div>
+            <h1 class="sonar-title" style="color: var(--accent-teal);">TRENCH FULLY CHARTED</h1>
+            <p class="sonar-subtitle">Master Navigator Distinction Awarded</p>
+
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Outstanding navigation! You completed all 12 dive orders, precisely setting negative-integer depths and calculating vertical distances using absolute value.
+            </p>
+
+            <div class="score-readout">
+                Final Dive Score: <span id="victoryScore">1000</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍✈️ Navigator: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as official proof of mission completion for your instructor.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'submarine-trench-navigator', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartGame()">NEW DIVE SEQUENCE</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Navigator Rodrigo Vasquez
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

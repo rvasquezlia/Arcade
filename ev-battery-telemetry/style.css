@@ -1,0 +1,352 @@
+        :root {
+            --bg-color: #060c14;
+            --container-bg: #0a1420;
+            --card-bg: #0f1c2c;
+            --border-color: #1e3348;
+            --text-primary: #e6f1ff;
+            --text-secondary: #7c93ab;
+            --accent-teal: #22d3ee;
+            --accent-green: #34d399;
+            --accent-red: #f87171;
+            --accent-amber: #fbbf24;
+            --font-display: 'Sora', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --shadow-color: rgba(0, 0, 0, 0.6);
+            --panel-sunken: rgba(0, 0, 0, 0.35);
+
+            /* Shared kit mapping */
+            --kit-accent: var(--accent-teal);
+            --kit-accent-ink: #00232b;
+            --kit-accent-glow: rgba(34, 211, 238, 0.25);
+            --kit-surface: var(--card-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
+        }
+
+        /* TRUE LIGHT THEME — bright dashboard-white lab console, not a
+           second dark palette. Backgrounds sit in the #f5f7fb–#ffffff
+           range with dark, readable text throughout. */
+        body.light-mode {
+            --bg-color: #f2f5fa;
+            --container-bg: #ffffff;
+            --card-bg: #f7f9fc;
+            --border-color: #cbd8e6;
+            --text-primary: #0b1c2c;
+            --text-secondary: #4b6478;
+            --accent-teal: #0891b2;
+            --accent-green: #15803d;
+            --accent-red: #dc2626;
+            --accent-amber: #b45309;
+            --shadow-color: rgba(15, 40, 60, 0.12);
+            --panel-sunken: rgba(11, 28, 44, 0.05);
+
+            /* Shared kit mapping (light) — redeclared in full: a custom
+               property whose value is var(--other-var) does not reliably
+               re-track that other var's light-mode override, so every
+               --kit-* token must be restated here, not just the ink. */
+            --kit-accent: var(--accent-teal);
+            --kit-accent-ink: #000000;
+            --kit-accent-glow: rgba(8, 145, 178, 0.18);
+            --kit-surface: var(--card-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .top-controls {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn {
+            background: var(--container-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--accent-teal);
+            color: var(--accent-teal);
+        }
+
+        .dash-container {
+            width: 100%;
+            max-width: 860px;
+            background: var(--container-bg);
+            border: 2px solid var(--border-color);
+            border-top: 6px solid var(--accent-teal);
+            border-radius: 12px;
+            padding: 36px;
+            box-shadow: 0 16px 40px var(--shadow-color);
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dash-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-teal);
+            text-align: center;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .dash-subtitle {
+            font-family: var(--font-mono);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 22px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-sunken);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .status-label {
+            color: var(--text-secondary);
+        }
+
+        .status-value {
+            color: var(--accent-teal);
+            font-size: 1rem;
+        }
+
+        /* Function Input/Output Mapping Diagram */
+        .mapping-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            background: var(--panel-sunken);
+            border: 1px dashed var(--accent-teal);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 18px;
+        }
+
+        .map-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+        }
+
+        .map-label {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .map-value {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .map-arrow {
+            font-family: var(--font-mono);
+            color: var(--accent-teal);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .telemetry-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-teal);
+            padding: 22px;
+            margin-bottom: 22px;
+            border-radius: 6px;
+        }
+
+        .telemetry-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: var(--accent-teal);
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .telemetry-text {
+            font-family: var(--font-display);
+            font-size: 1.12rem;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+
+        .option-btn {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent-teal);
+            background: var(--panel-sunken);
+        }
+
+        .option-key {
+            font-family: var(--font-mono);
+            background: var(--border-color);
+            color: var(--text-primary);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .feedback-line {
+            font-family: var(--font-mono);
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            min-height: 24px;
+            text-transform: uppercase;
+        }
+
+        .text-success { color: var(--accent-green); }
+        .text-error { color: var(--accent-red); }
+
+        .screen-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .action-btn {
+            background: var(--accent-teal);
+            color: #00232b;
+            border: none;
+            padding: 14px 36px;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        .brief-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px 28px;
+            text-align: left;
+            margin: 20px 0;
+            max-width: 680px;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            border-radius: 8px;
+        }
+
+        .brief-box ul {
+            padding-left: 20px;
+        }
+
+        .brief-box li {
+            margin-bottom: 8px;
+        }
+
+        footer {
+            margin-top: 24px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }

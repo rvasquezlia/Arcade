@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roller Coaster Drop Simulator: Vertex Track Designer</title>
+
+    <!-- Google Fonts for Amusement Park Engineering Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax 3 Engine Configuration -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['$$', '$$']]
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../shared/arcade-kit.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Right Theme Toggle -->
+    <div class="top-controls">
+        <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Park Container -->
+    <div class="park-container">
+
+        <!-- 1. START SCREEN -->
+        <div id="startScreen" class="screen-center">
+            <h1 class="park-title">🎢 Roller Coaster Drop Simulator</h1>
+            <p class="park-subtitle">Amusement Park Engineering // Vertex &amp; Axis of Symmetry</p>
+
+            <div class="brief-box">
+                <p style="margin-bottom: 10px;"><strong>TRACK ENGINEER BRIEFING:</strong></p>
+                <ul>
+                    <li><strong>Objective:</strong> Design 12 coaster hills and drops by finding the vertex \( (h, k) \) of each quadratic track equation \( y = ax^2 + bx + c \).</li>
+                    <li><strong>Cart Integrity:</strong> You start with 3 test carts. Each incorrect vertex derails 1 cart. Losing all 3 shuts down the track.</li>
+                    <li><strong>Track Randomization:</strong> Track equations are shuffled every design session.</li>
+                    <li><strong>Test Run Animation:</strong> A correct vertex launches a live test-cart animation along your track's parabola on the design canvas!</li>
+                    <li><strong>Session Memory:</strong> This blueprint console holds data only in active memory. Reloading the page resets the design log completely.</li>
+                </ul>
+            </div>
+
+            <div class="kit-name-field">
+                <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
+                <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
+                <div class="kit-name-error" id="playerNameError">Please enter your name before opening the design deck!</div>
+            </div>
+
+            <button class="action-btn" onclick="startDesignSession()">OPEN TRACK DESIGN DECK</button>
+        </div>
+
+        <!-- 2. GAMEPLAY SCREEN -->
+        <div id="gameScreen" style="display: none;">
+            <h2 id="hillHeader" class="park-title" style="font-size: 1.3rem; text-align: left;">Hill 01: Track Blueprint</h2>
+            <p class="park-subtitle" style="text-align: left; margin-bottom: 12px;">FIND THE VERTEX TO CLEAR THE TEST RUN</p>
+
+            <!-- HUD -->
+            <div class="hud-status-bar">
+                <div class="hud-item">
+                    <span class="hud-label">Hill</span>
+                    <span id="hillCounter" class="hud-value">01 / 12</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Cart Integrity</span>
+                    <span id="livesDisplay" class="hud-value">🎢🎢🎢</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Track Steepness</span>
+                    <div class="meter-container">
+                        <div id="steepnessFill" class="meter-fill"></div>
+                    </div>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Score</span>
+                    <span id="scoreDisplay" class="hud-value">0 PTS</span>
+                </div>
+            </div>
+
+            <!-- Arena Split Grid -->
+            <div class="arena-grid">
+
+                <!-- Canvas Left -->
+                <div class="canvas-wrapper">
+                    <canvas id="trackCanvas" width="420" height="320"></canvas>
+                </div>
+
+                <!-- Panel Right -->
+                <div class="terminal-panel">
+                    <div>
+                        <div class="equation-box">
+                            <div class="equation-title">Track Equation (Standard Form)</div>
+                            <div id="equationText" class="equation-text">
+                                Loading track blueprint...
+                            </div>
+                        </div>
+
+                        <!-- Vertex Input -->
+                        <div class="vertex-input-group">
+                            <div class="vertex-field">
+                                <label for="inputH">h (x-coordinate)</label>
+                                <input type="number" id="inputH" class="vertex-number-input" step="any" placeholder="h">
+                            </div>
+                            <div class="vertex-field">
+                                <label for="inputK">k (y-coordinate)</label>
+                                <input type="number" id="inputK" class="vertex-number-input" step="any" placeholder="k">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="fire-btn" onclick="submitVertex()">TEST-RUN THE TRACK 🎡</button>
+                        <div id="feedbackLine" class="feedback-line"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 3. TRACK SHUTDOWN / FAIL SCREEN -->
+        <div id="failScreen" class="screen-center" style="display: none;">
+            <h1 class="park-title" style="color: var(--accent-red);">TRACK SHUTDOWN // CARTS DERAILED</h1>
+            <p class="park-subtitle">All 3 test carts derailed from incorrect vertex calculations.</p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Design Score: <span id="failScore">0</span> PTS</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'roller-coaster-drop-simulator', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartDesignSession()">REBUILD &amp; RESTART</button>
+        </div>
+
+        <!-- 4. VICTORY SCREEN -->
+        <div id="victoryScreen" class="screen-center" style="display: none;">
+            <h1 class="park-title" style="color: var(--accent-green);">GRAND OPENING APPROVED</h1>
+            <p class="park-subtitle">Certified Coaster Vertex Engineer</p>
+
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
+                Incredible engineering! You correctly located the vertex and axis of symmetry for every hill and drop, completing all test runs safely.
+            </p>
+
+            <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); margin-bottom: 10px; border-radius: 6px;">
+                Total Design Score: <span id="victoryScore" style="color: var(--accent-green);">1200</span> PTS
+            </div>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'roller-coaster-drop-simulator', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="action-btn" onclick="restartDesignSession()">NEW DESIGN SESSION</button>
+        </div>
+
+    </div>
+
+    <footer>
+        Lincoln International Academy // Department of Mathematics // Amusement Park Engineering Studio
+    </footer>
+
+    <script src="../shared/arcade-kit.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+        :root {
+            --bg-color: #050b12;
+            --container-bg: #0a1420;
+            --card-bg: #101d2c;
+            --border-color: #1c2f42;
+            --accent-teal: #2dd4bf;
+            --accent-gold: #facc15;
+            --accent-red: #f87171;
+            --accent-green: #4ade80;
+            --text-primary: #e4edf5;
+            --text-secondary: #6d8299;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --glow-color: rgba(45, 212, 191, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.65);
+            --panel-sunken: rgba(0, 0, 0, 0.3);
+            --canvas-bg: #050b12;
+
+            /* Shared kit mapping */
+            --kit-accent: var(--accent-teal);
+            --kit-accent-ink: #00201a;
+            --kit-accent-glow: var(--glow-color);
+            --kit-surface: var(--card-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
+        }
+
+        /* TRUE LIGHT THEME — bright clinical-white lab report look,
+           not a second dark palette. Panels sit in the #f2f6f8–#ffffff
+           range with dark, readable text and softer accent tones. */
+        body.light-mode {
+            --bg-color: #f1f6f6;
+            --container-bg: #ffffff;
+            --card-bg: #f6faf9;
+            --border-color: #c9dcd8;
+            --accent-teal: #0d9488;
+            --accent-gold: #b45309;
+            --accent-red: #dc2626;
+            --accent-green: #15803d;
+            --text-primary: #0c1f22;
+            --text-secondary: #4a6763;
+            --glow-color: rgba(13, 148, 136, 0.12);
+            --shadow-color: rgba(10, 40, 40, 0.1);
+            --panel-sunken: rgba(12, 60, 55, 0.05);
+            --canvas-bg: #f6faf9;
+
+            /* Shared kit mapping (light) — redeclared in full: a custom
+               property whose value is var(--other-var) does not reliably
+               re-track that other var's light-mode override, so every
+               --kit-* token must be restated here, not just the ink. */
+            --kit-accent: var(--accent-teal);
+            --kit-accent-ink: #000000;
+            --kit-accent-glow: rgba(13, 148, 136, 0.18);
+            --kit-surface: var(--card-bg);
+            --kit-border: var(--border-color);
+            --kit-input-bg: var(--container-bg);
+            --kit-error: var(--accent-red);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .top-controls {
+            position: fixed;
+            top: 18px;
+            right: 22px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn {
+            background: var(--container-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--accent-teal);
+            color: var(--accent-teal);
+        }
+
+        .lab-container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--container-bg);
+            border: 2px solid var(--border-color);
+            border-top: 5px solid var(--accent-teal);
+            border-radius: 10px;
+            padding: 28px;
+            box-shadow: 0 16px 40px var(--shadow-color);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .lab-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-teal);
+            text-align: center;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .lab-subtitle {
+            font-family: var(--font-mono);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .hud-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-sunken);
+            border: 1px solid var(--border-color);
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            font-family: var(--font-mono);
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hud-label {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .hud-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent-teal);
+        }
+
+        .meter-container {
+            width: 150px;
+            height: 12px;
+            background: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--accent-green);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .arena-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        @media (max-width: 860px) {
+            .arena-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 340px;
+            margin: 0 auto;
+            background: var(--canvas-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(45, 212, 191, 0.05);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .terminal-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 340px;
+        }
+
+        .scenario-box {
+            background: var(--panel-sunken);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-teal);
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            border-radius: 6px;
+        }
+
+        .scenario-title {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--accent-teal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .scenario-prompt {
+            font-family: var(--font-display);
+            font-size: 1.08rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .coord-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+        }
+
+        .slider-label {
+            width: 90px;
+            font-weight: 700;
+            color: var(--accent-teal);
+            font-size: 0.9rem;
+        }
+
+        .coord-slider {
+            flex: 1;
+            accent-color: var(--accent-teal);
+            cursor: pointer;
+        }
+
+        .coord-val-display {
+            width: 54px;
+            text-align: right;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .fire-btn {
+            background: var(--accent-teal);
+            color: #00201a;
+            border: none;
+            padding: 14px;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 6px;
+            box-shadow: 0 4px 14px var(--glow-color);
+            transition: transform 0.15s ease, opacity 0.15s ease;
+            width: 100%;
+        }
+
+        .fire-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .feedback-line {
+            font-family: var(--font-mono);
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            min-height: 24px;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .text-success { color: var(--accent-green); }
+        .text-error { color: var(--accent-red); }
+
+        .screen-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .primary-btn {
+            background: var(--accent-teal);
+            color: #00201a;
+            border: none;
+            padding: 14px 40px;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px var(--glow-color);
+        }
+
+        .brief-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 22px 28px;
+            text-align: left;
+            margin: 20px 0;
+            max-width: 680px;
+            line-height: 1.7;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
+        .brief-box ul { padding-left: 20px; }
+        .brief-box li { margin-bottom: 8px; }
+
+        footer {
+            margin-top: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
