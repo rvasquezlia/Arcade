@@ -1,5 +1,5 @@
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         function playSound(type) {
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
@@ -11,8 +11,8 @@
 
             if (type === 'correct') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
-                osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.15); 
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.15);
                 gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
                 osc.start();
@@ -27,7 +27,7 @@
                 osc.stop(audioCtx.currentTime + 0.25);
             }
         }
-    
+
 
         const rawQuestData = [
             {
@@ -119,6 +119,45 @@
             explanation: "0.25 = <sup>1</sup>/<sub>4</sub>. So F = <sup>3</sup>/<sub>4</sub>. Multiply by 12: <sup>3</sup>/<sub>4</sub> × 12 = 9. Subtract 3: 9 − 3 = <b>6</b>!"
         };
 
+        // ---- Hiker flavor lines (funnier narrator voice) ----
+        const hikerLines = {
+            correct: [
+                "Plank secured — nice math!",
+                "Boom. Bridge engineer of the year.",
+                "That plank's sturdier than my lunch.",
+                "Smooth crossing, math ranger!",
+                "Nailed it! Onward!",
+                "Certified sturdy. Let's keep moving."
+            ],
+            wrong: [
+                "Whoa — that plank's rotten! Try another.",
+                "Nope, that one's made of spaghetti.",
+                "Not quite — the numbers disagree with you.",
+                "That plank just wants to be difficult.",
+                "Careful! Recalculate and retry.",
+                "Yikes, that one cracked like a bad joke."
+            ],
+            skip: [
+                "Grappling hook to the rescue!",
+                "We'll swing past this one — safe and sound.",
+                "No shame in a good shortcut!"
+            ],
+            win: [
+                "You crossed the whole canyon! 6th grade, here we come!",
+                "Bridge complete. You're basically a trailblazer now.",
+                "The canyon has been officially tamed by your math skills."
+            ],
+            fail: [
+                "Yikes — out of ropes! The canyon wins this round.",
+                "Don't worry, even expert hikers slip. Try again!",
+                "That's a wrap on this attempt — regroup and re-climb!"
+            ]
+        };
+
+        function randomLine(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
             let shuffled = JSON.parse(JSON.stringify(array));
@@ -130,14 +169,18 @@
             return shuffled;
         }
 
+        const MAX_LIVES = 4;
+
         let questData = [];
         let currentLevel = 0;
         let currentQuestion = 0;
         let score = 0;
+        let lives = MAX_LIVES;
         let isBossPhase = false;
-        let currentShuffledOptions = [];
         let isDarkMode = true;
         let playerName = '';
+        let currentGapData = null;
+        let interactionLocked = false;
 
         function toggleTheme() {
             isDarkMode = !isDarkMode;
@@ -168,13 +211,21 @@
 
         function initGame() {
             isBossPhase = false;
+            currentLevel = 0;
+            currentQuestion = 0;
+            score = 0;
+            lives = MAX_LIVES;
+            interactionLocked = false;
+
             questData = rawQuestData.map(lvl => ({
                 ...lvl,
                 questions: shuffle(lvl.questions)
             }));
 
+            document.getElementById('score').innerText = score;
+            renderLives();
             renderTabs();
-            loadQuestion();
+            loadGap();
         }
 
         function renderTabs() {
@@ -185,8 +236,8 @@
                 const isActive = idx === currentLevel && !isBossPhase;
                 const tab = document.createElement('div');
                 tab.className = `p-2.5 sm:p-3 rounded-xl border text-center transition-all ${
-                    isActive 
-                        ? 'tab-active bg-indigo-600/20 border-indigo-500 text-indigo-400 font-black glow' 
+                    isActive
+                        ? 'tab-active bg-indigo-600/20 border-indigo-500 text-indigo-400 font-black glow'
                         : 'tab-inactive bg-slate-800/60 border-slate-700/60 text-slate-400 font-bold opacity-70'
                 }`;
                 tab.innerHTML = `
@@ -197,12 +248,44 @@
             });
         }
 
-        function loadQuestion() {
+        function renderLives() {
+            const row = document.getElementById('lives-row');
+            if (!row) return;
+            row.innerHTML = '';
+            for (let i = 0; i < MAX_LIVES; i++) {
+                const span = document.createElement('span');
+                span.className = 'rope-icon' + (i < lives ? '' : ' lost');
+                span.textContent = '🪢';
+                row.appendChild(span);
+            }
+        }
+
+        function renderPlanksCrossed(level) {
+            const wrap = document.getElementById('planks-crossed');
+            wrap.innerHTML = '';
+            const total = level.questions.length;
+            const doneCount = isBossPhase ? total : Math.min(currentQuestion, total);
+            for (let i = 0; i < total; i++) {
+                const p = document.createElement('span');
+                p.className = 'mini-plank' + (i < doneCount ? ' done' : '');
+                wrap.appendChild(p);
+            }
+        }
+
+        function loadGap() {
+            interactionLocked = false;
             const level = questData[currentLevel];
             let qData;
             let isChallenge = false;
 
             const skipContainer = document.getElementById('skip-container');
+            const bridgeScene = document.getElementById('bridge-scene');
+            const gapSlot = document.getElementById('gap-slot');
+            const gapHint = document.getElementById('gap-hint');
+
+            bridgeScene.classList.remove('challenge-gap', 'boss-gap');
+            gapSlot.classList.remove('filled', 'wobble', 'hover-target');
+            gapHint.style.opacity = '';
 
             if (isBossPhase) {
                 qData = ultimateBossChallenge;
@@ -210,6 +293,8 @@
                 document.getElementById('level-badge').className = "badge-challenge px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 glow-gold";
                 document.getElementById('question-tracker').innerText = `Triple Points (+300 PTS)`;
                 skipContainer.classList.remove('hidden');
+                bridgeScene.classList.add('boss-gap');
+                gapHint.textContent = 'Drag the FINAL plank to finish the bridge!';
             } else if (currentQuestion === level.questions.length) {
                 qData = level.challenge;
                 isChallenge = true;
@@ -217,68 +302,265 @@
                 document.getElementById('level-badge').className = "badge-challenge px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40";
                 document.getElementById('question-tracker').innerText = `Double Points (+200 PTS)`;
                 skipContainer.classList.remove('hidden');
+                bridgeScene.classList.add('challenge-gap');
+                gapHint.textContent = 'Drag the bonus plank across the chasm!';
             } else {
                 qData = level.questions[currentQuestion];
                 document.getElementById('level-badge').innerText = `Level ${currentLevel + 1}: ${level.levelTitle}`;
                 document.getElementById('level-badge').className = "badge-standard px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
                 document.getElementById('question-tracker').innerText = `Question ${currentQuestion + 1} of 9`;
                 skipContainer.classList.add('hidden');
+                gapHint.textContent = 'Drag the correct plank into the gap!';
             }
-            
+
+            currentGapData = qData;
             document.getElementById('question-text').innerHTML = qData.q;
 
-            let optionsWithStatus = qData.options.map((opt, idx) => ({
+            renderPlanksCrossed(level);
+            renderRack(qData);
+            renderLives();
+            updateProgressBar();
+            hideToast();
+            renderMath();
+        }
+
+        function renderRack(qData) {
+            const rack = document.getElementById('plank-rack');
+            rack.innerHTML = '';
+
+            const optsWithStatus = qData.options.map((opt, idx) => ({
                 text: opt,
                 isCorrect: idx === qData.answer
             }));
-            currentShuffledOptions = shuffle(optionsWithStatus);
+            const shuffled = shuffle(optsWithStatus);
 
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
+            shuffled.forEach((optObj) => {
+                const slot = document.createElement('div');
+                slot.className = 'plank-slot';
 
-            currentShuffledOptions.forEach((optObj, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "opt-btn-theme w-full text-left p-3.5 sm:p-4 rounded-xl bg-slate-700/40 hover:bg-slate-700 border border-slate-600/80 font-bold text-slate-100 transition-all hover:border-indigo-400 active:scale-[0.98] flex items-center";
-                btn.innerHTML = `<span class="opt-badge-theme inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-slate-800 border border-slate-600 text-indigo-400 font-black mr-3 text-sm sm:text-base flex-shrink-0">${String.fromCharCode(65 + idx)}</span> <span class="text-base sm:text-lg font-bold leading-normal">${optObj.text}</span>`;
-                btn.onclick = () => checkAnswer(idx, isChallenge || isBossPhase);
-                container.appendChild(btn);
+                const tile = document.createElement('div');
+                tile.className = 'plank-tile';
+                tile.innerHTML = optObj.text;
+                tile.dataset.correct = optObj.isCorrect ? '1' : '0';
+
+                slot.appendChild(tile);
+                rack.appendChild(slot);
+                makeDraggable(tile);
             });
-
-            updateProgressBar();
         }
 
-        function checkAnswer(selectedIndex, isSpecial) {
-            const selectedOpt = currentShuffledOptions[selectedIndex];
-            const isCorrect = selectedOpt.isCorrect;
+        // ---- Pointer-based drag & drop (mouse + touch) ----
+        function makeDraggable(tile) {
+            let pointerId = null;
+            let startX = 0, startY = 0;
+            let dragOrigLeft = 0, dragOrigTop = 0;
+            let dragStarted = false;
+            const THRESHOLD = 6;
 
+            function getGapEl() { return document.getElementById('gap-slot'); }
+
+            function overlapsGap() {
+                const gapRect = getGapEl().getBoundingClientRect();
+                const tileRect = tile.getBoundingClientRect();
+                const cx = tileRect.left + tileRect.width / 2;
+                const cy = tileRect.top + tileRect.height / 2;
+                return cx >= gapRect.left && cx <= gapRect.right && cy >= gapRect.top && cy <= gapRect.bottom;
+            }
+
+            tile.addEventListener('pointerdown', (e) => {
+                if (interactionLocked) return;
+                if (tile.classList.contains('disabled')) return;
+                pointerId = e.pointerId;
+                try { tile.setPointerCapture(pointerId); } catch (err) { /* ignore */ }
+                startX = e.clientX;
+                startY = e.clientY;
+                dragStarted = false;
+                e.preventDefault();
+            });
+
+            tile.addEventListener('pointermove', (e) => {
+                if (pointerId === null || interactionLocked) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+
+                if (!dragStarted) {
+                    if (Math.abs(dx) < THRESHOLD && Math.abs(dy) < THRESHOLD) return;
+                    const rect = tile.getBoundingClientRect();
+                    dragOrigLeft = rect.left;
+                    dragOrigTop = rect.top;
+                    tile.style.width = rect.width + 'px';
+                    tile.style.height = rect.height + 'px';
+                    tile.style.position = 'fixed';
+                    tile.style.left = dragOrigLeft + 'px';
+                    tile.style.top = dragOrigTop + 'px';
+                    tile.style.zIndex = 999;
+                    tile.classList.add('dragging');
+                    dragStarted = true;
+                }
+
+                tile.style.left = (dragOrigLeft + dx) + 'px';
+                tile.style.top = (dragOrigTop + dy) + 'px';
+                getGapEl().classList.toggle('hover-target', overlapsGap());
+            });
+
+            function finishDrag() {
+                getGapEl().classList.remove('hover-target');
+                tile.classList.remove('dragging');
+                if (pointerId !== null) {
+                    try { tile.releasePointerCapture(pointerId); } catch (err) { /* ignore */ }
+                }
+                pointerId = null;
+
+                if (interactionLocked) return;
+
+                if (!dragStarted) {
+                    // Simple tap/click — treat as a direct placement attempt.
+                    attemptPlacement(tile);
+                    return;
+                }
+
+                if (overlapsGap()) {
+                    attemptPlacement(tile);
+                } else {
+                    returnToRack(tile);
+                }
+            }
+
+            tile.addEventListener('pointerup', finishDrag);
+            tile.addEventListener('pointercancel', () => {
+                if (dragStarted) returnToRack(tile);
+                pointerId = null;
+                dragStarted = false;
+            });
+        }
+
+        function disableAllTiles() {
+            document.querySelectorAll('.plank-tile').forEach(t => t.classList.add('disabled'));
+        }
+        function enableAllTiles() {
+            document.querySelectorAll('.plank-tile').forEach(t => t.classList.remove('disabled'));
+        }
+
+        function returnToRack(tile) {
+            const slot = tile.parentElement;
+            if (!slot) return;
+            const slotRect = slot.getBoundingClientRect();
+            if (tile.style.position !== 'fixed') return; // already at rest
+            tile.style.transition = 'left .3s ease, top .3s ease';
+            tile.style.left = slotRect.left + 'px';
+            tile.style.top = slotRect.top + 'px';
+            setTimeout(() => {
+                tile.style.position = '';
+                tile.style.left = '';
+                tile.style.top = '';
+                tile.style.width = '';
+                tile.style.height = '';
+                tile.style.zIndex = '';
+                tile.style.transition = '';
+            }, 320);
+        }
+
+        function attemptPlacement(tile) {
+            if (interactionLocked) return;
+            interactionLocked = true;
+
+            // Ensure the tile is positioned "fixed" at its current visual spot so we can animate it.
+            if (tile.style.position !== 'fixed') {
+                const rect = tile.getBoundingClientRect();
+                tile.style.width = rect.width + 'px';
+                tile.style.height = rect.height + 'px';
+                tile.style.position = 'fixed';
+                tile.style.left = rect.left + 'px';
+                tile.style.top = rect.top + 'px';
+                tile.style.zIndex = 999;
+            }
+
+            disableAllTiles();
+            const isCorrect = tile.dataset.correct === '1';
+            if (isCorrect) {
+                snapCorrect(tile);
+            } else {
+                wobbleWrong(tile);
+            }
+        }
+
+        function snapCorrect(tile) {
+            playSound('correct');
+            const gapRect = document.getElementById('gap-slot').getBoundingClientRect();
+            const targetLeft = gapRect.left + gapRect.width / 2 - tile.offsetWidth / 2;
+            const targetTop = gapRect.top + gapRect.height / 2 - tile.offsetHeight / 2;
+
+            tile.classList.add('snap-correct');
+            requestAnimationFrame(() => {
+                tile.style.transition = 'left .35s cubic-bezier(.34,1.56,.64,1), top .35s cubic-bezier(.34,1.56,.64,1)';
+                tile.style.left = targetLeft + 'px';
+                tile.style.top = targetTop + 'px';
+            });
+
+            const gapSlot = document.getElementById('gap-slot');
+            gapSlot.classList.add('filled');
+            document.getElementById('gap-hint').style.opacity = '0';
+
+            const hiker = document.getElementById('hiker');
+            hiker.classList.add('hop');
+            showHikerQuip(randomLine(hikerLines.correct));
+
+            setTimeout(() => {
+                hiker.classList.remove('hop');
+                resolveCorrectAnswer();
+            }, 650);
+        }
+
+        function wobbleWrong(tile) {
+            playSound('wrong');
+            const gapSlot = document.getElementById('gap-slot');
+            gapSlot.classList.add('wobble');
+            tile.classList.add('crack');
+            tile.classList.add('tried-wrong');
+            showHikerQuip(randomLine(hikerLines.wrong));
+            showToast('❌ Not quite! −1 safety rope');
+
+            lives = Math.max(0, lives - 1);
+            renderLives();
+
+            setTimeout(() => {
+                gapSlot.classList.remove('wobble');
+                tile.classList.remove('crack');
+                returnToRack(tile);
+
+                if (lives <= 0) {
+                    setTimeout(() => failRun(), 450);
+                } else {
+                    interactionLocked = false;
+                    enableAllTiles();
+                }
+            }, 450);
+        }
+
+        function resolveCorrectAnswer() {
+            let points = 100;
+            const isSpecial = isBossPhase || (currentQuestion === questData[currentLevel].questions.length);
+            if (isBossPhase) points = 300;
+            else if (currentQuestion === questData[currentLevel].questions.length) points = 200;
+
+            score += points;
+            document.getElementById('score').innerText = score;
+            showExplanationModal(points, isSpecial);
+        }
+
+        function showExplanationModal(points, isSpecial) {
             const modal = document.getElementById('feedback-modal');
             const modalBadge = document.getElementById('modal-badge');
             const modalTitle = document.getElementById('modal-title');
             const modalExp = document.getElementById('modal-explanation');
 
-            let points = 100;
-            if (isBossPhase) points = 300;
-            else if (currentQuestion === questData[currentLevel].questions.length) points = 200;
-
-            if (isCorrect) {
-                playSound('correct');
-                score += points;
-                document.getElementById('score').innerText = score;
-
-                modalBadge.className = "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-                modalBadge.innerHTML = "<span>✅</span><span>Correct Answer</span>";
-                modalTitle.innerText = isSpecial ? `Bonus Earned! (+${points} PTS)` : "Great Job!";
-            } else {
-                playSound('wrong');
-                modalBadge.className = "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-3 bg-rose-500/20 text-rose-400 border border-rose-500/30";
-                modalBadge.innerHTML = "<span>❌</span><span>Incorrect</span>";
-                modalTitle.innerText = "Not Quite!";
-            }
-
-            let qData = isBossPhase ? ultimateBossChallenge : (currentQuestion === questData[currentLevel].questions.length ? questData[currentLevel].challenge : questData[currentLevel].questions[currentQuestion]);
-            modalExp.innerHTML = qData.explanation;
+            modalBadge.className = "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            modalBadge.innerHTML = "<span>✅</span><span>Plank Secured!</span>";
+            modalTitle.innerText = isSpecial ? `Bonus Earned! (+${points} PTS)` : "Great Crossing!";
+            modalExp.innerHTML = currentGapData.explanation;
 
             modal.classList.remove('hidden');
+            renderMath();
         }
 
         function skipChallenge() {
@@ -288,11 +570,12 @@
             const modalExp = document.getElementById('modal-explanation');
 
             modalBadge.className = "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-3 bg-amber-500/20 text-amber-400 border border-amber-500/30";
-            modalBadge.innerHTML = "<span>⏩</span><span>Challenge Skipped</span>";
-            modalTitle.innerText = "Moving Ahead";
-            modalExp.innerHTML = "You skipped this bonus challenge. No bonus points were added, but you can keep going!";
+            modalBadge.innerHTML = "<span>🪝</span><span>Chasm Skipped</span>";
+            modalTitle.innerText = "Grappling Hook Deployed!";
+            modalExp.innerHTML = "You swung past this bonus chasm safely — no bonus points, but no ropes lost either. " + randomLine(hikerLines.skip);
 
             modal.classList.remove('hidden');
+            renderMath();
         }
 
         function nextStep() {
@@ -307,15 +590,17 @@
 
             if (currentQuestion < level.questions.length) {
                 currentQuestion++;
-                loadQuestion();
+                loadGap();
             } else if (currentLevel < questData.length - 1) {
+                // Level fully cleared — restock a safety rope as a reward.
+                if (lives < MAX_LIVES) lives++;
                 currentLevel++;
                 currentQuestion = 0;
                 renderTabs();
-                loadQuestion();
+                loadGap();
             } else {
                 isBossPhase = true;
-                loadQuestion();
+                loadGap();
             }
         }
 
@@ -329,6 +614,35 @@
             document.getElementById('progress-text').innerText = isBossPhase ? "Final Boss" : `Level ${currentLevel + 1}/4`;
         }
 
+        function showHikerQuip(text) {
+            const q = document.getElementById('hiker-quip');
+            if (!q) return;
+            q.textContent = text;
+            q.classList.add('show');
+            clearTimeout(q._t);
+            q._t = setTimeout(() => q.classList.remove('show'), 2200);
+        }
+
+        function showToast(text) {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.textContent = text;
+            t.classList.add('show');
+            clearTimeout(t._t);
+            t._t = setTimeout(() => t.classList.remove('show'), 1800);
+        }
+
+        function hideToast() {
+            const t = document.getElementById('toast');
+            if (t) t.classList.remove('show');
+        }
+
+        function renderMath() {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
         function showVictoryScreen() {
             document.getElementById('game-card').classList.add('hidden');
             document.getElementById('victory-screen').classList.remove('hidden');
@@ -336,16 +650,23 @@
             document.getElementById('progress-bar').style.width = '100%';
             playSound('correct');
             ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
+            const quip = document.getElementById('victory-quip');
+            if (quip) quip.textContent = randomLine(hikerLines.win);
+        }
+
+        function failRun() {
+            document.getElementById('game-card').classList.add('hidden');
+            document.getElementById('fail-screen').classList.remove('hidden');
+            document.getElementById('fail-score').innerText = score;
+            ArcadeKit.showPlayerName(playerName, ['playerNameDisplayFail']);
+            const quip = document.getElementById('fail-quip');
+            if (quip) quip.textContent = randomLine(hikerLines.fail);
+            playSound('wrong');
         }
 
         function restartQuest() {
-            currentLevel = 0;
-            currentQuestion = 0;
-            score = 0;
-            isBossPhase = false;
-            document.getElementById('score').innerText = score;
             document.getElementById('victory-screen').classList.add('hidden');
+            document.getElementById('fail-screen').classList.add('hidden');
             document.getElementById('game-card').classList.remove('hidden');
             initGame();
         }
-    

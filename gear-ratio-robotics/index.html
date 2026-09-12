@@ -31,11 +31,12 @@
             <p class="workshop-subtitle">Mars Rover Assembly Bay // Ratios &amp; Unit Rates</p>
 
             <div class="brief-box">
-                <p style="margin-bottom: 10px;"><strong>MISSION BRIEFING:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>MISSION BRIEFING (from RATIO-9000, Workshop Foreman-Bot):</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Build gear trains for the Mars rover across 12 terrain challenges by selecting a driver gear and a driven gear that produce the exact target ratio.</li>
-                    <li><strong>Power Cells:</strong> Your workshop runs on 100% Power Cells. Exact gear locks recharge cells; mismatched gear trains drain power based on how far off your ratio was.</li>
-                    <li><strong>Rover Progress:</strong> Precise gear locks send the rover further across the terrain track — sloppy ones barely budge it.</li>
+                    <li><strong>Objective:</strong> Grab the rotary <strong>Ratio Dial</strong> and twist it until the meshed gears read the exact target ratio for each of 12 terrain challenges.</li>
+                    <li><strong>Tolerance:</strong> Your dialed ratio must land within <strong>±0.06</strong> of the target — close enough for a robot, not close enough to fake it.</li>
+                    <li><strong>Power Cells:</strong> Your workshop runs on 100% Power Cells. A locked-in ratio recharges cells; pressing "Engage Drive" while off-target drains power (and makes the rover fall over, comedically).</li>
+                    <li><strong>Rover Progress:</strong> Every clean gear lock sends the rover further across the terrain track. You can keep re-dialing after a stumble — no attempt is ever wasted, only power.</li>
                     <li><strong>Terrain Randomization:</strong> Challenges and their order are shuffled at the start of every workshop session.</li>
                     <li><strong>Session Memory:</strong> Progress lives only in this browser tab. Reloading resets the whole assembly bay.</li>
                 </ul>
@@ -83,23 +84,36 @@
             <div class="mission-box">
                 <div class="mission-tag">Terrain Requirement</div>
                 <div id="missionText" class="mission-text">Loading terrain data...</div>
-                <div class="target-readout">Target Ratio (Driver : Driven) — <span id="targetReadout">3 : 2</span></div>
+                <div class="target-readout">Target Ratio (Driver : Driven) — <span id="targetReadout">3 : 2</span> <span class="tolerance-note">Tolerance: ±0.06</span></div>
             </div>
 
-            <!-- Gear Selection Panel -->
+            <!-- Interlocking Gear Dial Panel -->
             <div class="gear-panel">
-                <div class="gear-row">
-                    <div class="gear-row-label">DRIVER GEAR</div>
-                    <div id="driverButtons" class="gear-buttons"></div>
+                <div class="dial-mech-row">
+                    <div class="dial-column">
+                        <div class="dial-label">🎛️ RATIO DIAL — drag or use arrow keys</div>
+                        <div id="ratioDial" class="ratio-dial" tabindex="0" role="slider" aria-label="Gear ratio dial" aria-valuemin="0.2" aria-valuemax="3.4" aria-valuenow="0.2">
+                            <div class="dial-face">
+                                <span class="dial-tick dial-tick-min">MIN</span>
+                                <span class="dial-tick dial-tick-max">MAX</span>
+                                <div id="dialNeedle" class="dial-needle"></div>
+                                <div class="dial-hub">⚙️</div>
+                            </div>
+                        </div>
+                        <div class="live-readout">
+                            Dialed Ratio: <span id="achievedReadout">0.20</span>
+                            <span id="matchBadge" class="match-badge"></span>
+                        </div>
+                    </div>
+                    <div class="gear-column">
+                        <svg id="gearSvg" class="gear-svg" viewBox="0 0 260 160" aria-hidden="true">
+                            <g id="driverGearGroup"><g id="driverGearSpin"></g></g>
+                            <g id="drivenGearGroup"><g id="drivenGearSpin"></g></g>
+                        </svg>
+                        <div class="gear-caption">Watch the mesh — it spins live as you twist the dial.</div>
+                    </div>
                 </div>
-                <div class="gear-row">
-                    <div class="gear-row-label">DRIVEN GEAR</div>
-                    <div id="drivenButtons" class="gear-buttons"></div>
-                </div>
-                <div class="live-readout">
-                    Achieved Ratio: <span id="achievedReadout">— : —</span>
-                </div>
-                <button class="fire-btn" onclick="engageGearTrain()">ENGAGE GEAR TRAIN ⚙️</button>
+                <button class="fire-btn" id="engageBtn" onclick="engageGearTrain()">ENGAGE DRIVE ⚙️</button>
                 <div id="feedbackLine" class="feedback-line"></div>
             </div>
         </div>

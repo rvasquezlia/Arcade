@@ -218,9 +218,13 @@ body {
 
 .numberline-host {
     width: 100%;
-    cursor: pointer;
+    cursor: grab;
     user-select: none;
     touch-action: none;
+}
+
+.numberline-host.dragging {
+    cursor: grabbing;
 }
 
 .numberline-host svg {
@@ -229,48 +233,69 @@ body {
     display: block;
 }
 
-/* Toggle Controls */
-.toggle-controls {
+/* Grumpy Inspector Commentary */
+.inspector-panel {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+    align-items: flex-start;
+    gap: 14px;
     margin-bottom: 18px;
 }
 
-.toggle-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.inspector-avatar {
+    font-size: 2.4rem;
+    line-height: 1;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px var(--shadow-color));
 }
 
-.toggle-group-label {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-}
-
-.toggle-btn {
+.inspector-bubble {
+    position: relative;
     background: var(--card-bg);
-    color: var(--text-primary);
     border: 2px solid var(--border-color);
-    padding: 9px 16px;
-    border-radius: 6px;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 600;
+    flex: 1;
+    min-height: 20px;
+    color: var(--text-primary);
+}
+
+.inspector-bubble::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 16px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid var(--border-color);
+}
+
+.inspector-bubble.mood-idle {
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.inspector-bubble.mood-success {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+.inspector-bubble.mood-error {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+.inspector-final-line {
     font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 0.85rem;
-    cursor: pointer;
-}
-
-.toggle-btn:hover {
-    border-color: var(--accent-amber);
-}
-
-.toggle-btn.active {
-    background: var(--accent-amber);
-    border-color: var(--accent-amber);
-    color: #1a1300;
+    font-style: italic;
+    color: var(--text-secondary);
+    max-width: 620px;
+    margin: 0 0 16px;
+    font-size: 0.9rem;
 }
 
 /* Certify Button */

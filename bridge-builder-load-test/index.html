@@ -47,11 +47,11 @@
             <p class="blueprint-subtitle">Structural Drafting Table // Adding &amp; Subtracting Fractions</p>
 
             <div class="brief-box">
-                <p style="margin-bottom: 10px;"><strong>SITE ENGINEER INSTRUCTIONS:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>📋 FOREMAN'S SITE BRIEFING:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Solve 12 beam-span calculations by adding or subtracting fractional beam lengths with unlike denominators.</li>
-                    <li><strong>Structural Integrity:</strong> You start with 3 Integrity Points. Each incorrect span calculation costs 1 point. Losing all 3 collapses the bridge.</li>
-                    <li><strong>Blueprint Randomization:</strong> Beam problems and answer choices are shuffled at the start of every build.</li>
+                    <li><strong>Objective:</strong> Solve 12 beam-span calculations, then <strong>drag</strong> fraction-labeled beam segments out of the Supply Yard and fit them into the gap so the total length matches the required span <em>exactly</em>.</li>
+                    <li><strong>The Catch:</strong> Every Supply Yard has a couple of decoy segments mixed in that do NOT belong in the beam. Choose poorly and the beam sags (too short) or cracks (too long).</li>
+                    <li><strong>Structural Integrity:</strong> You start with 3 Integrity Points. Each failed load test costs 1 point. Lose all 3 and the whole bridge collapses.</li>
                     <li><strong>Session Memory:</strong> This drafting table only holds progress in active memory. Reloading the page clears the blueprint completely.</li>
                 </ul>
             </div>
@@ -85,23 +85,41 @@
                 </div>
             </div>
 
-            <!-- Bridge Span Visual -->
-            <div class="bridge-visual">
-                <div class="bridge-pier"></div>
-                <div class="bridge-gap">
-                    <span id="beamEmojiRow">🪵</span>
-                </div>
-                <div class="bridge-pier"></div>
-            </div>
-
             <!-- Question Box -->
             <div class="span-card">
-                <div class="span-tag">Structural Load Calculation</div>
+                <div class="span-tag">📐 Structural Load Calculation</div>
                 <div id="spanText" class="span-text">Loading beam data...</div>
+                <div class="foreman-note">🦺 Foreman: "Work out the exact span first. Then build it below — don't make me come over there."</div>
             </div>
 
-            <!-- Option Choices -->
-            <div id="optionsGrid" class="options-grid"></div>
+            <!-- Interactive Bridge Rig -->
+            <div id="beamRig" class="beam-rig">
+                <div class="rig-pier">🏛️</div>
+                <div class="gap-zone">
+                    <div id="gapTrack" class="gap-track"></div>
+                </div>
+                <div class="rig-pier">🏛️</div>
+            </div>
+
+            <!-- Load Meter -->
+            <div class="fill-meter">
+                <div id="fillBar" class="fill-bar-inner"></div>
+                <div class="target-tick"></div>
+            </div>
+
+            <div class="readout-row">
+                <div class="readout-chip">Current Total: <span id="totalReadout">0</span></div>
+                <div class="readout-chip">Required Span: <span id="targetReadout">—</span></div>
+            </div>
+
+            <!-- Supply Yard -->
+            <div class="panel-label">🧰 Supply Yard <span class="panel-hint">— drag segments into the gap above</span></div>
+            <div id="supplyYard" class="supply-yard"></div>
+
+            <div class="control-row">
+                <button type="button" class="secondary-btn" onclick="clearGap()">↺ Clear Gap</button>
+                <button type="button" class="action-btn" id="testLoadBtn" onclick="testLoad()">🔧 TEST LOAD</button>
+            </div>
 
             <div id="feedbackLine" class="feedback-line"></div>
         </div>
@@ -110,7 +128,7 @@
         <div id="failScreen" class="screen-center" style="display: none;">
             <div class="hero-icon">💥</div>
             <h1 class="blueprint-title" style="color: var(--accent-red);">BRIDGE COLLAPSE</h1>
-            <p class="blueprint-subtitle">Your structural integrity rating dropped to zero.</p>
+            <p class="blueprint-subtitle">Your structural integrity rating dropped to zero. The foreman is filing paperwork.</p>
             <p style="font-family: var(--mono-font); margin-bottom: 16px;">Final Span Score: <span id="failScore">0</span> PTS</p>
 
             <div class="kit-submission-card">
@@ -126,10 +144,10 @@
         <div id="victoryScreen" class="screen-center" style="display: none;">
             <div class="hero-icon">🌉</div>
             <h1 class="blueprint-title" style="color: var(--accent-blue);">BRIDGE APPROVED</h1>
-            <p class="blueprint-subtitle">Certified Structural Engineer Distinction Awarded</p>
+            <p class="blueprint-subtitle">Certified Structural Engineer Distinction Awarded (the foreman is, dare we say, impressed)</p>
 
             <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
-                Excellent work! You correctly calculated all 12 beam spans, combining and comparing fractional lengths with unlike denominators to pass every load test.
+                Excellent work! You correctly calculated all 12 beam spans and drag-fit every segment perfectly — no sagging, no cracking, no sandwiches lost in the gap.
             </p>
 
             <div class="score-readout">

@@ -35,15 +35,16 @@
             <div class="brief-box">
                 <p style="margin-bottom: 10px;"><strong>WEIGH STATION PROCEDURE:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Solve each two-step inequality for the load variable <code>x</code>, then plot the full solution on the interactive weight scale — the boundary point, an open or closed circle, and the correct shading direction.</li>
-                    <li><strong>Bridge Strain:</strong> You begin with 3 Structural Strain points. Any incomplete or incorrect solution drains 1 point. Lose all 3 and the bridge closes to traffic.</li>
+                    <li><strong>Objective:</strong> Solve each two-step inequality for the load variable <code>x</code>, then build the full solution graph yourself: <strong>drag</strong> across the scale to shade the correct ray, and <strong>tap the boundary marker</strong> to flip it open or closed to match.</li>
+                    <li><strong>Your Judge:</strong> Inspector Gruff has weighed ten thousand trucks and trusts none of them. He checks every graph personally — impress him, or hear about it.</li>
+                    <li><strong>Bridge Strain:</strong> You begin with 3 Structural Strain points. Any incomplete or incorrect graph drains 1 point. Lose all 3 and the bridge closes to traffic.</li>
                     <li><strong>Convoy Randomization:</strong> Trucks are pulled from a larger inequality bank and shuffled every session.</li>
                     <li><strong>Progress Disclaimer:</strong> This terminal holds session memory only. Reloading or leaving the page wipes the weigh log completely.</li>
                 </ul>
             </div>
 
             <div class="kit-name-field">
-                <label class="kit-name-label" for="playerNameInput">🧑‍✈️ Inspector Name:</label>
+                <label class="kit-name-label" for="playerNameInput">🚚 Driver Name:</label>
                 <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
                 <div class="kit-name-error" id="playerNameError">Please enter your name before opening the station!</div>
             </div>
@@ -70,6 +71,12 @@
                     </div>
                 </div>
 
+                <!-- Grumpy Inspector Commentary -->
+                <div class="inspector-panel">
+                    <div class="inspector-avatar" id="inspectorAvatar">🧐</div>
+                    <div class="inspector-bubble mood-idle" id="inspectorBubble">Let's see what you've got, driver...</div>
+                </div>
+
                 <!-- Inequality Readout Card -->
                 <div class="weigh-card">
                     <div class="weigh-tag">Weigh Station Readout — Solve for x</div>
@@ -78,25 +85,11 @@
 
                 <!-- Interactive Number Line -->
                 <div class="numberline-wrapper">
-                    <div class="numberline-tag">Plot the Solution Set (click the scale to move the marker)</div>
+                    <div class="numberline-tag">Drag the scale to shade the solution ray &nbsp;•&nbsp; Tap the marker to flip Open ↔ Closed</div>
                     <div id="numberLineHost" class="numberline-host"></div>
                 </div>
 
-                <!-- Toggle Controls -->
-                <div class="toggle-controls">
-                    <div class="toggle-group">
-                        <span class="toggle-group-label">Circle:</span>
-                        <button id="openBtn" class="toggle-btn" onclick="setOpenClosed('open')">○ OPEN</button>
-                        <button id="closedBtn" class="toggle-btn" onclick="setOpenClosed('closed')">● CLOSED</button>
-                    </div>
-                    <div class="toggle-group">
-                        <span class="toggle-group-label">Shade:</span>
-                        <button id="leftBtn" class="toggle-btn" onclick="setDirection('left')">← LEFT</button>
-                        <button id="rightBtn" class="toggle-btn" onclick="setDirection('right')">RIGHT →</button>
-                    </div>
-                </div>
-
-                <button class="certify-btn" onclick="certifySolution()">CERTIFY & CLEAR TRUCK</button>
+                <button class="certify-btn" onclick="inspectCargo()">🔍 INSPECT CARGO</button>
             </div>
 
             <div id="feedbackLine" class="feedback-line"></div>
@@ -108,9 +101,10 @@
             <h1 class="station-title" style="color: var(--accent-red);">BRIDGE CLOSED</h1>
             <p class="station-subtitle">Structural strain reached zero — no more trucks may cross.</p>
             <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Weigh Score: <span id="failScore">0</span> PTS</p>
+            <p class="inspector-final-line" id="failInspectorLine">"..."</p>
 
             <div class="kit-submission-card">
-                <div class="kit-player-line">🧑‍✈️ Inspector: <span id="playerNameDisplayFail">Student</span></div>
+                <div class="kit-player-line">🚚 Driver: <span id="playerNameDisplayFail">Student</span></div>
                 <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher your attempt.</p>
                 <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'freight-truck-weight-limit', playerName: playerName, score: score})">📸 Save Screenshot</button>
             </div>
@@ -131,9 +125,10 @@
             <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px;">
                 Total Score: <span id="victoryScore" style="color: var(--accent-green);">1200</span> PTS
             </div>
+            <p class="inspector-final-line" id="winInspectorLine">"..."</p>
 
             <div class="kit-submission-card">
-                <div class="kit-player-line">🧑‍✈️ Inspector: <span id="playerNameDisplayWin">Student</span></div>
+                <div class="kit-player-line">🚚 Driver: <span id="playerNameDisplayWin">Student</span></div>
                 <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
                 <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'freight-truck-weight-limit', playerName: playerName, score: score})">📸 Save Screenshot</button>
             </div>

@@ -3,28 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Particle Accelerator Collision: Containment Sort</title>
+    <title>Particle Accelerator Collision: Containment Catch</title>
 
     <!-- Google Fonts for Particle Physics Aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Exo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <!-- MathJax 3 Engine Configuration and Script -->
-    <script>
-      window.MathJax = {
-        tex: {
-          inlineMath: [['\\(', '\\)']],
-          displayMath: [['$$', '$$']]
-        },
-        startup: {
-          pageReady: () => {
-            return MathJax.startup.defaultPageReady();
-          }
-        }
-      };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../shared/arcade-kit.css">
@@ -46,14 +30,16 @@
         <div id="startScreen" class="screen-center">
             <div class="facility-icon">⚛️</div>
             <h1 class="facility-title">Particle Accelerator Collision</h1>
-            <p class="facility-subtitle">Rational vs. Irrational Containment Facility</p>
+            <p class="facility-subtitle">Rational vs. Irrational Containment Facility — Catcher Mode</p>
 
             <div class="brief-box">
-                <p style="margin-bottom: 10px;"><strong>CONTAINMENT PROTOCOL:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>CONTAINMENT PROTOCOL (Catcher Mode):</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Particles stream through the beam pipe one at a time. Sort each numeric value into the <strong>RATIONAL</strong> or <strong>IRRATIONAL</strong> containment chamber before the next collision cycle.</li>
-                    <li><strong>Containment Integrity:</strong> You begin with 3 Integrity Points. Every misclassified particle drains 1 point. Lose all 3 and the beam destabilizes.</li>
-                    <li><strong>Beam Randomization:</strong> The particle sequence is shuffled from a larger data bank every run — no two sessions match.</li>
+                    <li><strong>Objective:</strong> Numbered particles drop from the top of the beam pipe. Slide the containment collector to catch each one in its correct chamber — 🟢 <strong>RATIONAL</strong> on the left, 🟣 <strong>IRRATIONAL</strong> on the right — before it slips past.</li>
+                    <li><strong>Controls:</strong> <kbd>←</kbd> / <kbd>A</kbd> to slide left, <kbd>→</kbd> / <kbd>D</kbd> to slide right, or just drag/tap the collector directly. Basically bumper cars, but with number theory.</li>
+                    <li><strong>Containment Integrity:</strong> You begin with 5 Integrity Points. A wrong-chamber catch OR a particle that hits the floor uncaught drains 1 point. Lose all 5 and the beam destabilizes.</li>
+                    <li><strong>Speed Ramp:</strong> The particle stream accelerates the longer the run goes. Physics does not slow down for anybody, including you.</li>
+                    <li><strong>Win Condition:</strong> Correctly contain 12 particles to stabilize the beam.</li>
                     <li><strong>Progress Disclaimer:</strong> This terminal holds session memory only. Reloading or leaving the page wipes the containment log completely.</li>
                 </ul>
             </div>
@@ -73,12 +59,12 @@
                 <!-- Status HUD Bar -->
                 <div class="status-bar">
                     <div class="status-item">
-                        <span class="status-label">Particle</span>
-                        <span id="roundCounter" class="status-value">1 / 12</span>
+                        <span class="status-label">Caught</span>
+                        <span id="roundCounter" class="status-value">0 / 12</span>
                     </div>
                     <div class="status-item">
                         <span class="status-label">Integrity</span>
-                        <span id="integrityDisplay" class="status-value">3 / 3</span>
+                        <span id="integrityDisplay" class="status-value">5 / 5</span>
                     </div>
                     <div class="status-item">
                         <span class="status-label">Score</span>
@@ -86,23 +72,12 @@
                     </div>
                 </div>
 
-                <!-- Beam Pipe / Particle Display -->
-                <div class="beam-pipe">
-                    <div class="beam-pipe-tag">Incoming Particle Value</div>
-                    <div id="particleValue" class="particle-value">Loading particle stream...</div>
+                <!-- Falling Particle Catcher Playfield -->
+                <div class="playfield-wrap">
+                    <canvas id="gameCanvas"></canvas>
                 </div>
 
-                <!-- Chamber Sorting Buttons -->
-                <div class="chamber-grid">
-                    <button id="rationalBtn" class="chamber-btn chamber-rational" onclick="sortParticle(true, this)">
-                        <span class="chamber-icon">🟢</span>
-                        <span class="chamber-label">RATIONAL<br><small>Terminates, repeats, or is a fraction of integers</small></span>
-                    </button>
-                    <button id="irrationalBtn" class="chamber-btn chamber-irrational" onclick="sortParticle(false, this)">
-                        <span class="chamber-icon">🟣</span>
-                        <span class="chamber-label">IRRATIONAL<br><small>Never-ending, never-repeating decimal</small></span>
-                    </button>
-                </div>
+                <p class="controls-hint">🎮 <strong>←</strong>/<strong>A</strong> slide left &nbsp;•&nbsp; <strong>→</strong>/<strong>D</strong> slide right &nbsp;•&nbsp; or drag the collector directly</p>
             </div>
 
             <div id="feedbackLine" class="feedback-line"></div>
@@ -112,7 +87,7 @@
         <div id="failScreen" class="screen-center" style="display: none;">
             <div class="facility-icon">💥</div>
             <h1 class="facility-title" style="color: var(--accent-red);">CONTAINMENT BREACH</h1>
-            <p class="facility-subtitle">Integrity dropped to zero — the beam collision could not be prevented.</p>
+            <p class="facility-subtitle">Dr. Beaker screams into a beaker. Integrity hit zero before the beam could be stabilized.</p>
             <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Sort Score: <span id="failScore">0</span> PTS</p>
 
             <div class="kit-submission-card">
@@ -128,10 +103,10 @@
         <div id="victoryScreen" class="screen-center" style="display: none;">
             <div class="facility-icon">🛰️</div>
             <h1 class="facility-title" style="color: var(--accent-gold);">BEAM STABILIZED</h1>
-            <p class="facility-subtitle">Master Classification Distinction Awarded</p>
+            <p class="facility-subtitle">Master Classification Distinction Awarded — the intern owes you a coffee.</p>
 
             <p style="font-size: 1.05rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
-                Outstanding sorting precision! Every particle was routed to the correct containment chamber before the beam could collide.
+                Every particle you caught landed exactly where it belonged. The physics department is filing this under "suspiciously good at math."
             </p>
 
             <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px;">
