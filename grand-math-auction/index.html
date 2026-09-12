@@ -52,9 +52,11 @@
                 <p style="margin-bottom: 8px;"><strong>Auction Rules & Protocol:</strong></p>
                 <ul style="padding-left: 20px;">
                     <li>💰 <strong>Starting Capital:</strong> You enter the auction hall with <strong>$1,000</strong>.</li>
-                    <li>🔨 <strong>Place Your Bid:</strong> For each item, select your bid amount ($100, $250, $500, or ALL-IN) before submitting your answer.</li>
-                    <li>📈 <strong>High Returns:</strong> Correct answers yield <strong>+150%</strong> return on your bid!</li>
-                    <li>📉 <strong>Market Risk:</strong> Wrong answers forfeit your bid. If your capital drops to $0, you go Bankrupt!</li>
+                    <li>🔨 <strong>Open the Bidding:</strong> Pick an opening wager ($100, $250, $500, or ALL-IN) — the item stays <em>sealed</em> until the gavel falls.</li>
+                    <li>🥊 <strong>Live Rival Bidding:</strong> Two rival bidders may jump in and raise against you <em>before</em> you ever see the question. Raise right back or walk away — no penalty for folding!</li>
+                    <li>🔒 <strong>The Reveal:</strong> Once the bid is locked, the math item is revealed and you type in your answer — no multiple choice, just your brainpower.</li>
+                    <li>📈 <strong>High Returns:</strong> A correct answer yields <strong>+150%</strong> return on your <em>final committed bid</em>!</li>
+                    <li>📉 <strong>Market Risk:</strong> A wrong answer forfeits that bid. If your capital drops to $0, you go Bankrupt!</li>
                     <li>⚠️ <strong>Session Disclaimer:</strong> Progress is live only. Refreshing the browser resets your capital and restarts the auction from Lot 1.</li>
                 </ul>
             </div>
@@ -89,28 +91,70 @@
                     </div>
                 </div>
 
-                <!-- Bidding Amount Selector -->
-                <div class="bid-selector">
-                    <span class="bid-label">SELECT BID WAGER:</span>
-                    <div class="bid-buttons">
-                        <button class="bid-chip active" onclick="selectBid(100, this)">$100</button>
-                        <button class="bid-chip" onclick="selectBid(250, this)">$250</button>
-                        <button class="bid-chip" onclick="selectBid(500, this)">$500</button>
-                        <button class="bid-chip" onclick="selectBid('ALL', this)">ALL-IN 🔥</button>
+                <!-- Auctioneer Flavor Chatter -->
+                <div id="auctioneerChatter" class="auctioneer-chatter">🔨 Welcome to the floor, bidders! Fortunes are made and lost right here.</div>
+
+                <!-- PHASE 1: Opening Bid (item still sealed) -->
+                <div id="openingPhase" class="phase-panel">
+                    <div class="sealed-lot-box">
+                        <span class="lot-tag">Item Description</span>
+                        <p>🔒 This lot is sealed! Place your opening bid to bring it to the floor — you won't see the question until the gavel falls.</p>
+                    </div>
+
+                    <div class="bid-selector">
+                        <span class="bid-label">SELECT OPENING WAGER:</span>
+                        <div class="bid-buttons">
+                            <button class="bid-chip active" onclick="selectBid(100, this)">$100</button>
+                            <button class="bid-chip" onclick="selectBid(250, this)">$250</button>
+                            <button class="bid-chip" onclick="selectBid(500, this)">$500</button>
+                            <button class="bid-chip" onclick="selectBid('ALL', this)">ALL-IN 🔥</button>
+                        </div>
+                    </div>
+
+                    <button class="gold-button" id="placeBidBtn" onclick="placeOpeningBid()">PLACE OPENING BID 🔨</button>
+                </div>
+
+                <!-- PHASE 2: Live Rival Bidding War -->
+                <div id="warPhase" class="phase-panel" style="display: none;">
+                    <div class="rival-row">
+                        <div class="rival-card" id="rivalCard-pete">
+                            <span class="rival-emoji">🪙</span>
+                            <span class="rival-name">Penny-Pinching Pete</span>
+                            <span class="rival-tagline">Counts every nickel twice.</span>
+                            <span class="rival-status" id="rivalStatus-pete">Watching the floor...</span>
+                        </div>
+                        <div class="rival-card" id="rivalCard-rhonda">
+                            <span class="rival-emoji">🎩</span>
+                            <span class="rival-name">Reckless Rhonda Vance</span>
+                            <span class="rival-tagline">Bids first, budgets never.</span>
+                            <span class="rival-status" id="rivalStatus-rhonda">Watching the floor...</span>
+                        </div>
+                    </div>
+
+                    <div class="war-bid-display">Top Bid on the Floor: <span id="warTopBid">$100</span></div>
+
+                    <div id="warDecision" style="display: none;">
+                        <div class="war-countdown">⏱️ Respond in <span id="warCountdownNum">15</span>s or you'll auto-fold!</div>
+                        <div class="war-timer-track"><div id="warTimerBar" class="war-timer-fill"></div></div>
+                        <div class="war-buttons">
+                            <button class="gold-button" id="raiseBidBtn" onclick="playerRaise()">RAISE MY BID 💪</button>
+                            <button class="gold-button walk-away-btn" id="walkAwayBtn" onclick="playerWalkAway()">WALK AWAY 🚪</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Math Lot Question Box -->
-                <div class="lot-box">
-                    <span class="lot-tag">Item Description</span>
-                    <div id="lotQuestionText" style="margin-top: 6px;">
-                        Loading item specifications...
+                <!-- PHASE 3: The Reveal + Typed Answer -->
+                <div id="questionPhase" class="phase-panel" style="display: none;">
+                    <div class="lot-box">
+                        <span class="lot-tag">Final Item Reveal</span>
+                        <div id="lotQuestionText" style="margin-top: 6px;"></div>
                     </div>
-                </div>
 
-                <!-- Answer Options Grid -->
-                <div id="optionsGrid" class="options-grid">
-                    <!-- Buttons generated dynamically -->
+                    <div class="answer-row">
+                        <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer..." autocomplete="off" onkeydown="if (event.key === 'Enter') submitAnswer();">
+                        <button class="gold-button" id="submitAnswerBtn" onclick="submitAnswer()">LOCK IN ANSWER 🔨</button>
+                    </div>
+                    <div class="kit-name-error" id="answerError" style="display: none;">Type an answer before locking it in!</div>
                 </div>
             </div>
 

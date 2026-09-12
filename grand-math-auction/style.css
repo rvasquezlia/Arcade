@@ -350,6 +350,207 @@
             font-weight: 600;
         }
 
+        /* ============================================================
+           Live Rival Bidding — new mechanic styling
+           ============================================================ */
+
+        .auctioneer-chatter {
+            background: var(--input-bg);
+            border: 1px dashed var(--gold-primary);
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            color: var(--gold-primary);
+            min-height: 24px;
+        }
+
+        @keyframes chatterPulse {
+            0% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        .chatter-pulse {
+            animation: chatterPulse 0.28s ease-out;
+        }
+
+        .phase-panel {
+            display: block;
+        }
+
+        .sealed-lot-box {
+            background: var(--input-bg);
+            border: 2px dashed var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            position: relative;
+            text-align: center;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .rival-row {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        @media (max-width: 640px) {
+            .rival-row { flex-direction: column; }
+        }
+
+        .rival-card {
+            flex: 1;
+            background: var(--input-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 4px;
+        }
+
+        .rival-emoji {
+            font-size: 2rem;
+        }
+
+        .rival-name {
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--gold-primary);
+        }
+
+        .rival-tagline {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            font-style: italic;
+        }
+
+        .rival-status {
+            margin-top: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .rival-card.rival-acting {
+            border-color: var(--rose-red);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .rival-card.rival-acting .rival-status {
+            color: var(--rose-red);
+        }
+
+        .rival-card.rival-passed {
+            opacity: 0.55;
+        }
+
+        .rival-card.rival-passed .rival-status {
+            color: var(--text-sub);
+        }
+
+        .war-bid-display {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--gold-primary);
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 18px;
+        }
+
+        .war-countdown {
+            text-align: center;
+            font-weight: 700;
+            color: var(--rose-red);
+            margin-bottom: 8px;
+        }
+
+        .war-timer-track {
+            width: 100%;
+            height: 10px;
+            background: var(--card-border);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .war-timer-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--emerald-green), var(--gold-primary), var(--rose-red));
+            transition: width 1s linear;
+        }
+
+        .war-buttons {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .war-buttons .gold-button {
+            margin-top: 0;
+        }
+
+        .walk-away-btn {
+            background: transparent;
+            border: 2px solid var(--rose-red);
+            color: var(--rose-red);
+            box-shadow: none;
+        }
+
+        .walk-away-btn:hover {
+            background: var(--rose-red);
+            color: #ffffff;
+        }
+
+        .answer-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 640px) {
+            .answer-row { flex-direction: column; }
+        }
+
+        .answer-input {
+            flex: 1;
+            font: inherit;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 2px solid var(--card-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .answer-input:focus-visible {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .answer-row .gold-button {
+            margin-top: 0;
+            white-space: nowrap;
+        }
+
+        .msg-neutral { color: var(--text-sub); }
+
         footer {
             margin-top: 24px;
             font-size: 0.85rem;
