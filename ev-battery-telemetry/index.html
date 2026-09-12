@@ -45,58 +45,71 @@
         <!-- 1. START SCREEN -->
         <div id="startScreen" class="screen-center">
             <h1 class="dash-title">🔋 EV Battery Telemetry</h1>
-            <p class="dash-subtitle">Function Diagnostics Console // Domain &amp; Range Calibration</p>
+            <p class="dash-subtitle">Road-Trip Range Dashboard // Domain &amp; Range Calibration</p>
 
             <div class="brief-box">
-                <p style="margin-bottom: 10px;"><strong>ENGINEER BRIEFING:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>NAVIGATOR BRIEFING:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Diagnose the vehicle's battery discharge function \( f(x) \) across 12 telemetry readings — evaluating outputs and identifying valid domain &amp; range limits.</li>
-                    <li><strong>Battery Cells:</strong> You start with 3 Diagnostic Cells. Each incorrect reading drains 1 cell. Losing all 3 shuts down the console.</li>
-                    <li><strong>Telemetry Randomization:</strong> Readings and answer choices are shuffled every diagnostic session.</li>
-                    <li><strong>Session Memory:</strong> This console holds data only in active memory. Reloading the page resets the diagnostic log completely.</li>
+                    <li><strong>Objective:</strong> Drive across 12 checkpoints while diagnosing the vehicle's battery discharge function \( f(x) \) — typing in evaluated readings and dragging out valid domain &amp; range zones.</li>
+                    <li><strong>Range Gauge:</strong> Your charge drains in real time while you compute. A correct reading refuels the gauge and rolls the car to the next checkpoint; a wrong one drains it further. Empty gauge = stranded.</li>
+                    <li><strong>Telemetry Randomization:</strong> Checkpoints are shuffled every trip, so no two drives are the same.</li>
+                    <li><strong>Session Memory:</strong> This console holds data only in active memory. Reloading the page resets the trip completely.</li>
                 </ul>
             </div>
 
             <div class="kit-name-field">
                 <label class="kit-name-label" for="playerNameInput">🧑‍🎓 Enter Your Name:</label>
                 <input type="text" id="playerNameInput" class="kit-name-input" placeholder="Type your name here..." maxlength="40" autocomplete="off">
-                <div class="kit-name-error" id="playerNameError">Please enter your name before starting the console!</div>
+                <div class="kit-name-error" id="playerNameError">Please enter your name before starting the trip!</div>
             </div>
 
-            <button class="action-btn" onclick="startDiagnostics()">BOOT DIAGNOSTIC CONSOLE</button>
+            <button class="action-btn" onclick="startTrip()">START THE ROAD TRIP</button>
         </div>
 
         <!-- 2. GAMEPLAY SCREEN -->
         <div id="gameScreen" style="display: none;">
             <div>
-                <h2 id="readingHeader" class="dash-title" style="font-size: 1.35rem; text-align: left;">Reading #1: Discharge Curve</h2>
+                <h2 id="roadHeader" class="dash-title" style="font-size: 1.35rem; text-align: left;">Checkpoint 1: Discharge Curve</h2>
 
                 <!-- Status HUD Bar -->
                 <div class="status-bar">
                     <div class="status-item">
-                        <span class="status-label">Reading:</span>
-                        <span id="readingCounter" class="status-value">1 / 12</span>
+                        <span class="status-label">Checkpoint:</span>
+                        <span id="checkpointCounter" class="status-value">1 / 12</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Battery Cells:</span>
-                        <span id="livesDisplay" class="status-value">🔋🔋🔋</span>
+                        <span class="status-label">Range:</span>
+                        <span id="gaugePercentLabel" class="status-value">100%</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Diagnostic Score:</span>
+                        <span class="status-label">Score:</span>
                         <span id="scoreDisplay" class="status-value">0 PTS</span>
                     </div>
                 </div>
 
-                <!-- Function Mapping Diagram -->
-                <div class="mapping-diagram">
+                <!-- Range Gauge -->
+                <div class="gauge-outer">
+                    <div id="gaugeFill" class="gauge-fill" style="width: 100%;"></div>
+                </div>
+
+                <!-- Road / Car Sprite -->
+                <div class="road-wrap">
+                    <div class="road-track">
+                        <div class="checkpoint-flags" id="checkpointFlags"></div>
+                        <div id="carSprite" class="car-sprite">🚗</div>
+                    </div>
+                </div>
+
+                <!-- Function Mapping Diagram (evaluate rounds only) -->
+                <div id="mapDiagram" class="mapping-diagram">
                     <div class="map-node">
                         <span class="map-label">INPUT</span>
-                        <span id="mapInput" class="map-value">x</span>
+                        <span id="mapInputVal" class="map-value">x</span>
                     </div>
                     <div class="map-arrow">➜ f(x) ➜</div>
                     <div class="map-node">
                         <span class="map-label">OUTPUT</span>
-                        <span id="mapOutput" class="map-value">?</span>
+                        <span id="mapOutputVal" class="map-value">?</span>
                     </div>
                 </div>
 
@@ -108,20 +121,22 @@
                     </div>
                 </div>
 
-                <!-- Option Choices Grid -->
-                <div id="optionsGrid" class="options-grid">
-                    <!-- Dynamic option buttons -->
+                <!-- Dynamic Answer Zone: numeric input, number-line drag, or concept MC -->
+                <div id="answerZone" class="answer-zone">
+                    <!-- Populated per-checkpoint by script.js -->
                 </div>
             </div>
 
             <div id="feedbackLine" class="feedback-line"></div>
+            <div id="navigatorQuip" class="quip-line"></div>
         </div>
 
         <!-- 3. SYSTEM SHUTDOWN / FAIL SCREEN -->
         <div id="failScreen" class="screen-center" style="display: none;">
-            <h1 class="dash-title" style="color: var(--accent-red);">CONSOLE SHUTDOWN // CELLS DEPLETED</h1>
-            <p class="dash-subtitle">All 3 diagnostic cells were drained by incorrect readings.</p>
-            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Diagnostic Score: <span id="failScore">0</span> PTS</p>
+            <h1 class="dash-title" style="color: var(--accent-red);">STRANDED // RANGE DEPLETED</h1>
+            <p class="dash-subtitle">The range gauge ran dry somewhere between checkpoints.</p>
+            <p id="failQuip" class="quip-line" style="margin-bottom: 10px;"></p>
+            <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Score: <span id="failScore">0</span> PTS</p>
 
             <div class="kit-submission-card">
                 <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
@@ -129,20 +144,21 @@
                 <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('failScreen', {buttonEl: this, gameSlug: 'ev-battery-telemetry', playerName: playerName, score: score})">📸 Save Screenshot</button>
             </div>
 
-            <button class="action-btn" style="background: var(--accent-red);" onclick="restartDiagnostics()">RECHARGE &amp; REBOOT</button>
+            <button class="action-btn" style="background: var(--accent-red);" onclick="restartTrip()">RECHARGE &amp; REBOOT</button>
         </div>
 
         <!-- 4. VICTORY SCREEN -->
         <div id="victoryScreen" class="screen-center" style="display: none;">
-            <h1 class="dash-title" style="color: var(--accent-green);">FULL SYSTEM DIAGNOSTIC PASSED</h1>
-            <p class="dash-subtitle">Certified Function &amp; Domain/Range Specialist</p>
+            <h1 class="dash-title" style="color: var(--accent-green);">DESTINATION REACHED</h1>
+            <p class="dash-subtitle">Certified Function &amp; Domain/Range Road-Trip Specialist</p>
+            <p id="victoryQuip" class="quip-line" style="margin-bottom: 10px;"></p>
 
             <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
-                Excellent engineering work! You correctly evaluated every battery discharge function and identified valid domain and range limits across all 12 telemetry readings.
+                Excellent engineering work! You correctly evaluated every battery discharge function and dragged out valid domain and range zones across all 12 checkpoints.
             </p>
 
             <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); margin-bottom: 10px; border-radius: 6px;">
-                Total Diagnostic Score: <span id="victoryScore" style="color: var(--accent-green);">1200</span> PTS
+                Total Score: <span id="victoryScore" style="color: var(--accent-green);">1200</span> PTS
             </div>
 
             <div class="kit-submission-card">
@@ -151,7 +167,7 @@
                 <button class="kit-screenshot-btn" id="screenshotBtnWin" onclick="ArcadeKit.saveScreenshot('victoryScreen', {buttonEl: this, gameSlug: 'ev-battery-telemetry', playerName: playerName, score: score})">📸 Save Screenshot</button>
             </div>
 
-            <button class="action-btn" onclick="restartDiagnostics()">NEW DIAGNOSTIC SESSION</button>
+            <button class="action-btn" onclick="restartTrip()">NEW ROAD TRIP</button>
         </div>
 
     </div>

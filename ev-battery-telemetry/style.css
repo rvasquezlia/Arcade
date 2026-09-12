@@ -293,6 +293,262 @@
         .text-success { color: var(--accent-green); }
         .text-error { color: var(--accent-red); }
 
+        .quip-line {
+            font-family: var(--font-display);
+            text-align: center;
+            font-size: 0.92rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            min-height: 20px;
+        }
+
+        /* ---- Range gauge ---- */
+        .gauge-outer {
+            width: 100%;
+            height: 16px;
+            background: var(--panel-sunken);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            background: var(--accent-teal);
+            border-radius: 999px;
+            transition: width 0.15s linear, background-color 0.3s ease;
+        }
+
+        .gauge-fill.warn { background: var(--accent-amber); }
+
+        .gauge-fill.critical {
+            background: var(--accent-red);
+            animation: gaugePulse 0.9s ease-in-out infinite;
+        }
+
+        @keyframes gaugePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.55; }
+        }
+
+        /* ---- Road / car sprite ---- */
+        .road-wrap {
+            margin-bottom: 18px;
+        }
+
+        .road-track {
+            position: relative;
+            height: 56px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    var(--border-color) 0px,
+                    var(--border-color) 24px,
+                    transparent 24px,
+                    transparent 48px
+                ),
+                var(--panel-sunken);
+            background-size: 100% 2px, 100% 100%;
+            background-position: center;
+            background-repeat: repeat-x, no-repeat;
+            overflow: hidden;
+        }
+
+        .checkpoint-flags {
+            position: absolute;
+            inset: 0;
+        }
+
+        .road-flag {
+            position: absolute;
+            top: 4px;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            opacity: 0.55;
+        }
+
+        .road-flag.passed {
+            opacity: 1;
+            filter: saturate(1.3);
+        }
+
+        .car-sprite {
+            position: absolute;
+            bottom: 6px;
+            left: 0;
+            font-size: 1.7rem;
+            transition: left 0.6s ease;
+            transform: scaleX(-1);
+        }
+
+        /* ---- Typed numeric answer ---- */
+        .numeric-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .numeric-label {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .numeric-input {
+            flex: 1 1 140px;
+            min-width: 100px;
+            font: inherit;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background: var(--kit-input-bg);
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        .numeric-input:focus-visible {
+            border-color: var(--accent-teal);
+        }
+
+        .numeric-submit-btn {
+            margin-top: 0;
+            padding: 12px 22px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .numeric-row { flex-direction: column; align-items: stretch; }
+        }
+
+        /* ---- Number-line drag widget (domain/range + exclusion) ---- */
+        .answer-zone {
+            margin-bottom: 6px;
+        }
+
+        .nline-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .nline-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nline-endlabel {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .nline-track {
+            position: relative;
+            flex: 1 1 auto;
+            height: 48px;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .nline-baseline {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 4px;
+            transform: translateY(-50%);
+            background: var(--border-color);
+            border-radius: 999px;
+        }
+
+        .nline-fill {
+            position: absolute;
+            top: 50%;
+            height: 8px;
+            transform: translateY(-50%);
+            background: var(--accent-teal);
+            border-radius: 999px;
+            opacity: 0.85;
+        }
+
+        .nline-handle {
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: var(--container-bg);
+            border: 3px solid var(--accent-teal);
+            cursor: pointer;
+        }
+
+        .nline-handle.closed {
+            background: var(--accent-teal);
+        }
+
+        .nline-marker {
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: var(--accent-red);
+            border: 3px solid var(--accent-red);
+        }
+
+        .nline-bubble {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 2px 6px;
+            white-space: nowrap;
+        }
+
+        .nline-readout {
+            font-family: var(--font-mono);
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent-teal);
+            margin: 14px 0 8px;
+        }
+
+        .nline-confirm-btn {
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        .nline-confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .screen-center {
             display: flex;
             flex-direction: column;
