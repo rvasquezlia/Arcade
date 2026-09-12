@@ -49,9 +49,12 @@
             <p class="sub-title">8th Grade Algebra Refresher Challenge | Lincoln International Academy</p>
 
             <ul class="instructions-list">
-                <li>🎯 <strong>Goal:</strong> Conquer all 13 math dungeons to escape the cyber grid!</li>
-                <li>❤️ <strong>Health Points (HP):</strong> You start with 3 Hearts. Each wrong answer loses 1 Heart.</li>
-                <li>🔀 <strong>Randomized Challenges:</strong> Questions and answer choices are randomized every round.</li>
+                <li>🎯 <strong>Goal:</strong> Breach all 13 math terminals to escape the cyber grid!</li>
+                <li>⌨️ <strong>Hack the Terminal:</strong> No multiple choice here — type your answer into the keypad and hit HACK IT IN to unlock each terminal.</li>
+                <li>🧩 <strong>Sequence Locks:</strong> A few terminals need you to drag solving-step tiles into the correct order instead of typing.</li>
+                <li>❤️ <strong>Health Points (HP):</strong> You start with 3 Hearts. Each failed hack loses 1 Heart.</li>
+                <li>🤖 <strong>AI Sidekick:</strong> ECHO comments as you go, and drops a hint if a terminal beats you twice.</li>
+                <li>🔀 <strong>Randomized Order:</strong> Terminal order is shuffled every run.</li>
                 <li>📸 <strong>Progress Reporting:</strong> Complete all stages to earn your completion badge.</li>
                 <li>⚠️ <strong>Warning:</strong> Refreshing or leaving the browser will reset your score and force a complete restart!</li>
             </ul>
@@ -83,15 +86,65 @@
                     </div>
                 </div>
 
+                <!-- AI Sidekick Commentary -->
+                <div class="sidekick-bar">
+                    <div class="sidekick-avatar" id="sidekickAvatar">🤖</div>
+                    <div class="sidekick-bubble" id="sidekickBubble">Booting up terminal...</div>
+                </div>
+
                 <!-- Math Problem Card -->
                 <div id="questionBox" class="question-box">
                     Question text will appear here...
                 </div>
 
-                <!-- Answer Choices Options Grid -->
-                <div id="optionsGrid" class="options-grid">
-                    <!-- Dynamic option buttons rendered via JS -->
+                <!-- Hacking Progress Meter -->
+                <div class="hack-progress-wrap">
+                    <div class="hack-progress-label">
+                        <span>🔓 Decryption Progress</span>
+                        <span id="hackProgressPct">0%</span>
+                    </div>
+                    <div class="hack-progress-track">
+                        <div class="hack-progress-bar" id="hackProgressBar"></div>
+                    </div>
                 </div>
+
+                <!-- Typed Keypad Answer Mode -->
+                <div id="typeAnswerWrap" class="type-answer-wrap">
+                    <input type="text" id="answerInput" class="hack-input" placeholder="Type your answer..." autocomplete="off" autocapitalize="off" spellcheck="false">
+                    <div class="keypad-grid" id="keypadGrid">
+                        <button type="button" class="keypad-btn" onclick="keypadPress('7')">7</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('8')">8</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('9')">9</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('/')">/</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('4')">4</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('5')">5</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('6')">6</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('x')">x</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('1')">1</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('2')">2</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('3')">3</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('-')">-</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('0')">0</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('.')">.</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('=')">=</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('%')">%</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('<')">&lt;</button>
+                        <button type="button" class="keypad-btn" onclick="keypadPress('>')">&gt;</button>
+                        <button type="button" class="keypad-btn keypad-del" onclick="keypadPress('DEL')">⌫</button>
+                        <button type="button" class="keypad-btn keypad-clr" onclick="keypadPress('CLR')">CLR</button>
+                    </div>
+                    <button class="hack-submit-btn" id="hackSubmitBtn">🔓 HACK IT IN</button>
+                </div>
+
+                <!-- Drag-to-Reorder Sequence Lock Mode -->
+                <div id="orderAnswerWrap" class="order-answer-wrap" style="display:none;">
+                    <div class="order-tiles" id="orderTiles">
+                        <!-- Draggable step tiles injected via JS -->
+                    </div>
+                    <button class="hack-submit-btn" id="orderSubmitBtn">🔓 LOCK IN SEQUENCE</button>
+                </div>
+
+                <div id="glitchOverlay" class="glitch-overlay"></div>
             </div>
 
             <div id="feedbackBanner" class="feedback-banner"></div>
