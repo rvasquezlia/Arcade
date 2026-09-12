@@ -22,6 +22,12 @@
             --kit-border: var(--border-color);
             --kit-input-bg: var(--container-bg);
             --kit-error: var(--accent-red);
+
+            /* Ratio dial + meshed-gear rig (dark) */
+            --dial-face-bg: #0b0f14;
+            --canvas-bg: #0a0d12;
+            --gear-metal: #4b5563;
+            --gear-metal-driven: #64748b;
         }
 
         body.light-mode {
@@ -46,6 +52,12 @@
             --kit-border: var(--border-color);
             --kit-input-bg: var(--container-bg);
             --kit-error: var(--accent-red);
+
+            /* Ratio dial + meshed-gear rig (light) */
+            --dial-face-bg: #e7e2d3;
+            --canvas-bg: #efece1;
+            --gear-metal: #7c8797;
+            --gear-metal-driven: #9aa6b5;
         }
 
         * {
@@ -254,6 +266,24 @@
             transition: left 0.6s ease;
         }
 
+        @keyframes roverHop {
+            0% { transform: translateY(0) rotate(0deg); }
+            30% { transform: translateY(-16px) rotate(-10deg); }
+            55% { transform: translateY(-2px) rotate(6deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        @keyframes roverStumble {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            20% { transform: translateX(-5px) rotate(-8deg); }
+            40% { transform: translateX(4px) rotate(7deg); }
+            60% { transform: translateX(-4px) rotate(-6deg); }
+            80% { transform: translateX(3px) rotate(4deg); }
+        }
+
+        .rover-icon.hop { animation: roverHop 0.65s ease; }
+        .rover-icon.stumble { animation: roverStumble 0.65s ease; }
+
         .track-goal {
             position: absolute;
             bottom: 8px;
@@ -293,7 +323,14 @@
             color: var(--accent-cyan);
         }
 
-        /* Gear Selection Panel */
+        .tolerance-note {
+            font-family: var(--body-font);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-left: 6px;
+        }
+
+        /* Interlocking Gear Dial Panel */
         .gear-panel {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -301,57 +338,168 @@
             padding: 18px 22px;
         }
 
-        .gear-row {
-            margin-bottom: 14px;
+        .dial-mech-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: flex-start;
+            justify-content: center;
+            margin-bottom: 16px;
         }
 
-        .gear-row-label {
+        .dial-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1 1 220px;
+        }
+
+        .dial-label {
             font-family: var(--display-font);
-            font-size: 0.72rem;
+            font-size: 0.68rem;
+            text-align: center;
             color: var(--text-secondary);
-            margin-bottom: 8px;
             letter-spacing: 0.5px;
         }
 
-        .gear-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        .ratio-dial {
+            width: 170px;
+            height: 170px;
+            touch-action: none;
+            cursor: grab;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .gear-btn {
-            background: var(--panel-sunken);
-            color: var(--text-primary);
+        .ratio-dial.dragging {
+            cursor: grabbing;
+        }
+
+        .dial-face {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--dial-face-bg);
+            border: 4px solid var(--border-color);
+            box-shadow: inset 0 4px 12px var(--shadow-color);
+        }
+
+        .ratio-dial:focus-visible .dial-face {
+            box-shadow: inset 0 4px 12px var(--shadow-color), 0 0 0 3px var(--accent-cyan);
+        }
+
+        .dial-needle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 5px;
+            height: 42%;
+            background: var(--accent-red);
+            border-radius: 3px;
+            transform-origin: 50% 100%;
+            transform: translate(-50%, -100%) rotate(-135deg);
+            box-shadow: 0 0 6px var(--accent-red);
+        }
+
+        .dial-hub {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 34px;
+            height: 34px;
+            margin: -17px 0 0 -17px;
+            border-radius: 50%;
+            background: var(--panel-bg);
             border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-family: var(--body-font);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            pointer-events: none;
+        }
+
+        .dial-tick {
+            position: absolute;
+            bottom: 10px;
+            font-size: 0.6rem;
             font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            pointer-events: none;
         }
 
-        .gear-btn:hover {
-            border-color: var(--accent-cyan);
+        .dial-tick-min { left: 10px; }
+        .dial-tick-max { right: 10px; }
+
+        .gear-column {
+            flex: 1 1 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
         }
 
-        .gear-btn.selected {
-            border-color: var(--accent-orange);
-            background: rgba(249, 115, 22, 0.15);
-            color: var(--accent-orange);
+        .gear-svg {
+            width: 100%;
+            max-width: 280px;
+            background: var(--canvas-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .gear-fill-driver {
+            fill: var(--gear-metal);
+            stroke: var(--border-color);
+            stroke-width: 1;
+        }
+
+        .gear-fill-driven {
+            fill: var(--gear-metal-driven);
+            stroke: var(--border-color);
+            stroke-width: 1;
+        }
+
+        .gear-hole {
+            fill: var(--canvas-bg);
+        }
+
+        .gear-bolt {
+            fill: var(--text-secondary);
+        }
+
+        .gear-caption {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-align: center;
         }
 
         .live-readout {
             font-family: var(--display-font);
             font-size: 0.95rem;
             color: var(--text-primary);
-            margin: 14px 0;
+            margin: 4px 0 14px;
             text-align: center;
         }
 
         #achievedReadout {
             color: var(--accent-cyan);
         }
+
+        .match-badge {
+            margin-left: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: var(--body-font);
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: var(--panel-sunken);
+        }
+
+        .match-good { color: var(--accent-green); }
+        .match-warm { color: var(--accent-orange); }
+        .match-bad { color: var(--accent-red); }
 
         .fire-btn {
             background: var(--accent-orange);
@@ -370,6 +518,11 @@
 
         .fire-btn:hover {
             opacity: 0.92;
+        }
+
+        .fire-btn:disabled {
+            opacity: 0.55;
+            cursor: default;
         }
 
         .feedback-line {
