@@ -2,8 +2,9 @@
 // Every hypotenuse/leg value below was hand-calculated and cross-checked:
 //   findC:   c = sqrt(a^2 + b^2)
 //   findLeg: b = sqrt(c^2 - a^2)   (a is the known leg, b is the unknown leg)
-// Distractor options are classic student mistakes: a+b (adding instead of
-// using the theorem), |leg difference|, and a plausible near-miss value.
+// This bank is untouched from the original release — buildRound() below
+// reinterprets each entry for the drag-to-anchor mechanic without altering
+// a single number.
 const towerBank = [
     // ---- FIND C (given both legs, find the hypotenuse) ----
     { mode: 'findC', a: 3, b: 4, correct: 5, approx: false, options: [5, 7, 1, 6] },
@@ -35,6 +36,28 @@ const towerBank = [
 ];
 
 const TOTAL_ROUNDS = 12;
+const LOCK_TOLERANCE = 0.15; // meters of cable length — how close liveY must be to R to count as taut
+
+// FOREMAN FLAVOR LINES
+const successLines = [
+    "The foreman wipes his brow and gives you a thumbs up.",
+    "Somewhere, a very relieved pigeon stops circling the tower.",
+    "You hear a faint, satisfied twang. Structurally perfect.",
+    "The foreman stops chewing his pencil for a second. High praise."
+];
+const slackLines = [
+    "The cable's got enough droop to swing a marching band from it.",
+    "The foreman mutters something about \"a bridge, not a hammock.\"",
+    "That much slack and birds are going to start nesting in it.",
+    "It's flopping around down there like a wet noodle."
+];
+const overtensionLines = [
+    "The foreman is now hiding behind his clipboard.",
+    "That cable is one gust of wind away from becoming a slingshot.",
+    "You can hear the steel fibers screaming for mercy.",
+    "It's stretched tighter than the foreman's last nerve."
+];
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 // GAME STATE
 let activeTowers = [];
@@ -42,10 +65,23 @@ let currentIndex = 0;
 let score = 0;
 let stability = 3;
 let isDarkMode = true;
-let isLocked = false;
 let playerName = '';
 
-// Theme Toggle
+let round = null;        // built round data for the current tower: {H, R, A, xMax, scalePx}
+let dragValue = 0;       // current anchor distance (meters) from the tower base
+let isDragging = false;
+let isResolved = false;  // true once Lock Anchor has been pressed for this round (inputs disabled)
+let activePointerId = null;
+
+// Fixed scene geometry (SVG user-space units)
+const SCENE_W = 640;
+const SCENE_H = 250;
+const TOWER_BASE_X = 100;
+const GROUND_Y = 210;
+const MAX_TRACK_PX = 470;
+const MAX_TOWER_PX = 150;
+
+// ---------- THEME ----------
 function toggleTheme() {
     isDarkMode = !isDarkMode;
     const body = document.body;
@@ -61,67 +97,216 @@ function toggleTheme() {
         icon.innerText = '☀️';
         text.innerText = 'Light Mode';
     }
-    renderTriangle();
+    if (round) renderScene();
 }
 
 function formatVal(v) {
     return Number.isInteger(v) ? String(v) : v.toFixed(1);
 }
-
-// Build the right-triangle diagram SVG for the current question
-function renderTriangle() {
-    const tData = activeTowers[currentIndex];
-    if (!tData) return;
-
-    const lineColor = isDarkMode ? '#5eb1e0' : '#1c6fa0';
-    const fillColor = isDarkMode ? 'rgba(94, 177, 224, 0.12)' : 'rgba(28, 111, 160, 0.10)';
-    const labelColor = isDarkMode ? '#eef2f5' : '#161a17';
-    const unknownColor = isDarkMode ? '#f2c94c' : '#8a6d1a';
-
-    // Fixed schematic triangle: right angle at bottom-left.
-    // Horizontal leg = a (bottom), vertical leg = b (left), hypotenuse = c (diagonal).
-    const p1 = { x: 30, y: 190 };  // bottom-left (right angle)
-    const p2 = { x: 250, y: 190 }; // bottom-right
-    const p3 = { x: 30, y: 40 };   // top-left
-
-    let aLabel, bLabel, cLabel;
-    if (tData.mode === 'findC') {
-        aLabel = `a = ${formatVal(tData.a)} m`;
-        bLabel = `b = ${formatVal(tData.b)} m`;
-        cLabel = `c = ?`;
-    } else {
-        aLabel = `a = ${formatVal(tData.a)} m`;
-        bLabel = `b = ?`;
-        cLabel = `c = ${formatVal(tData.c)} m`;
-    }
-
-    const cIsUnknown = tData.mode === 'findC';
-    const bIsUnknown = tData.mode === 'findLeg';
-
-    const svg = `
-        <svg viewBox="0 0 280 220" preserveAspectRatio="xMidYMid meet">
-            <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}" fill="${fillColor}" stroke="${lineColor}" stroke-width="3" stroke-linejoin="round" />
-            <rect x="${p1.x}" y="${p1.y - 14}" width="14" height="14" fill="none" stroke="${lineColor}" stroke-width="2" />
-
-            <!-- Tower / anchor icons -->
-            <circle cx="${p1.x}" cy="${p1.y}" r="4" fill="${lineColor}" />
-            <circle cx="${p2.x}" cy="${p2.y}" r="4" fill="${lineColor}" />
-            <circle cx="${p3.x}" cy="${p3.y}" r="4" fill="${lineColor}" />
-
-            <!-- Leg a (horizontal) label -->
-            <text x="${(p1.x + p2.x) / 2}" y="${p1.y + 22}" text-anchor="middle" font-size="14" font-weight="700" font-family="Roboto Mono, monospace" fill="${labelColor}">${aLabel}</text>
-
-            <!-- Leg b (vertical) label -->
-            <text x="${p1.x - 10}" y="${(p1.y + p3.y) / 2}" text-anchor="end" font-size="14" font-weight="700" font-family="Roboto Mono, monospace" fill="${bIsUnknown ? unknownColor : labelColor}" transform="rotate(-90 ${p1.x - 10} ${(p1.y + p3.y) / 2})">${bLabel}</text>
-
-            <!-- Hypotenuse c label -->
-            <text x="${(p2.x + p3.x) / 2 + 14}" y="${(p2.y + p3.y) / 2 - 6}" text-anchor="middle" font-size="14" font-weight="700" font-family="Roboto Mono, monospace" fill="${cIsUnknown ? unknownColor : labelColor}">${cLabel}</text>
-        </svg>`;
-
-    document.getElementById('trianglePanel').innerHTML = svg;
+function formatMeters(v) {
+    return `${formatVal(v)} m`;
 }
 
-// Start Survey
+// ---------- ROUND CONSTRUCTION ----------
+// Reframes each bank entry as: a fixed tower height (H), a fixed/required
+// cable length (R), and the hidden correct anchor distance (A) the player
+// must drag to. H is always a whole number of meters in the source bank;
+// A and R keep whatever precision the original entry specified.
+function buildRound(entry) {
+    let H, R, A;
+    if (entry.mode === 'findC') {
+        H = entry.b;
+        R = entry.correct;
+        A = entry.a;
+    } else {
+        H = entry.a;
+        R = entry.c;
+        A = entry.correct;
+    }
+    const xMax = Math.round(Math.max(A * 1.6, A + 8) * 10) / 10;
+    const scalePx = Math.min(MAX_TRACK_PX / xMax, MAX_TOWER_PX / H);
+    return { mode: entry.mode, H, R, A, xMax, scalePx };
+}
+
+function liveCableLength(x) {
+    return Math.sqrt(x * x + round.H * round.H);
+}
+
+// ---------- SCENE RENDERING ----------
+function renderScene(resolvedState) {
+    resolvedState = resolvedState || 'none';
+    const stroke = isDarkMode ? '#5eb1e0' : '#1c6fa0';
+    const rockFill = isDarkMode ? '#1b232c' : '#d8ddd4';
+    const rockStroke = isDarkMode ? '#2f3b47' : '#b7bdb2';
+    const labelColor = isDarkMode ? '#eef2f5' : '#161a17';
+    const dim = isDarkMode ? '#8b97a3' : '#525b53';
+
+    const towerTopY = GROUND_Y - round.H * round.scalePx;
+    const trackEndX = TOWER_BASE_X + round.xMax * round.scalePx;
+    const handleX = TOWER_BASE_X + dragValue * round.scalePx;
+
+    let cableClass = 'cable-line';
+    let cablePath;
+    if (resolvedState === 'success') {
+        cableClass += ' cable-success';
+        cablePath = `M ${TOWER_BASE_X} ${towerTopY} L ${handleX} ${GROUND_Y}`;
+    } else if (resolvedState === 'slack') {
+        cableClass += ' cable-slack';
+        const midX = (TOWER_BASE_X + handleX) / 2;
+        const midY = (towerTopY + GROUND_Y) / 2 + 26;
+        cablePath = `M ${TOWER_BASE_X} ${towerTopY} Q ${midX} ${midY} ${handleX} ${GROUND_Y}`;
+    } else if (resolvedState === 'overtension') {
+        cableClass += ' cable-overtension';
+        cablePath = `M ${TOWER_BASE_X} ${towerTopY} L ${handleX} ${GROUND_Y}`;
+    } else {
+        cableClass += ' cable-neutral';
+        cablePath = `M ${TOWER_BASE_X} ${towerTopY} L ${handleX} ${GROUND_Y}`;
+    }
+
+    // Tick marks along the track every 5 (or 10, if the range is large) meters
+    const tickStep = round.xMax > 30 ? 10 : 5;
+    let ticks = '';
+    for (let t = 0; t <= round.xMax + 0.001; t += tickStep) {
+        const tx = TOWER_BASE_X + t * round.scalePx;
+        ticks += `<line x1="${tx}" y1="${GROUND_Y - 5}" x2="${tx}" y2="${GROUND_Y + 5}" stroke="${dim}" stroke-width="1.5" />`;
+        ticks += `<text x="${tx}" y="${GROUND_Y + 20}" text-anchor="middle" font-size="10" font-family="Roboto Mono, monospace" fill="${dim}">${t}m</text>`;
+    }
+
+    let sparks = '';
+    if (resolvedState === 'overtension') {
+        for (let i = 0; i < 4; i++) {
+            const sx = handleX + (Math.random() * 16 - 8);
+            const sy = GROUND_Y - 8 - Math.random() * 14;
+            sparks += `<circle class="spark-particle" cx="${sx}" cy="${sy}" r="3" style="animation-delay:${i * 0.08}s" />`;
+        }
+    }
+
+    const svg = `
+        <svg viewBox="0 0 ${SCENE_W} ${SCENE_H}" preserveAspectRatio="xMidYMid meet">
+            <!-- near cliff -->
+            <polygon points="0,${SCENE_H} 0,${GROUND_Y + 14} ${TOWER_BASE_X + 14},${GROUND_Y + 14} ${TOWER_BASE_X + 26},${SCENE_H}" fill="${rockFill}" stroke="${rockStroke}" stroke-width="2" />
+            <!-- far cliff -->
+            <polygon points="${trackEndX - 20},${SCENE_H} ${trackEndX - 6},${GROUND_Y + 14} ${SCENE_W},${GROUND_Y + 14} ${SCENE_W},${SCENE_H}" fill="${rockFill}" stroke="${rockStroke}" stroke-width="2" />
+
+            <!-- track -->
+            <line x1="${TOWER_BASE_X}" y1="${GROUND_Y}" x2="${trackEndX}" y2="${GROUND_Y}" stroke="${dim}" stroke-width="2" stroke-dasharray="4 4" />
+            ${ticks}
+
+            <!-- tower -->
+            <rect x="${TOWER_BASE_X - 5}" y="${towerTopY}" width="10" height="${GROUND_Y - towerTopY}" fill="${stroke}" />
+            <polygon points="${TOWER_BASE_X - 16},${towerTopY} ${TOWER_BASE_X + 16},${towerTopY} ${TOWER_BASE_X},${towerTopY - 16}" fill="${stroke}" />
+            <text x="${TOWER_BASE_X}" y="${towerTopY - 24}" text-anchor="middle" font-size="13" font-weight="700" font-family="Roboto Mono, monospace" fill="${labelColor}">H = ${formatVal(round.H)}m</text>
+
+            <!-- cable -->
+            <path class="${cableClass}" d="${cablePath}" />
+            ${sparks}
+
+            <!-- anchor handle -->
+            <g id="anchorHandle" class="anchor-handle anchor-state-${resolvedState}" tabindex="0" role="slider"
+               aria-label="Anchor point distance from tower"
+               aria-valuemin="0" aria-valuemax="${round.xMax}" aria-valuenow="${dragValue}">
+                <circle class="handle-outer" cx="${handleX}" cy="${GROUND_Y}" r="12" stroke-width="2" />
+                <circle class="handle-center" cx="${handleX}" cy="${GROUND_Y}" r="4" />
+            </g>
+        </svg>`;
+
+    document.getElementById('bridgeStage').innerHTML = svg;
+}
+
+// ---------- LIVE READOUTS + GAUGE ----------
+function updateLiveReadouts() {
+    const liveY = liveCableLength(dragValue);
+    document.getElementById('currentDistanceValue').innerText = formatMeters(dragValue);
+    document.getElementById('liveCableValue').innerText = liveY.toFixed(1) + ' m';
+    document.getElementById('requiredCableValue').innerText = formatMeters(round.R);
+
+    const gaugeMax = round.R * 1.6;
+    const pct = Math.max(0, Math.min(100, (liveY / gaugeMax) * 100));
+    const fill = document.getElementById('tensionFill');
+    fill.style.width = `${pct}%`;
+
+    if (Math.abs(liveY - round.R) <= LOCK_TOLERANCE) {
+        fill.style.backgroundColor = 'var(--accent-green)';
+    } else if (liveY < round.R) {
+        fill.style.backgroundColor = 'var(--accent-steel)';
+    } else {
+        fill.style.backgroundColor = 'var(--accent-red)';
+    }
+}
+
+function setDragValue(x) {
+    dragValue = Math.max(0, Math.min(round.xMax, Math.round(x * 10) / 10));
+    const handle = document.getElementById('anchorHandle');
+    if (handle) handle.setAttribute('aria-valuenow', dragValue);
+    const handleX = TOWER_BASE_X + dragValue * round.scalePx;
+    const towerTopY = GROUND_Y - round.H * round.scalePx;
+    const circles = handle ? handle.querySelectorAll('circle') : [];
+    circles.forEach((c) => c.setAttribute('cx', handleX));
+    const cable = document.querySelector('#bridgeStage .cable-line');
+    if (cable) cable.setAttribute('d', `M ${TOWER_BASE_X} ${towerTopY} L ${handleX} ${GROUND_Y}`);
+    updateLiveReadouts();
+}
+
+function adjustAnchor(delta) {
+    if (isResolved || !round) return;
+    setDragValue(dragValue + delta);
+}
+
+// ---------- POINTER + KEYBOARD DRAG ----------
+function svgXToMeters(clientX) {
+    const svg = document.querySelector('#bridgeStage svg');
+    if (!svg) return dragValue;
+    const rect = svg.getBoundingClientRect();
+    const ratio = SCENE_W / rect.width;
+    const svgX = (clientX - rect.left) * ratio;
+    return (svgX - TOWER_BASE_X) / round.scalePx;
+}
+
+function onStagePointerDown(e) {
+    if (isResolved || !round) return;
+    const handle = e.target.closest('#anchorHandle');
+    if (!handle) return;
+    isDragging = true;
+    activePointerId = e.pointerId;
+    handle.setPointerCapture && handle.setPointerCapture(e.pointerId);
+    handle.focus();
+    setDragValue(svgXToMeters(e.clientX));
+    e.preventDefault();
+}
+
+function onWindowPointerMove(e) {
+    if (!isDragging || isResolved) return;
+    if (activePointerId !== null && e.pointerId !== activePointerId) return;
+    setDragValue(svgXToMeters(e.clientX));
+}
+
+function onWindowPointerUp(e) {
+    if (activePointerId !== null && e.pointerId !== activePointerId) return;
+    isDragging = false;
+    activePointerId = null;
+}
+
+function onStageKeyDown(e) {
+    if (isResolved || !round) return;
+    const target = e.target.closest && e.target.closest('#anchorHandle');
+    if (!target) return;
+    const big = e.shiftKey ? 1 : 0.1;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+        adjustAnchor(-big);
+        e.preventDefault();
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+        adjustAnchor(big);
+        e.preventDefault();
+    } else if (e.key === 'Home') {
+        setDragValue(0);
+        e.preventDefault();
+    } else if (e.key === 'End') {
+        setDragValue(round.xMax);
+        e.preventDefault();
+    }
+}
+
+// ---------- GAME FLOW ----------
 function startSurvey() {
     const name = ArcadeKit.requireName('playerNameInput', 'playerNameError');
     if (!name) return;
@@ -130,7 +315,6 @@ function startSurvey() {
     currentIndex = 0;
     score = 0;
     stability = 3;
-    isLocked = false;
     activeTowers = ArcadeKit.sample(towerBank, TOTAL_ROUNDS);
 
     document.getElementById('startScreen').style.display = 'none';
@@ -142,66 +326,58 @@ function startSurvey() {
 }
 
 function loadTower() {
-    isLocked = false;
+    isResolved = false;
+    isDragging = false;
+    activePointerId = null;
     document.getElementById('feedbackLine').innerText = '';
     document.getElementById('feedbackLine').className = 'feedback-line';
 
-    const tData = activeTowers[currentIndex];
+    const entry = activeTowers[currentIndex];
+    round = buildRound(entry);
+    dragValue = Math.round((round.xMax * 0.3) * 10) / 10;
 
     document.getElementById('roundCounter').innerText = `${currentIndex + 1} / ${activeTowers.length}`;
     document.getElementById('stabilityDisplay').innerText = `${stability} / 3`;
     document.getElementById('scoreDisplay').innerText = `${score} PTS`;
-    updateTensionGauge();
 
     let qText;
-    if (tData.mode === 'findC') {
-        qText = `The tower's horizontal footing runs <strong>a = ${formatVal(tData.a)} m</strong> and its vertical height is <strong>b = ${formatVal(tData.b)} m</strong>. Find the length of the diagonal anchor cable <strong>c</strong>${tData.approx ? ' (round to 1 decimal place)' : ''}.`;
+    if (entry.mode === 'findC') {
+        qText = `Tower height is <strong>${formatVal(round.H)} m</strong>. The rigging crew already cut a cable rated at exactly <strong>${formatVal(round.R)} m</strong>. Drag the anchor to the horizontal distance where that cable would pull dead taut.`;
     } else {
-        qText = `The anchor cable measures <strong>c = ${formatVal(tData.c)} m</strong> and the horizontal footing is <strong>a = ${formatVal(tData.a)} m</strong>. Find the missing vertical tower height <strong>b</strong>${tData.approx ? ' (round to 1 decimal place)' : ''}.`;
+        qText = `Tower height is <strong>${formatVal(round.H)} m</strong>, and the cable spanning to the anchor measures exactly <strong>${formatVal(round.R)} m</strong>. Drag the anchor to the horizontal distance where the geometry actually works out.`;
     }
     document.getElementById('questionText').innerHTML = qText;
 
-    renderTriangle();
+    renderScene('none');
+    updateLiveReadouts();
 
-    // Shuffle option order
-    const correctStr = formatVal(tData.correct) + ' m';
-    const shuffledOptions = ArcadeKit.shuffle(tData.options.map(v => formatVal(v) + ' m'));
-    const grid = document.getElementById('optionsGrid');
-    grid.innerHTML = '';
-    shuffledOptions.forEach(optText => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerText = optText;
-        btn.onclick = () => evaluateAnswer(optText, correctStr, btn);
-        grid.appendChild(btn);
-    });
+    document.getElementById('lockAnchorBtn').disabled = false;
+    document.getElementById('nudgeMinus1').disabled = false;
+    document.getElementById('nudgeMinus01').disabled = false;
+    document.getElementById('nudgePlus01').disabled = false;
+    document.getElementById('nudgePlus1').disabled = false;
 }
 
-function updateTensionGauge() {
-    const pct = Math.round((stability / 3) * 100);
-    const fill = document.getElementById('tensionFill');
-    fill.style.width = `${pct}%`;
-    if (stability >= 3) {
-        fill.style.backgroundColor = 'var(--accent-green)';
-    } else if (stability === 2) {
-        fill.style.backgroundColor = 'var(--accent-yellow)';
-    } else {
-        fill.style.backgroundColor = 'var(--accent-red)';
-    }
-}
+function lockAnchor() {
+    if (isResolved || !round) return;
+    isResolved = true;
 
-function evaluateAnswer(selectedOpt, correctOpt, btnEl) {
-    if (isLocked) return;
-    isLocked = true;
+    document.getElementById('lockAnchorBtn').disabled = true;
+    document.getElementById('nudgeMinus1').disabled = true;
+    document.getElementById('nudgeMinus01').disabled = true;
+    document.getElementById('nudgePlus01').disabled = true;
+    document.getElementById('nudgePlus1').disabled = true;
 
+    const liveY = liveCableLength(dragValue);
+    const diff = liveY - round.R;
     const feedback = document.getElementById('feedbackLine');
+    const correctText = formatMeters(round.A);
 
-    if (selectedOpt === correctOpt) {
+    if (Math.abs(diff) <= LOCK_TOLERANCE) {
         score += 100;
-        btnEl.style.borderColor = 'var(--accent-green)';
-        btnEl.style.background = 'rgba(79, 191, 131, 0.15)';
+        renderScene('success');
         feedback.className = 'feedback-line text-success';
-        feedback.innerText = `✅ ANCHOR SECURE // +100 PTS — c${'²'} = a${'²'} + b${'²'} confirmed`;
+        feedback.innerText = `✅ ANCHOR SECURE // +100 PTS — cable pulled dead taut at ${formatMeters(dragValue)}. ${pick(successLines)}`;
 
         setTimeout(() => {
             currentIndex++;
@@ -210,21 +386,26 @@ function evaluateAnswer(selectedOpt, correctOpt, btnEl) {
             } else {
                 loadTower();
             }
-        }, 1200);
+        }, 1300);
 
     } else {
         stability--;
-        btnEl.style.borderColor = 'var(--accent-red)';
-        btnEl.style.background = 'rgba(224, 82, 79, 0.15)';
-        feedback.className = 'feedback-line text-error';
-        feedback.innerText = `❌ ANCHOR FAILED // -1 STABILITY — Correct cable/leg length was ${correctOpt}`;
+        document.getElementById('stabilityDisplay').innerText = `${stability} / 3`;
 
-        updateTensionGaugeStability();
+        if (diff < 0) {
+            renderScene('slack');
+            feedback.className = 'feedback-line text-error';
+            feedback.innerText = `🪢 SLACK CABLE // -1 STABILITY — anchor was too close to the tower. Correct anchor distance was ${correctText}. ${pick(slackLines)}`;
+        } else {
+            renderScene('overtension');
+            feedback.className = 'feedback-line text-error';
+            feedback.innerText = `⚡ OVER-TENSION // -1 STABILITY — anchor was too far out. Correct anchor distance was ${correctText}. ${pick(overtensionLines)}`;
+        }
 
         if (stability <= 0) {
             setTimeout(() => {
                 triggerFail();
-            }, 1600);
+            }, 1800);
         } else {
             setTimeout(() => {
                 currentIndex++;
@@ -233,14 +414,9 @@ function evaluateAnswer(selectedOpt, correctOpt, btnEl) {
                 } else {
                     loadTower();
                 }
-            }, 1600);
+            }, 1800);
         }
     }
-}
-
-function updateTensionGaugeStability() {
-    document.getElementById('stabilityDisplay').innerText = `${stability} / 3`;
-    updateTensionGauge();
 }
 
 function triggerFail() {
@@ -260,3 +436,16 @@ function triggerVictory() {
 function restartSurvey() {
     startSurvey();
 }
+
+// ---------- EVENT WIRING (script.js is loaded with `defer`, so the DOM is ready) ----------
+document.getElementById('bridgeStage').addEventListener('pointerdown', onStagePointerDown);
+document.getElementById('bridgeStage').addEventListener('keydown', onStageKeyDown);
+window.addEventListener('pointermove', onWindowPointerMove);
+window.addEventListener('pointerup', onWindowPointerUp);
+window.addEventListener('pointercancel', onWindowPointerUp);
+
+document.getElementById('nudgeMinus1').addEventListener('click', () => adjustAnchor(-1));
+document.getElementById('nudgeMinus01').addEventListener('click', () => adjustAnchor(-0.1));
+document.getElementById('nudgePlus01').addEventListener('click', () => adjustAnchor(0.1));
+document.getElementById('nudgePlus1').addEventListener('click', () => adjustAnchor(1));
+document.getElementById('lockAnchorBtn').addEventListener('click', lockAnchor);

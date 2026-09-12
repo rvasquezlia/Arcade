@@ -35,10 +35,11 @@
             <div class="brief-box">
                 <p style="margin-bottom: 10px;"><strong>ANCHOR CREW BRIEFING:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Every suspension tower forms a right triangle between its anchor point, base, and cable line. Use <code>a² + b² = c²</code> to solve for the missing cable length or tower leg across 12 anchor points.</li>
-                    <li><strong>Mix of Problems:</strong> Some towers give you both legs and ask for the diagonal cable (hypotenuse); others give you the cable and one leg and ask for the missing leg. A few answers are exact whole numbers, others round to 1 decimal place — read carefully.</li>
-                    <li><strong>Structural Stability:</strong> You begin with 3 Stability points. Each incorrect anchor calculation drains 1 point. Lose all 3 and the crossing is condemned.</li>
-                    <li><strong>Randomization:</strong> Anchor points and answer choices are pulled from a larger data bank and shuffled every session.</li>
+                    <li><strong>Objective:</strong> Every tower has a fixed height and a fixed-length cable already cut for it. Your job is to <strong>drag the anchor point</strong> along the cliffside track to the exact spot where that cable would pull perfectly taut. Use <code>a² + b² = c²</code> to work out the distance before you drag.</li>
+                    <li><strong>No multiple choice:</strong> Drag the anchor handle (or nudge it with the ± buttons), watch the live cable-length readout, and press <strong>LOCK ANCHOR</strong> when you think it's exact. Too close and the cable droops with slack; too far and it over-tensions and sparks.</li>
+                    <li><strong>Structural Stability:</strong> You begin with 3 Stability points. Each mis-locked anchor drains 1 point. Lose all 3 and the crossing is condemned.</li>
+                    <li><strong>Mix of Problems:</strong> Some towers give you the tower height and cable length and hide the horizontal span; others give you the span and cable length and hide the tower height — either way, you're solving for the missing leg by dragging. A few answers are exact whole meters, others need 1 decimal place of precision.</li>
+                    <li><strong>Randomization:</strong> Anchor points are pulled from a larger data bank and shuffled every session.</li>
                     <li><strong>Progress Disclaimer:</strong> This terminal holds session memory only. Reloading or leaving the page wipes the anchor log completely.</li>
                 </ul>
             </div>
@@ -68,6 +69,7 @@
                     <div class="status-item">
                         <span class="status-label">Cable Tension</span>
                         <div class="tension-gauge">
+                            <div id="tensionTargetMarker" class="tension-target-marker"></div>
                             <div id="tensionFill" class="tension-fill"></div>
                         </div>
                     </div>
@@ -78,17 +80,42 @@
                 </div>
 
                 <div class="survey-grid">
-                    <!-- Triangle Diagram -->
-                    <div class="triangle-panel" id="trianglePanel"></div>
+                    <!-- Interactive Bridge Stage -->
+                    <div class="bridge-stage" id="bridgeStage"></div>
 
-                    <!-- Question + Options -->
+                    <!-- Question + Controls -->
                     <div class="question-panel">
                         <div class="question-card">
-                            <div class="question-tag">Anchor Point Survey</div>
+                            <div class="question-tag">Foreman's Briefing</div>
                             <div id="questionText" class="question-text">Loading survey data...</div>
                         </div>
 
-                        <div id="optionsGrid" class="options-grid"></div>
+                        <div class="control-panel">
+                            <div class="readout-grid">
+                                <div class="readout-box">
+                                    <span class="readout-label">Anchor Distance (drag)</span>
+                                    <span id="currentDistanceValue" class="readout-value">0.0 m</span>
+                                </div>
+                                <div class="readout-box">
+                                    <span class="readout-label">Cable Needed Right Now</span>
+                                    <span id="liveCableValue" class="readout-value">0.0 m</span>
+                                </div>
+                                <div class="readout-box">
+                                    <span class="readout-label">Actual Cable Length</span>
+                                    <span id="requiredCableValue" class="readout-value">0.0 m</span>
+                                </div>
+                            </div>
+
+                            <div class="nudge-row">
+                                <span class="nudge-label">Fine-tune:</span>
+                                <button type="button" class="nudge-btn" id="nudgeMinus1">−1 m</button>
+                                <button type="button" class="nudge-btn" id="nudgeMinus01">−0.1 m</button>
+                                <button type="button" class="nudge-btn" id="nudgePlus01">+0.1 m</button>
+                                <button type="button" class="nudge-btn" id="nudgePlus1">+1 m</button>
+                            </div>
+
+                            <button class="action-btn lock-btn" id="lockAnchorBtn">🔒 LOCK ANCHOR</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -100,7 +127,7 @@
         <div id="failScreen" class="screen-center" style="display: none;">
             <div class="bridge-icon">⚠️</div>
             <h1 class="bridge-title" style="color: var(--accent-red);">CROSSING CONDEMNED</h1>
-            <p class="bridge-subtitle">Structural stability reached zero — the bridge cannot be certified.</p>
+            <p class="bridge-subtitle">Structural stability reached zero — the foreman has fainted onto his clipboard.</p>
             <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Survey Score: <span id="failScore">0</span> PTS</p>
 
             <div class="kit-submission-card">
@@ -116,10 +143,10 @@
         <div id="victoryScreen" class="screen-center" style="display: none;">
             <div class="bridge-icon">🏗️</div>
             <h1 class="bridge-title" style="color: var(--accent-green);">BRIDGE CERTIFIED</h1>
-            <p class="bridge-subtitle">Master Structural Engineer Distinction Awarded</p>
+            <p class="bridge-subtitle">Master Structural Engineer Distinction Awarded — not one cable left drooping.</p>
 
             <p style="font-size: 1.05rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
-                Outstanding structural work! Every anchor tower was calculated correctly and the skyway is cleared for crossing.
+                Outstanding structural work! Every anchor point was calculated and dragged into place with dead-on precision. The skyway is cleared for crossing, and the foreman only chewed his pencil in half twice.
             </p>
 
             <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px;">
