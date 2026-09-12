@@ -22,6 +22,18 @@
             --kit-border: var(--border-color);
             --kit-input-bg: var(--container-bg);
             --kit-error: var(--accent-red);
+
+            /* Number-line / drag mechanic (dark) */
+            --rail-bg: var(--panel-sunken);
+            --rail-border: var(--border-color);
+            --tick-color: var(--text-secondary);
+            --tick-major-color: var(--text-primary);
+            --token-bg: var(--panel-bg);
+            --token-border: var(--accent-lime);
+            --token-text: var(--text-primary);
+            --token-placed-bg: rgba(132, 204, 22, 0.18);
+            --pin-shadow: rgba(0, 0, 0, 0.55);
+            --marker-color: var(--accent-green);
         }
 
         body.light-mode {
@@ -46,6 +58,18 @@
             --kit-border: var(--border-color);
             --kit-input-bg: var(--container-bg);
             --kit-error: var(--accent-red);
+
+            /* Number-line / drag mechanic (light) */
+            --rail-bg: var(--panel-sunken);
+            --rail-border: var(--border-color);
+            --tick-color: var(--text-secondary);
+            --tick-major-color: var(--text-primary);
+            --token-bg: var(--panel-bg);
+            --token-border: var(--accent-lime);
+            --token-text: var(--text-primary);
+            --token-placed-bg: rgba(77, 124, 15, 0.15);
+            --pin-shadow: rgba(28, 42, 26, 0.3);
+            --marker-color: var(--accent-green);
         }
 
         * {
@@ -277,33 +301,173 @@
             color: var(--accent-amber);
         }
 
-        /* Option Grid */
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        /* ---------- Pin-Drop Data Mechanic ---------- */
+
+        .phase-label {
+            font-family: var(--display-font);
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--accent-amber);
+            margin-bottom: 4px;
+        }
+
+        .phase-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        /* Token tray: scattered numbered tags waiting to be sorted */
+        .token-tray {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: flex-end;
+            min-height: 74px;
+            padding: 10px 6px 22px;
+            margin-bottom: 4px;
+        }
+
+        .token-chip {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--token-bg);
+            border: 2px solid var(--token-border);
+            color: var(--token-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--display-font);
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: grab;
+            box-shadow: 0 3px 8px var(--shadow-color);
+            user-select: none;
+            touch-action: none;
+            flex-shrink: 0;
+        }
+
+        .token-chip.dragging {
+            cursor: grabbing;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            opacity: 0.95;
+        }
+
+        .token-chip.token-placed {
+            cursor: default;
+            background: var(--token-placed-bg);
+            border-color: var(--accent-green);
+        }
+
+        @keyframes shakeReject {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        .token-chip.shake-reject { animation: shakeReject 0.35s ease; }
+
+        /* Number line / field log rail */
+        .line-wrap {
+            padding: 32px 10px 44px;
+            margin-bottom: 4px;
+        }
+
+        .number-line {
+            position: relative;
+        }
+
+        .line-rail {
+            position: relative;
+            height: 6px;
+            background: var(--rail-bg);
+            border: 1px solid var(--rail-border);
+            border-radius: 4px;
+            margin: 0 12px;
+        }
+
+        .tick {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            background: var(--tick-color);
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+        .tick-minor { height: 6px; opacity: 0.55; }
+        .tick-major { height: 14px; top: -4px; background: var(--tick-major-color); }
+
+        .tick-label {
+            position: absolute;
+            top: 16px;
+            transform: translateX(-50%);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--tick-major-color);
+            font-family: var(--mono-font);
+            pointer-events: none;
+        }
+
+        .correct-marker {
+            position: absolute;
+            top: -28px;
+            transform: translateX(-50%);
+            color: var(--marker-color);
+            font-weight: 800;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* Measuring pin */
+        .pin-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
             margin-bottom: 14px;
         }
 
-        @media (max-width: 620px) {
-            .options-grid { grid-template-columns: 1fr; }
+        .pin-caddy {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 56px;
         }
 
-        .option-btn {
-            background: var(--panel-sunken);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 16px;
-            border-radius: 6px;
+        .measuring-pin {
+            font-size: 2.1rem;
+            line-height: 1;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            filter: drop-shadow(0 4px 6px var(--pin-shadow));
+        }
+        .measuring-pin.dragging { cursor: grabbing; }
+        .measuring-pin.pin-correct { filter: drop-shadow(0 0 10px var(--accent-green)); }
+        .measuring-pin.pin-wrong { filter: drop-shadow(0 0 10px var(--accent-red)); }
+
+        .pin-readout {
             font-family: var(--display-font);
-            font-size: 1.2rem;
             font-weight: 700;
-            text-align: center;
-            cursor: pointer;
+            font-size: 1.05rem;
+            color: var(--accent-amber);
         }
 
-        .option-btn:hover {
-            border-color: var(--accent-lime);
+        .lock-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        @media (max-width: 480px) {
+            .token-chip { width: 44px; height: 44px; font-size: 0.95rem; }
+            .line-wrap { padding: 26px 4px 38px; }
+            .measuring-pin { font-size: 1.8rem; }
         }
 
         .feedback-line {

@@ -33,9 +33,10 @@
             <div class="brief-box">
                 <p style="margin-bottom: 10px;"><strong>FIELD RESEARCHER BRIEFING:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Analyze 12 wildlife tag-count data sets from trail cameras and calculate the requested statistic for each.</li>
-                    <li><strong>Field Credibility:</strong> You start with 3 Credibility Points. Each incorrect calculation costs 1 point. Losing all 3 ends your field season.</li>
-                    <li><strong>Data Randomization:</strong> Data sets and answer choices are shuffled at the start of every survey.</li>
+                    <li><strong>Objective:</strong> Analyze 12 wildlife tag-count data sets from trail cameras — drag each count onto the field log line, then drag the measuring pin to the requested statistic.</li>
+                    <li><strong>How To Play:</strong> Step 1 — drag every numbered tag near the log line to sort it out. Step 2 — drag the 📍 pin to where you think the answer sits, then lock it in.</li>
+                    <li><strong>Field Credibility:</strong> You start with 3 Credibility Points. Each incorrect reading costs 1 point (you'll re-survey the same data set). Losing all 3 ends your field season.</li>
+                    <li><strong>Data Randomization:</strong> Data sets are shuffled at the start of every survey.</li>
                     <li><strong>Session Memory:</strong> This field log only holds progress in active memory. Reloading the page erases the whole survey.</li>
                 </ul>
             </div>
@@ -81,8 +82,26 @@
                 </div>
             </div>
 
-            <!-- Option Choices -->
-            <div id="optionsGrid" class="options-grid"></div>
+            <!-- Step 1: Sort the raw data -->
+            <div id="phaseLabel" class="phase-label">STEP 1 · SORT THE CAMERA COUNTS</div>
+            <p id="phaseHint" class="phase-hint">Drag every numbered tag down near the line — get it close and it'll click into its true spot.</p>
+
+            <div id="tokenTray" class="token-tray"></div>
+
+            <div class="line-wrap">
+                <div id="numberLine" class="number-line">
+                    <div id="lineRail" class="line-rail"></div>
+                </div>
+            </div>
+
+            <!-- Step 2: Measure with the pin -->
+            <div id="pinZone" class="pin-zone" style="display: none;">
+                <div id="pinCaddy" class="pin-caddy">
+                    <div id="measuringPin" class="measuring-pin">📍</div>
+                </div>
+                <div class="pin-readout">Your reading: <span id="pinReading">–</span></div>
+                <button id="lockInBtn" class="action-btn lock-btn" disabled onclick="lockInAnswer()">🔒 LOCK IN MEASUREMENT</button>
+            </div>
 
             <div id="feedbackLine" class="feedback-line"></div>
         </div>
@@ -110,7 +129,7 @@
             <p class="field-subtitle">Senior Field Ecologist Distinction Awarded</p>
 
             <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
-                Excellent fieldwork! You correctly calculated mean, median, mode, and range across all 12 wildlife data sets to complete the ecosystem stability report.
+                Excellent fieldwork! You sorted the camera data and pinned down the mean, median, mode, and range across all 12 wildlife surveys to complete the ecosystem stability report. The critters are relieved.
             </p>
 
             <div class="score-readout">
