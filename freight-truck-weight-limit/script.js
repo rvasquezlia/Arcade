@@ -40,6 +40,52 @@ const SVG_LEFT = 30;
 const SVG_RIGHT = 610;
 const SVG_Y = 60;
 
+// Drag-vs-tap tuning, in the SVG's local 640-unit coordinate space
+// (one integer tick is ~29 units wide at this viewBox scale).
+const DRAG_PIXEL_THRESHOLD = 8;
+const MARKER_HIT_RADIUS = 24;
+
+// GRUMPY INSPECTOR FLAVOR TEXT
+const idleLines = [
+    "Well? I don't have all day. Solve it.",
+    "Chop chop. The line behind you is getting long.",
+    "I've seen freshman fractions move faster than this.",
+    "Don't just stare at the manifest — drag something.",
+    "Cargo doesn't graph itself, kid.",
+    "Every minute you stall, I get grumpier. And I'm already at an 8.",
+    "Convince me this truck deserves to cross my bridge."
+];
+const correctLines = [
+    "...Fine. That's correct. Don't get used to my approval.",
+    "Huh. Didn't expect that. Cleared for crossing.",
+    "Correct. I'm writing it down before I change my mind.",
+    "The math checks out. So does the truck. Go on, get out of here.",
+    "Acceptable. Barely. Move along.",
+    "That's a clean graph. I almost smiled. Almost."
+];
+const incorrectLines = [
+    "Rejected! That shading's about as right as a square wheel.",
+    "Nope. Try again before I confiscate your calculator.",
+    "Wrong circle, wrong shading, wrong day to test me.",
+    "This truck isn't crossing my bridge looking like that.",
+    "Back it up. Literally. Redo the graph.",
+    "That boundary is not where I hoped it would be. Again."
+];
+const failLines = [
+    "Bridge's closed. Go find a detour and some algebra tutoring.",
+    "Structural strain's gone. So has my patience. We're done here.",
+    "That's three strikes. The bridge — and my mood — are closed for the day."
+];
+const victoryLines = [
+    "...Every truck, clean. Fine, you're the best inspector I've trained. Don't let it go to your head.",
+    "Convoy cleared. I'm almost proud. Almost.",
+    "Perfect record. I'm updating my report to say 'exceptional,' and I hate that word."
+];
+
+function pickLine(lines) {
+    return lines[Math.floor(Math.random() * lines.length)];
+}
+
 // GAME STATE
 let activeTrucks = [];
 let currentIndex = 0;
@@ -53,6 +99,9 @@ let playerName = '';
 let selectedValue = 0;
 let selectedCircle = 'closed';
 let selectedDirection = 'right';
+
+// Active pointer-drag tracking (null when no pointer is down on the scale)
+let dragState = null;
 
 // Theme Toggle
 function toggleTheme() {
@@ -127,33 +176,86 @@ function drawNumberLine() {
 
     const host = document.getElementById('numberLineHost');
     host.innerHTML = svg;
-    host.onclick = handleLineClick;
+    host.onpointerdown = handlePointerDown;
+    host.onpointermove = handlePointerMove;
+    host.onpointerup = handlePointerUp;
+    host.onpointercancel = handlePointerCancel;
 }
 
-function handleLineClick(e) {
-    if (isLocked) return;
-    const svgEl = document.getElementById('numberLineHost').querySelector('svg');
-    const rect = svgEl.getBoundingClientRect();
+// Converts a pointer event's clientX into the SVG's local 0-640 coordinate space.
+function getLocalX(e) {
+    const host = document.getElementById('numberLineHost');
+    const rect = host.getBoundingClientRect();
     const scaleX = 640 / rect.width;
-    const localX = (e.clientX - rect.left) * scaleX;
-    selectedValue = xToValue(localX);
-    drawNumberLine();
+    return (e.clientX - rect.left) * scaleX;
 }
 
-function setOpenClosed(kind) {
+// Press down anywhere on the scale to start building a graph:
+//  - press near the current marker and release without moving -> toggles open/closed
+//  - press anywhere and drag left or right -> paints the shaded ray from the press point
+//  - press elsewhere and release without moving -> just relocates the boundary point
+function handlePointerDown(e) {
     if (isLocked) return;
-    selectedCircle = kind;
-    document.getElementById('openBtn').classList.toggle('active', kind === 'open');
-    document.getElementById('closedBtn').classList.toggle('active', kind === 'closed');
-    drawNumberLine();
+    const host = document.getElementById('numberLineHost');
+    const localX = getLocalX(e);
+    const markerX = valueToX(selectedValue);
+    dragState = {
+        downLocalX: localX,
+        downValueSnapped: xToValue(localX),
+        isNearMarker: Math.abs(localX - markerX) <= MARKER_HIT_RADIUS,
+        moved: false,
+        pointerId: e.pointerId
+    };
+    try { host.setPointerCapture(e.pointerId); } catch (err) { /* touch fallback */ }
+    host.classList.add('dragging');
+    e.preventDefault();
 }
 
-function setDirection(dir) {
-    if (isLocked) return;
-    selectedDirection = dir;
-    document.getElementById('leftBtn').classList.toggle('active', dir === 'left');
-    document.getElementById('rightBtn').classList.toggle('active', dir === 'right');
-    drawNumberLine();
+function handlePointerMove(e) {
+    if (!dragState || isLocked) return;
+    const localX = getLocalX(e);
+    const dx = localX - dragState.downLocalX;
+    if (Math.abs(dx) > DRAG_PIXEL_THRESHOLD) {
+        dragState.moved = true;
+        selectedValue = dragState.downValueSnapped;
+        selectedDirection = dx < 0 ? 'left' : 'right';
+        drawNumberLine();
+    }
+    e.preventDefault();
+}
+
+function handlePointerUp(e) {
+    if (!dragState) return;
+    if (isLocked) { dragState = null; return; }
+    if (!dragState.moved) {
+        if (dragState.isNearMarker) {
+            selectedCircle = (selectedCircle === 'closed') ? 'open' : 'closed';
+        } else {
+            selectedValue = dragState.downValueSnapped;
+        }
+        drawNumberLine();
+    }
+    const host = document.getElementById('numberLineHost');
+    try { host.releasePointerCapture(dragState.pointerId); } catch (err) { /* no-op */ }
+    host.classList.remove('dragging');
+    dragState = null;
+    e.preventDefault();
+}
+
+function handlePointerCancel() {
+    const host = document.getElementById('numberLineHost');
+    if (host) host.classList.remove('dragging');
+    dragState = null;
+}
+
+function setInspectorMood(mood, text) {
+    const avatar = document.getElementById('inspectorAvatar');
+    const bubble = document.getElementById('inspectorBubble');
+    if (!avatar || !bubble) return;
+    bubble.classList.remove('mood-idle', 'mood-success', 'mood-error');
+    bubble.classList.add('mood-' + mood);
+    bubble.innerText = text;
+    avatar.innerText = mood === 'success' ? '😏' : (mood === 'error' ? '😠' : '🧐');
 }
 
 // Start Inspection
@@ -188,19 +290,18 @@ function loadTruck() {
     document.getElementById('scoreDisplay').innerText = `${score} PTS`;
     document.getElementById('inequalityText').innerText = tData.text;
 
-    // Reset marker / toggles to neutral defaults for the new round
+    // Reset marker to neutral defaults for the new round
     selectedValue = 0;
     selectedCircle = 'closed';
     selectedDirection = 'right';
-    document.getElementById('openBtn').classList.remove('active');
-    document.getElementById('closedBtn').classList.add('active');
-    document.getElementById('leftBtn').classList.remove('active');
-    document.getElementById('rightBtn').classList.add('active');
+    dragState = null;
+
+    setInspectorMood('idle', pickLine(idleLines));
 
     drawNumberLine();
 }
 
-function certifySolution() {
+function inspectCargo() {
     if (isLocked) return;
     isLocked = true;
 
@@ -222,11 +323,13 @@ function certifySolution() {
         score += 100;
         feedback.className = 'feedback-line text-success';
         feedback.innerText = `✅ CLEARED FOR CROSSING // +100 PTS — Solution: ${correctSummary}`;
+        setInspectorMood('success', pickLine(correctLines));
     } else {
         strain--;
         feedback.className = 'feedback-line text-error';
         feedback.innerText = `❌ REJECTED AT THE SCALE — Correct solution was: ${correctSummary} (${expectedCircle} circle, shade ${expectedDirection})`;
         document.getElementById('strainDisplay').innerText = `${strain} / 3`;
+        setInspectorMood('error', pickLine(incorrectLines));
     }
 
     if (!fullyCorrect && strain <= 0) {
@@ -249,6 +352,7 @@ function triggerFail() {
     document.getElementById('gameScreen').style.display = 'none';
     document.getElementById('failScreen').style.display = 'flex';
     document.getElementById('failScore').innerText = score;
+    document.getElementById('failInspectorLine').innerText = `"${pickLine(failLines)}"`;
     ArcadeKit.showPlayerName(playerName, ['playerNameDisplayFail']);
 }
 
@@ -256,6 +360,7 @@ function triggerVictory() {
     document.getElementById('gameScreen').style.display = 'none';
     document.getElementById('victoryScreen').style.display = 'flex';
     document.getElementById('victoryScore').innerText = score;
+    document.getElementById('winInspectorLine').innerText = `"${pickLine(victoryLines)}"`;
     ArcadeKit.showPlayerName(playerName, ['playerNameDisplayWin']);
 }
 
