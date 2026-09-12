@@ -46,11 +46,12 @@
             <p class="case-subtitle">Precinct Evidence Board // Algebra Investigation</p>
 
             <div class="dossier-box">
-                <p style="margin-bottom: 10px;"><strong>DETECTIVE BRIEFING & RULES OF EVIDENCE:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>DETECTIVE BRIEFING &amp; RULES OF EVIDENCE:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Analyze the evidence wall across 10 unsolved case files involving coordinates, scientific notation, and keyword ciphers.</li>
-                    <li><strong>Integrity Rating:</strong> You start with 3 Integrity Badges. Each incorrect lead deductions 1 badge. Losing all 3 closes the case unsolved.</li>
-                    <li><strong>Evidence Randomization:</strong> Case files and lead options are shuffled upon each new investigation.</li>
+                    <li><strong>Objective:</strong> Solve 10 unsolved case files involving coordinates, scientific notation, and keyword ciphers &mdash; the usual Tuesday.</li>
+                    <li><strong>The Corkboard:</strong> Each case pins a clue file to the board. Click and drag it across the room with your mouse (or your finger) and pin it onto the suspect lead you believe matches the math. A real string follows your cursor. It's very dramatic.</li>
+                    <li><strong>Detective Focus:</strong> You start with 3 Focus Points. Pin the wrong suspect and you lose 1 &mdash; and the string snaps, which is somehow more embarrassing than just being wrong. Lose all 3 and the case goes cold, unsolved.</li>
+                    <li><strong>Evidence Randomization:</strong> Suspect leads shuffle their positions on the board with every case. Keep your eyes on the math, not the furniture.</li>
                     <li><strong>Progress Disclaimer:</strong> This window maintains active memory only. Reloading or leaving the page resets all evidence logs completely.</li>
                 </ul>
             </div>
@@ -68,7 +69,7 @@
         <div id="gameScreen" style="display: none;">
             <div>
                 <h2 id="caseHeader" class="case-title" style="font-size: 1.4rem; text-align: left;">Case File #1: Signal Trace</h2>
-                
+
                 <!-- Status HUD Bar -->
                 <div class="status-bar">
                     <div class="status-item">
@@ -76,7 +77,7 @@
                         <span id="fileCounter" class="status-value">1 / 10</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Integrity:</span>
+                        <span class="status-label">Detective Focus:</span>
                         <span id="integrityDisplay" class="status-value">3 / 3</span>
                     </div>
                     <div class="status-item">
@@ -85,17 +86,25 @@
                     </div>
                 </div>
 
-                <!-- Evidence Clue Box -->
-                <div class="evidence-card">
-                    <div class="evidence-tag">Case Evidence Log</div>
-                    <div id="evidenceText" class="evidence-text">
-                        Loading case file data...
-                    </div>
-                </div>
+                <p id="narrationText" class="narration-line">The rain hasn't stopped since Tuesday. Neither have the numbers.</p>
 
-                <!-- Option Choices Grid -->
-                <div id="optionsGrid" class="options-grid">
-                    <!-- Dynamic option buttons -->
+                <!-- Corkboard: clue file + string-connector leads -->
+                <div id="corkboardWrap" class="corkboard-wrap">
+                    <svg id="stringSvg" class="string-svg">
+                        <g id="pinnedLines"></g>
+                        <line id="dragLine" class="drag-line" x1="0" y1="0" x2="0" y2="0" visibility="hidden"></line>
+                    </svg>
+
+                    <div id="clueCard" class="clue-card">
+                        <div class="evidence-tag">Case Evidence Log</div>
+                        <div id="evidenceText" class="evidence-text">Loading case file data...</div>
+                        <div class="clue-drag-hint">🖐️ Click &amp; drag this file onto the suspect who matches the math</div>
+                        <div id="cluePin" class="clue-pin" aria-hidden="true">📌</div>
+                    </div>
+
+                    <div id="leadsLayer" class="leads-layer" aria-label="Suspect leads">
+                        <!-- Dynamic suspect/answer cards -->
+                    </div>
                 </div>
             </div>
 
@@ -105,7 +114,7 @@
         <!-- 3. CASE FAILED / COLD LOCK SCREEN -->
         <div id="failScreen" class="screen-center" style="display: none;">
             <h1 class="case-title" style="color: var(--accent-red);">CASE CLOSED // UNSOLVED</h1>
-            <p class="case-subtitle">Your integrity rating dropped to zero. The evidence remains unverified.</p>
+            <p class="case-subtitle">Your Detective Focus dropped to zero. Every string in the room just went slack.</p>
             <p style="font-family: var(--code-font); margin-bottom: 16px;">Final Evidence Score: <span id="failScore">0</span> PTS</p>
 
             <div class="kit-submission-card">
@@ -123,7 +132,7 @@
             <p class="case-subtitle">Master Detective Distinction Awarded</p>
 
             <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
-                Outstanding investigative work! You have successfully resolved all 10 cold case files by correctly applying coordinate geometry, scientific notation, and algebraic translations.
+                Outstanding investigative work! You pinned all 10 cold case files, correctly stringing together coordinate geometry, scientific notation, and algebraic translations. The precinct is throwing you a (modest, budget-conscious) parade.
             </p>
 
             <div style="font-family: var(--code-font); font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border: 1px solid var(--border-color); margin-bottom: 10px;">

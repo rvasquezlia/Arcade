@@ -62,13 +62,58 @@
             }
         ];
 
+        // Fixed 2x2 scatter slots for the four suspect leads (percentages of
+        // the leads-layer box). Small per-card jitter/rotation is added at
+        // render time so the board feels hand-pinned, not gridded.
+        const SLOT_POSITIONS = [
+            { left: 2,  top: 4  },
+            { left: 52, top: 4  },
+            { left: 2,  top: 54 },
+            { left: 52, top: 54 }
+        ];
+
+        const NARRATION_LINES = [
+            "The rain hasn't stopped since Tuesday. Neither have the numbers.",
+            "Somewhere a saxophone plays. It's probably just the radiator.",
+            "You light a cigarette you don't smoke, for the drama of it, then remember this is a school.",
+            "The coffee's cold. The trail isn't.",
+            "Every suspect has an alibi. Only one of them has the arithmetic to back it up.",
+            "You've seen a lot of corkboards in this line of work. This one has opinions.",
+            "The city sleeps. You, apparently, do word problems.",
+            "Somebody once said the truth is out there. They were talking about a decimal point.",
+            "Your trench coat is purely ceremonial. It does not affect your math skills.",
+            "The evidence never lies. The suspects, constantly.",
+            "You crack your knuckles. You crack open the case file. Only one of those was necessary.",
+            "The lieutenant wants answers by Friday. The numbers want them right now."
+        ];
+
+        const CORRECT_LINES = [
+            "Thunk. Case cracked. The suspect didn't even see it coming.",
+            "Pinned it like a pro. Somewhere, a criminal is quietly sweating.",
+            "That's a wrap. The precinct owes you a coffee.",
+            "Nailed it. This town's a little safer tonight — and a little better at math.",
+            "String's taut, math checks out, case closed.",
+            "Clean pin. No notes. The chief is, against his better judgment, impressed."
+        ];
+
+        const WRONG_LINES = [
+            "Wrong lead, detective. That suspect's got a rock-solid alibi (and better arithmetic).",
+            "Snap. That string had places to be, and 'correct answer' wasn't one of them.",
+            "Nope. That's not a criminal, that's just a guy who owns a similar hat.",
+            "Miss. The real answer is still out there, laughing at you.",
+            "The string fell to the floor in what can only be described as disappointment.",
+            "Wrong pin. Back to the evidence board, detective."
+        ];
+
         // GAME STATE
         let currentFileIndex = 0;
         let score = 0;
-        let integrity = 3;
+        let focus = 3;
         let activeCases = [];
         let isDarkMode = true;
         let isLocked = false;
+        let isDragging = false;
+        let dragPointerId = null;
         let playerName = '';
 
         // Fisher-Yates Array Shuffle
@@ -79,6 +124,10 @@
                 [temp[i], temp[j]] = [temp[j], temp[i]];
             }
             return temp;
+        }
+
+        function pickRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
         }
 
         // Theme Toggle
@@ -113,7 +162,7 @@
 
             currentFileIndex = 0;
             score = 0;
-            integrity = 3;
+            focus = 3;
             activeCases = shuffleArray(caseFiles);
 
             document.getElementById('startScreen').style.display = 'none';
@@ -124,10 +173,15 @@
             loadCase();
         }
 
-        // Load Current Case File
+        // Load Current Case File onto the corkboard
         function loadCase() {
             isLocked = false;
-            document.getElementById('feedbackLine').innerText = '';
+            isDragging = false;
+            dragPointerId = null;
+
+            const feedback = document.getElementById('feedbackLine');
+            feedback.innerText = '';
+            feedback.className = 'feedback-line';
 
             const cData = activeCases[currentFileIndex];
 
@@ -135,44 +189,170 @@
             document.getElementById('caseHeader').innerText = `Case File #${currentFileIndex + 1}: ${cData.title}`;
             document.getElementById('fileCounter').innerText = `${currentFileIndex + 1} / ${activeCases.length}`;
             document.getElementById('scoreDisplay').innerText = `${score} PTS`;
-            document.getElementById('integrityDisplay').innerText = `${integrity} / 3`;
+            document.getElementById('integrityDisplay').innerText = `${focus} / 3`;
+            document.getElementById('narrationText').innerText = pickRandom(NARRATION_LINES);
 
-            // Render Evidence Text
+            // Render clue card
+            const clueCard = document.getElementById('clueCard');
+            clueCard.classList.remove('pinned', 'dragging');
             document.getElementById('evidenceText').innerHTML = cData.evidence;
 
-            // Randomize & Render Options
+            // Build scattered suspect lead cards
+            const leadsLayer = document.getElementById('leadsLayer');
+            leadsLayer.innerHTML = '';
             const shuffledOptions = shuffleArray(cData.options);
-            const grid = document.getElementById('optionsGrid');
-            grid.innerHTML = '';
 
-            const keys = ['A', 'B', 'C', 'D'];
             shuffledOptions.forEach((optText, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.onclick = () => evaluateAnswer(optText, cData.correct, btn);
-                btn.innerHTML = `
-                    <span class="option-key">${keys[idx]}</span>
-                    <span>${optText}</span>
+                const slot = SLOT_POSITIONS[idx] || SLOT_POSITIONS[idx % SLOT_POSITIONS.length];
+                const jitterX = (Math.random() * 3 - 1.5);
+                const jitterY = (Math.random() * 3 - 1.5);
+                const rotate = (Math.random() * 6 - 3).toFixed(1);
+
+                const card = document.createElement('div');
+                card.className = 'lead-card';
+                card.style.left = (slot.left + jitterX) + '%';
+                card.style.top = (slot.top + jitterY) + '%';
+                card.style.setProperty('--rot', rotate + 'deg');
+                card.dataset.correct = (optText === cData.correct) ? '1' : '0';
+                card.innerHTML = `
+                    <span class="lead-pin">📌</span>
+                    <span class="lead-label">Suspect Lead</span>
+                    <span class="lead-text">${optText}</span>
                 `;
-                grid.appendChild(btn);
+                leadsLayer.appendChild(card);
             });
 
+            clearStrings();
             renderMath();
         }
 
-        // Evaluate Answer Choice
-        function evaluateAnswer(selectedOpt, correctOpt, btnEl) {
-            if (isLocked) return;
+        // ---------- Corkboard string-connector drag logic ----------
+
+        function getWrapRect() {
+            return document.getElementById('corkboardWrap').getBoundingClientRect();
+        }
+
+        function getCluePinCenter() {
+            const rect = document.getElementById('cluePin').getBoundingClientRect();
+            const wrap = getWrapRect();
+            return {
+                x: rect.left + rect.width / 2 - wrap.left,
+                y: rect.top + rect.height / 2 - wrap.top
+            };
+        }
+
+        function updateDragLine(clientX, clientY) {
+            const wrap = getWrapRect();
+            const start = getCluePinCenter();
+            const line = document.getElementById('dragLine');
+            line.setAttribute('x1', start.x);
+            line.setAttribute('y1', start.y);
+            line.setAttribute('x2', clientX - wrap.left);
+            line.setAttribute('y2', clientY - wrap.top);
+            line.setAttribute('visibility', 'visible');
+        }
+
+        function retractDragLine() {
+            document.getElementById('dragLine').setAttribute('visibility', 'hidden');
+        }
+
+        function pinPermanentLine(start, end, isCorrect) {
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const line = document.createElementNS(svgNS, 'line');
+            line.setAttribute('x1', start.x);
+            line.setAttribute('y1', start.y);
+            line.setAttribute('x2', end.x);
+            line.setAttribute('y2', end.y);
+            line.setAttribute('class', 'pinned-string ' + (isCorrect ? 'solved' : 'snapped'));
+            document.getElementById('pinnedLines').appendChild(line);
+        }
+
+        function clearStrings() {
+            document.getElementById('pinnedLines').innerHTML = '';
+            retractDragLine();
+        }
+
+        function onPinDown(e) {
+            if (isLocked || isDragging) return;
+            const clueCard = document.getElementById('clueCard');
+            isDragging = true;
+            dragPointerId = e.pointerId;
+            clueCard.classList.add('dragging');
+            document.getElementById('corkboardWrap').classList.add('drag-active');
+            try { clueCard.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+
+            updateDragLine(e.clientX, e.clientY);
+
+            clueCard.addEventListener('pointermove', onPinMove);
+            clueCard.addEventListener('pointerup', onPinUp);
+            clueCard.addEventListener('pointercancel', onPinCancel);
+            e.preventDefault();
+        }
+
+        function onPinMove(e) {
+            if (!isDragging || e.pointerId !== dragPointerId) return;
+            updateDragLine(e.clientX, e.clientY);
+        }
+
+        function endDrag() {
+            const clueCard = document.getElementById('clueCard');
+            clueCard.removeEventListener('pointermove', onPinMove);
+            clueCard.removeEventListener('pointerup', onPinUp);
+            clueCard.removeEventListener('pointercancel', onPinCancel);
+            clueCard.classList.remove('dragging');
+            document.getElementById('corkboardWrap').classList.remove('drag-active');
+            isDragging = false;
+        }
+
+        function onPinUp(e) {
+            if (!isDragging || e.pointerId !== dragPointerId) return;
+            const clueCard = document.getElementById('clueCard');
+            try { clueCard.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+            endDrag();
+
+            const target = document.elementFromPoint(e.clientX, e.clientY);
+            const leadCard = target ? target.closest('.lead-card') : null;
+
+            if (!leadCard || isLocked) {
+                retractDragLine();
+                return;
+            }
+            submitLead(leadCard);
+        }
+
+        function onPinCancel(e) {
+            if (e.pointerId !== dragPointerId) return;
+            endDrag();
+            retractDragLine();
+        }
+
+        // Evaluate the suspect lead the player pinned the clue to
+        function submitLead(leadCard) {
             isLocked = true;
+            retractDragLine();
 
             const feedback = document.getElementById('feedbackLine');
+            const isCorrect = leadCard.dataset.correct === '1';
 
-            if (selectedOpt === correctOpt) {
+            const wrap = getWrapRect();
+            const start = getCluePinCenter();
+            const cardRect = leadCard.getBoundingClientRect();
+            const end = {
+                x: cardRect.left + cardRect.width / 2 - wrap.left,
+                y: cardRect.top + cardRect.height / 2 - wrap.top
+            };
+
+            document.querySelectorAll('.lead-card').forEach(c => c.classList.add('disabled'));
+            pinPermanentLine(start, end, isCorrect);
+
+            if (isCorrect) {
                 score += 100;
-                btnEl.style.borderColor = 'var(--accent-green)';
-                btnEl.style.background = 'rgba(22, 163, 74, 0.15)';
+                leadCard.classList.remove('disabled');
+                leadCard.classList.add('correct', 'thunk');
+                document.getElementById('clueCard').classList.add('pinned');
                 feedback.className = 'feedback-line text-success';
-                feedback.innerText = 'VERIFIED EVIDENCE // +100 PTS';
+                feedback.innerText = pickRandom(CORRECT_LINES) + ' // +100 PTS';
+                document.getElementById('scoreDisplay').innerText = `${score} PTS`;
 
                 setTimeout(() => {
                     currentFileIndex++;
@@ -181,27 +361,29 @@
                     } else {
                         loadCase();
                     }
-                }, 1100);
+                }, 1400);
 
             } else {
-                integrity--;
-                btnEl.style.borderColor = 'var(--accent-red)';
-                btnEl.style.background = 'rgba(220, 38, 38, 0.15)';
+                leadCard.classList.add('wrong');
+                focus--;
+                document.getElementById('integrityDisplay').innerText = `${focus} / 3`;
                 feedback.className = 'feedback-line text-error';
-                feedback.innerText = 'MISLEADING LEAD // -1 INTEGRITY';
+                feedback.innerText = pickRandom(WRONG_LINES) + ' // -1 FOCUS';
 
-                document.getElementById('integrityDisplay').innerText = `${integrity} / 3`;
-
-                if (integrity <= 0) {
-                    setTimeout(() => {
+                setTimeout(() => {
+                    if (focus <= 0) {
                         triggerFail();
-                    }, 1000);
-                } else {
-                    setTimeout(() => {
+                    } else {
+                        // Same case file, board reshuffles — no soft-lock,
+                        // the detective just tries again.
                         loadCase();
-                    }, 1200);
-                }
+                    }
+                }, 1300);
             }
+        }
+
+        function initDragHandlers() {
+            document.getElementById('clueCard').addEventListener('pointerdown', onPinDown);
         }
 
         function triggerFail() {
@@ -221,4 +403,5 @@
         function restartInvestigation() {
             startInvestigation();
         }
-    
+
+        initDragHandlers();

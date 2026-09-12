@@ -21,6 +21,11 @@
             --kit-border: var(--border-color);
             --kit-input-bg: var(--container-bg);
             --kit-error: var(--accent-red);
+
+            /* Corkboard panel — redeclared (not chained) in the light block too,
+               see body.light-mode comment below for why. */
+            --board-bg: var(--card-bg);
+            --board-dot: var(--border-color);
         }
 
         body.light-mode {
@@ -43,6 +48,11 @@
             --kit-border: var(--border-color);
             --kit-input-bg: var(--container-bg);
             --kit-error: var(--accent-red);
+
+            /* Corkboard panel — redeclared explicitly here, not inherited via
+               var-of-var, so the light theme actually re-tracks it. */
+            --board-bg: var(--card-bg);
+            --board-dot: var(--border-color);
         }
 
         * {
@@ -136,8 +146,10 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             padding: 12px 20px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             font-family: var(--code-font);
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .status-item {
@@ -156,14 +168,89 @@
             color: var(--accent-amber);
         }
 
-        /* Clue Box / Evidence Index */
-        .evidence-card {
+        /* Flavor narration line above the corkboard */
+        .narration-line {
+            font-family: var(--typewriter-font);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* ============ CORKBOARD ============ */
+
+        .corkboard-wrap {
+            position: relative;
+            background-color: var(--board-bg);
+            background-image: radial-gradient(var(--board-dot) 1.4px, transparent 1.6px);
+            background-size: 18px 18px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .string-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: visible;
+            pointer-events: none;
+        }
+
+        .drag-line {
+            stroke: var(--accent-red);
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+
+        .pinned-string {
+            stroke: var(--accent-red);
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+
+        .pinned-string.solved {
+            filter: drop-shadow(0 2px 1px var(--shadow-color));
+        }
+
+        .pinned-string.snapped {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: snapFall 0.7s ease forwards;
+        }
+
+        @keyframes snapFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.95; }
+            100% { transform: translateY(46px) rotate(10deg); opacity: 0; }
+        }
+
+        /* Clue file — the draggable case card */
+        .clue-card {
+            position: relative;
+            z-index: 2;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-left: 4px solid var(--accent-amber);
-            padding: 24px;
-            margin-bottom: 24px;
-            position: relative;
+            padding: 22px 24px 30px;
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            box-shadow: 0 6px 14px var(--shadow-color);
+        }
+
+        .clue-card.dragging {
+            cursor: grabbing;
+            box-shadow: 0 0 0 3px var(--accent-amber), 0 10px 22px var(--shadow-color);
+        }
+
+        .clue-card.pinned {
+            opacity: 0.82;
+            cursor: default;
         }
 
         .evidence-tag {
@@ -182,51 +269,125 @@
             font-weight: 500;
         }
 
-        /* Option Grid */
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-bottom: 16px;
+        .clue-drag-hint {
+            margin-top: 14px;
+            font-family: var(--code-font);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+        }
+
+        .clue-pin {
+            position: absolute;
+            left: 50%;
+            bottom: -18px;
+            transform: translateX(-50%);
+            font-size: 1.7rem;
+            line-height: 1;
+            filter: drop-shadow(0 3px 2px var(--shadow-color));
+            pointer-events: none;
+        }
+
+        /* Leads layer — the scattered suspect/answer cards */
+        .leads-layer {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            margin-top: 34px;
+            z-index: 2;
+        }
+
+        .corkboard-wrap.drag-active .lead-card {
+            outline: 2px dashed var(--accent-amber);
+            outline-offset: 2px;
+        }
+
+        .lead-card {
+            position: absolute;
+            width: 44%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            padding: 14px 16px 16px;
+            box-shadow: 0 5px 12px var(--shadow-color);
+            transform: rotate(var(--rot, 0deg));
+        }
+
+        .lead-card.disabled {
+            pointer-events: none;
+        }
+
+        .lead-card.correct {
+            border-color: var(--accent-green) !important;
+            background: rgba(22, 163, 74, 0.15);
+        }
+
+        .lead-card.wrong {
+            border-color: var(--accent-red) !important;
+            background: rgba(220, 38, 38, 0.15);
+            animation: shake 0.45s ease;
+        }
+
+        .lead-card.thunk {
+            animation: thunk 0.4s ease;
+        }
+
+        @keyframes thunk {
+            0% { transform: scale(1) rotate(var(--rot, 0deg)); }
+            45% { transform: scale(1.14) rotate(var(--rot, 0deg)); }
+            100% { transform: scale(1) rotate(var(--rot, 0deg)); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(var(--rot, 0deg)); }
+            20% { transform: translateX(-7px) rotate(var(--rot, 0deg)); }
+            40% { transform: translateX(7px) rotate(var(--rot, 0deg)); }
+            60% { transform: translateX(-5px) rotate(var(--rot, 0deg)); }
+            80% { transform: translateX(5px) rotate(var(--rot, 0deg)); }
+        }
+
+        .lead-pin {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .lead-label {
+            display: block;
+            font-family: var(--code-font);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .lead-text {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.4;
         }
 
         @media (max-width: 640px) {
-            .options-grid { grid-template-columns: 1fr; }
-        }
-
-        .option-btn {
-            background: var(--card-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 16px;
-            border-radius: 2px;
-            font-family: var(--sans-font);
-            font-size: 1rem;
-            font-weight: 600;
-            text-align: left;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .option-btn:hover {
-            border-color: var(--accent-amber);
-            background: var(--container-bg);
-        }
-
-        .option-key {
-            font-family: var(--code-font);
-            background: var(--border-color);
-            color: var(--text-primary);
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 700;
-            flex-shrink: 0;
+            .leads-layer {
+                height: auto;
+            }
+            .lead-card {
+                position: static !important;
+                left: auto !important;
+                top: auto !important;
+                width: 100% !important;
+                transform: none !important;
+                margin-bottom: 12px;
+            }
+            .lead-card:last-child {
+                margin-bottom: 0;
+            }
+            .string-svg {
+                display: none;
+            }
         }
 
         /* Feedback Message */
