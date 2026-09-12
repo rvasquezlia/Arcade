@@ -45,14 +45,15 @@
         <!-- 1. START SCREEN -->
         <div id="startScreen" class="screen-center">
             <h1 class="hud-title">🚗 Autonomous Braking Distance</h1>
-            <p class="hud-subtitle">Test Track HUD // Quadratic Formula &amp; Discriminant</p>
+            <p class="hud-subtitle">Test Track HUD // Type It. Time It. Brake It.</p>
 
             <div class="brief-box">
-                <p style="margin-bottom: 10px;"><strong>SYSTEMS ENGINEER BRIEFING:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>SYSTEMS ENGINEER BRIEFING (from your very nervous student-driver AI):</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Clear 12 test-track diagnostics by computing the discriminant \( b^2 - 4ac \) and solving braking equations with the quadratic formula \( x = \dfrac{-b \pm \sqrt{b^2-4ac}}{2a} \).</li>
-                    <li><strong>System Integrity:</strong> You start with 3 Integrity Cores. Each incorrect diagnostic drains 1 core. Losing all 3 halts the test vehicle.</li>
-                    <li><strong>Test Randomization:</strong> Track equations and answer choices are shuffled every test session.</li>
+                    <li><strong>Step 1 — Calculate:</strong> Compute the discriminant \( b^2 - 4ac \) or solve with the quadratic formula \( x = \dfrac{-b \pm \sqrt{b^2-4ac}}{2a} \), then type your number into the console. No multiple choice to hide behind!</li>
+                    <li><strong>Step 2 — Brake:</strong> A needle sweeps across the brake gauge. If your math was correct, the safe stopping zone lights up green — slam BRAKE (or hit SPACE) while the needle is inside it. Get the math wrong and you're braking blind.</li>
+                    <li><strong>System Integrity:</strong> You start with 3 Integrity Cores. Any missed diagnostic (bad math, bad timing, or both) drains 1 core. Losing all 3 halts the test vehicle.</li>
+                    <li><strong>Test Randomization:</strong> Equations are shuffled every test session. Cones are, unfortunately, always in the way.</li>
                     <li><strong>Session Memory:</strong> This console holds data only in active memory. Reloading the page resets the test log completely.</li>
                 </ul>
             </div>
@@ -91,7 +92,7 @@
                 <div class="calc-pad">
                     <div class="status-light-row">
                         <div id="statusLight" class="status-light light-neutral"></div>
-                        <span id="statusLightLabel" class="status-light-label">DISCRIMINANT STANDBY</span>
+                        <span id="statusLightLabel" class="status-light-label">SYSTEM STANDBY</span>
                     </div>
                     <div class="equation-card">
                         <div class="equation-tag">Braking Equation</div>
@@ -99,10 +100,33 @@
                     </div>
                 </div>
 
-                <!-- Prompt + Option Choices Grid -->
-                <div class="prompt-line" id="promptLine">Solve the diagnostic below.</div>
-                <div id="optionsGrid" class="options-grid">
-                    <!-- Dynamic option buttons -->
+                <!-- PHASE 1: TYPE THE CALCULATION -->
+                <div id="calcPhase">
+                    <div class="prompt-line" id="promptLine">Solve the diagnostic below.</div>
+                    <div class="calc-input-row">
+                        <input type="number" step="any" inputmode="decimal" id="answerInput" class="calc-input"
+                               placeholder="Type your number…" autocomplete="off"
+                               onkeydown="if(event.key==='Enter'){submitAnswer();}">
+                        <button class="action-btn calc-submit-btn" id="submitAnswerBtn" onclick="submitAnswer()">LOCK IN 🔒</button>
+                    </div>
+                    <div class="calc-input-error" id="calcInputError">Type a number first, rookie — the console can't brake on vibes.</div>
+                    <div class="calc-feedback" id="calcFeedback"></div>
+                </div>
+
+                <!-- PHASE 2: TYPE-THEN-BRAKE QTE -->
+                <div id="qtePhase" class="qte-phase" style="display:none;">
+                    <div class="qte-hint" id="qteHint">Calibrating sensor…</div>
+                    <canvas id="brakeGauge" class="brake-gauge" width="480" height="270"></canvas>
+                    <button class="action-btn brake-btn" id="brakeBtn" onclick="handleBrake()">🛑 BRAKE!</button>
+                    <div class="qte-tip">Tip: press BRAKE (or the SPACE bar) the instant the needle sweeps through the zone.</div>
+                </div>
+
+                <!-- ROUND RESULT: CAR VS CONE -->
+                <div id="trackStage" class="track-stage" style="display:none;">
+                    <div class="track-road">
+                        <div id="carEl" class="track-car">🚗</div>
+                        <div id="hazardEl" class="track-hazard">🚧</div>
+                    </div>
                 </div>
             </div>
 
