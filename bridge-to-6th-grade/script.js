@@ -286,6 +286,7 @@
             bridgeScene.classList.remove('challenge-gap', 'boss-gap');
             gapSlot.classList.remove('filled', 'wobble', 'hover-target');
             gapHint.style.opacity = '';
+            resetHikerPosition();
 
             if (isBossPhase) {
                 qData = ultimateBossChallenge;
@@ -501,14 +502,46 @@
             gapSlot.classList.add('filled');
             document.getElementById('gap-hint').style.opacity = '0';
 
-            const hiker = document.getElementById('hiker');
-            hiker.classList.add('hop');
+            climbHikerUp();
             showHikerQuip(randomLine(hikerLines.correct));
 
             setTimeout(() => {
-                hiker.classList.remove('hop');
                 resolveCorrectAnswer();
             }, 650);
+        }
+
+        // Moves the climber's SVG figure up past the current foothold gap,
+        // using the real on-screen distance between them (so it works at any
+        // screen size/zoom). It holds that "climbed past it" position — it
+        // does NOT snap back to (0,0) here, so progress stays visible through
+        // the explanation modal. loadGap() resets it for the next foothold.
+        function climbHikerUp() {
+            const wrapEl = document.querySelector('.hiker-wrap');
+            const gapSlot = document.getElementById('gap-slot');
+            if (!wrapEl || !gapSlot) return;
+
+            const wrapRect = wrapEl.getBoundingClientRect();
+            const gapRect = gapSlot.getBoundingClientRect();
+            const distance = Math.max(70, (wrapRect.top - gapRect.top) + gapRect.height + 16);
+
+            wrapEl.style.transition = 'transform 0.6s cubic-bezier(.34,1.56,.64,1)';
+            requestAnimationFrame(() => {
+                wrapEl.style.transform = `translate(5px, ${-(distance * 0.55)}px) rotate(-5deg)`;
+                setTimeout(() => {
+                    wrapEl.style.transform = `translate(0px, ${-distance}px) rotate(0deg)`;
+                }, 240);
+            });
+        }
+
+        // Instantly (no transition) returns the climber to the base of the
+        // cliff so the next foothold gap has somewhere fresh to climb from.
+        function resetHikerPosition() {
+            const wrapEl = document.querySelector('.hiker-wrap');
+            if (!wrapEl) return;
+            wrapEl.style.transition = 'none';
+            wrapEl.style.transform = 'translate(0, 0) rotate(0deg)';
+            void wrapEl.offsetWidth; // force reflow so the next transition isn't skipped
+            wrapEl.style.transition = 'transform 0.6s cubic-bezier(.34,1.56,.64,1)';
         }
 
         function wobbleWrong(tile) {

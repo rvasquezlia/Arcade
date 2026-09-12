@@ -217,32 +217,16 @@
         .bridge-scene {
             position: relative;
             display: flex;
-            align-items: flex-end;
+            flex-direction: column;
+            align-items: center;
             gap: 10px;
             min-height: 150px;
-            padding: 14px 16px 26px;
+            padding: 18px 16px 14px;
             border-radius: 16px;
             background: linear-gradient(180deg, var(--bridge-sky-top), var(--bridge-sky-bottom));
             border: 1px solid var(--bridge-rack-border);
             overflow: hidden;
             transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-        }
-        .bridge-scene::before {
-            content: '';
-            position: absolute;
-            left: 0; right: 0; bottom: 36px;
-            height: 5px;
-            background: repeating-linear-gradient(90deg, var(--bridge-rope) 0 14px, transparent 14px 22px);
-            opacity: 0.9;
-            z-index: 1;
-        }
-        .bridge-scene::after {
-            content: '';
-            position: absolute;
-            left: 0; right: 0; bottom: 0;
-            height: 30px;
-            background: var(--bridge-chasm);
-            z-index: 0;
         }
         .bridge-scene.challenge-gap {
             box-shadow: 0 0 0 2px var(--bridge-rope-good) inset;
@@ -251,15 +235,35 @@
             box-shadow: 0 0 0 2px var(--kit-error) inset;
         }
 
+        /* Vertical cliff panel: flag at the top, current foothold gap below it,
+           climber below that — the climber moves UP past the gap on every
+           correct answer instead of a static sprite that never advances. */
+        .cliff-face {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 230px;
+            height: 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0 8px;
+            border-left: 3px dashed var(--bridge-rope);
+            border-right: 3px dashed var(--bridge-rope);
+            border-radius: 14px;
+            background: linear-gradient(180deg, transparent 0%, var(--bridge-chasm) 115%);
+        }
+
         .planks-crossed {
             position: relative;
             z-index: 2;
             display: flex;
             gap: 4px;
-            align-items: flex-end;
-            padding-bottom: 8px;
+            align-items: center;
+            justify-content: center;
             flex-wrap: wrap;
-            max-width: 30%;
+            padding-top: 2px;
         }
         .mini-plank {
             width: 14px;
@@ -281,21 +285,35 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-bottom: 10px;
             flex-shrink: 0;
+            transition: transform 0.6s cubic-bezier(.34,1.56,.64,1);
+            transform: translate(0, 0) rotate(0deg);
         }
         .hiker {
-            font-size: 1.9rem;
+            width: 46px;
+            height: 60px;
+            overflow: visible;
+            color: var(--bridge-rope-good);
             filter: drop-shadow(0 4px 4px var(--bridge-hiker-shadow));
+            animation: hikerIdleBob 1.8s ease-in-out infinite;
         }
-        .hiker.hop {
-            animation: hikerHop 0.65s ease;
+        .hiker-head {
+            fill: currentColor;
         }
-        @keyframes hikerHop {
-            0%   { transform: translate(0, 0) rotate(0deg); }
-            25%  { transform: translate(6px, -16px) rotate(-8deg); }
-            55%  { transform: translate(16px, -4px) rotate(6deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
+        .hiker-torso,
+        .hiker-arm-up,
+        .hiker-arm-down,
+        .hiker-leg-a,
+        .hiker-leg-b {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        @keyframes hikerIdleBob {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50%      { transform: translateY(-3px) rotate(-3deg); }
         }
         .hiker-quip {
             position: absolute;
@@ -338,7 +356,6 @@
             justify-content: center;
             text-align: center;
             padding: 6px;
-            margin-bottom: 8px;
             transition: border-color 0.2s ease, background 0.2s ease;
         }
         .gap-slot.hover-target {
@@ -374,11 +391,8 @@
         }
 
         .finish-post {
-            margin-left: auto;
-            font-size: 1.5rem;
-            align-self: flex-end;
-            padding-bottom: 8px;
-            opacity: 0.85;
+            font-size: 1.6rem;
+            opacity: 0.9;
             z-index: 2;
             flex-shrink: 0;
         }
@@ -486,7 +500,11 @@
         @media (max-width: 480px) {
             .bridge-scene {
                 gap: 6px;
-                padding: 12px 10px 22px;
+                padding: 12px 10px 16px;
+            }
+            .cliff-face {
+                height: 210px;
+                max-width: 190px;
             }
             .planks-crossed {
                 display: none;

@@ -95,17 +95,26 @@
                 <div class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-400 text-sub-theme">🪢 Safety Ropes</div>
             </div>
 
-            <!-- Rope Bridge Scene -->
+            <!-- Vertical Cliff-Climb Scene -->
             <div id="bridge-scene" class="bridge-scene">
+                <div class="cliff-face">
+                    <div class="finish-post">🚩</div>
+                    <div id="gap-slot" class="gap-slot">
+                        <span id="gap-hint" class="gap-hint">Drag a plank here!</span>
+                    </div>
+                    <div class="hiker-wrap">
+                        <div id="hiker-quip" class="hiker-quip"></div>
+                        <svg id="hiker" class="hiker" viewBox="0 0 64 84" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <path class="hiker-leg-a" d="M31 42 L21 56 L27 72"></path>
+                            <path class="hiker-leg-b" d="M32 42 L45 54 L41 72"></path>
+                            <path class="hiker-arm-down" d="M33 30 L47 42"></path>
+                            <path class="hiker-arm-up" d="M30 27 L16 10"></path>
+                            <path class="hiker-torso" d="M32 24 L31 42"></path>
+                            <circle class="hiker-head" cx="34" cy="14" r="9"></circle>
+                        </svg>
+                    </div>
+                </div>
                 <div id="planks-crossed" class="planks-crossed"></div>
-                <div class="hiker-wrap">
-                    <div id="hiker-quip" class="hiker-quip"></div>
-                    <div id="hiker" class="hiker">🧗</div>
-                </div>
-                <div id="gap-slot" class="gap-slot">
-                    <span id="gap-hint" class="gap-hint">Drag a plank here!</span>
-                </div>
-                <div class="finish-post">🚩</div>
             </div>
 
             <!-- Supply Rack (draggable planks) -->
