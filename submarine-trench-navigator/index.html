@@ -31,13 +31,13 @@
             <p class="sonar-subtitle">Sonar Command Deck // Integers &amp; Absolute Value</p>
 
             <div class="brief-box">
-                <p style="margin-bottom: 10px;"><strong>NAVIGATOR ORDERS:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>SONAR OPERATOR'S BRIEFING:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Complete 12 dive orders across the trench, mixing depth-gauge dives with distance calculations.</li>
-                    <li><strong>Depth Dives:</strong> Drag the depth gauge slider to the exact requested depth (a negative integer between 0 m and -100 m) and lock it in.</li>
-                    <li><strong>Distance Logs:</strong> Some orders ask you to compute distance traveled between two depths using absolute value — pick the correct answer from four choices.</li>
-                    <li><strong>Hull Integrity:</strong> You start at 100% Hull Integrity. Inaccurate dives and wrong distance logs drain the hull. Reaching 0% causes a hull breach.</li>
-                    <li><strong>Dive Log Randomization:</strong> Orders and their sequence are shuffled at the start of every dive.</li>
+                    <li><strong>Objective:</strong> Fly the sub through 8 dive orders in the trench. No clicking your way through this one, Navigator — you're piloting it live.</li>
+                    <li><strong>Controls:</strong> Hold ▲ / ▼ (or the Arrow Keys) to rise or dive. Read the sonar clue, work out the integer or absolute-value math, then steer to that depth.</li>
+                    <li><strong>The Gate:</strong> Every order ends with a rock gate scrolling toward you. Hold your sub inside the safe gap as it passes — miss it and you'll scrape hull paint off solid rock.</li>
+                    <li><strong>Wrong-Answer Mines:</strong> Drifting mines mark other tempting-but-wrong depths. Get to the correct depth early and you'll cruise right past them untouched.</li>
+                    <li><strong>Hull Integrity:</strong> You start at 100%. Mine strikes and rock scrapes drain it. Hit 0% and it's an emergency blow to the surface — a "hull breach" in polite company.</li>
                     <li><strong>Session Memory:</strong> This console only holds progress in active memory. Reloading the page resets the entire dive log.</li>
                 </ul>
             </div>
@@ -59,7 +59,7 @@
             <div class="hud-bar">
                 <div class="hud-item">
                     <span class="hud-label">Dive Log</span>
-                    <span id="roundCounter" class="hud-value">1 / 12</span>
+                    <span id="roundCounter" class="hud-value">1 / 8</span>
                 </div>
                 <div class="hud-item">
                     <span class="hud-label">Hull Integrity</span>
@@ -75,34 +75,24 @@
 
             <!-- Mission Prompt -->
             <div class="order-card">
-                <div class="order-tag">Command Order</div>
+                <div class="order-tag">Sonar Ops Chatter</div>
                 <div id="orderText" class="order-text">Loading dive order...</div>
             </div>
 
-            <!-- SLIDER MODE PANEL -->
-            <div id="sliderPanel" class="interaction-panel">
-                <div class="depth-gauge-wrap">
-                    <div class="depth-scale">
-                        <span>0 m</span>
-                        <span>-25 m</span>
-                        <span>-50 m</span>
-                        <span>-75 m</span>
-                        <span>-100 m</span>
-                    </div>
-                    <div class="slider-rotate-wrap">
-                        <input type="range" id="depthSlider" class="depth-slider" min="-100" max="0" step="1" value="-50" oninput="updateDepthReadout()">
-                    </div>
-                    <div class="depth-readout-box">
+            <!-- STEERING PANEL -->
+            <div class="interaction-panel steering-panel">
+                <div class="scope-wrap">
+                    <canvas id="trenchCanvas" width="1280" height="640" aria-label="Trench sonar scope"></canvas>
+                    <div class="depth-readout-box scope-readout">
                         <span class="depth-readout-label">Current Depth</span>
                         <span id="depthReadout" class="depth-readout-value">-50 m</span>
                     </div>
                 </div>
-                <button class="fire-btn" onclick="lockDepth()">LOCK DEPTH &amp; DIVE 🌊</button>
-            </div>
-
-            <!-- MC MODE PANEL -->
-            <div id="mcPanel" class="interaction-panel" style="display: none;">
-                <div id="optionsGrid" class="options-grid"></div>
+                <div class="throttle-controls">
+                    <button type="button" id="ascendBtn" class="throttle-btn ascend-btn">▲<br>RISE</button>
+                    <div class="throttle-hint">Hold ▲ / ▼<br>or Arrow Keys</div>
+                    <button type="button" id="descendBtn" class="throttle-btn descend-btn">▼<br>DIVE</button>
+                </div>
             </div>
 
             <div id="feedbackLine" class="feedback-line"></div>
@@ -112,7 +102,7 @@
         <div id="failScreen" class="screen-center" style="display: none;">
             <div class="hero-icon">💥</div>
             <h1 class="sonar-title" style="color: var(--accent-red);">HULL BREACH</h1>
-            <p class="sonar-subtitle">Hull Integrity reached 0%. Emergency ballast blow initiated.</p>
+            <p class="sonar-subtitle">Hull Integrity hit 0%. The rockfish are laughing. Emergency ballast blow initiated.</p>
             <p style="font-family: var(--mono-font); margin-bottom: 16px;">Final Dive Score: <span id="failScore">0</span> PTS</p>
 
             <div class="kit-submission-card">
@@ -128,10 +118,10 @@
         <div id="victoryScreen" class="screen-center" style="display: none;">
             <div class="hero-icon">🐋</div>
             <h1 class="sonar-title" style="color: var(--accent-teal);">TRENCH FULLY CHARTED</h1>
-            <p class="sonar-subtitle">Master Navigator Distinction Awarded</p>
+            <p class="sonar-subtitle">Master Navigator Distinction Awarded — even the fish are saluting.</p>
 
             <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px;">
-                Outstanding navigation! You completed all 12 dive orders, precisely setting negative-integer depths and calculating vertical distances using absolute value.
+                Outstanding navigation! You steered every dive order through its gate, reading negative-integer depths and absolute-value distances on the fly — no rock scraped, no mine unavoided (mostly).
             </p>
 
             <div class="score-readout">
