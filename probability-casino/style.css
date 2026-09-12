@@ -196,6 +196,16 @@
             .table-grid { grid-template-columns: 1fr; }
         }
 
+        /* Column holding whichever mini-game visual is active this round.
+           Fixed min-height keeps the table-grid from jumping between a
+           round wheel/dice/cards. */
+        .game-visual-column {
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* Canvas Wheel Wrapper */
         .wheel-wrapper {
             position: relative;
@@ -210,6 +220,174 @@
             padding: 10px;
             border: 4px solid var(--gold-primary);
             box-shadow: 0 0 25px var(--gold-glow);
+        }
+
+        /* ---------------- Mini-Game 2: Dice Tower ---------------- */
+        .dice-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            background: var(--panel-sunken);
+            border-radius: 20px;
+            padding: 30px 10px;
+            border: 4px solid var(--gold-primary);
+            box-shadow: 0 0 25px var(--gold-glow);
+        }
+
+        .dice-tray {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .die {
+            width: 78px;
+            height: 78px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            background: var(--card-bg);
+            border: 3px solid var(--gold-primary);
+            border-radius: 16px;
+            padding: 10px;
+            box-shadow: 0 6px 16px var(--shadow-deep);
+        }
+
+        .die .pip {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--gold-primary);
+            justify-self: center;
+            align-self: center;
+        }
+
+        @keyframes diceTumble {
+            0%   { transform: rotate(0deg) scale(1); }
+            25%  { transform: rotate(90deg) scale(1.08); }
+            50%  { transform: rotate(180deg) scale(0.94); }
+            75%  { transform: rotate(270deg) scale(1.08); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .die.tumbling {
+            animation: diceTumble 0.4s linear infinite;
+        }
+
+        /* ---------------- Mini-Game 3: Card Table ---------------- */
+        .cards-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            background: var(--panel-sunken);
+            border-radius: 20px;
+            padding: 26px 10px;
+            border: 4px solid var(--gold-primary);
+            box-shadow: 0 0 25px var(--gold-glow);
+        }
+
+        .deck-stack {
+            position: relative;
+            width: 90px;
+            height: 60px;
+            transition: transform 0.15s ease;
+        }
+
+        .deck-card {
+            position: absolute;
+            top: 0; left: 0;
+            width: 90px;
+            height: 128px;
+            border-radius: 10px;
+            background: var(--card-bg);
+            border: 2px solid var(--gold-primary);
+            box-shadow: 0 4px 10px var(--shadow-deep);
+        }
+
+        .deck-card:nth-child(1) { transform: rotate(-6deg) translateY(2px); }
+        .deck-card:nth-child(2) { transform: rotate(3deg) translateY(1px); }
+        .deck-card:nth-child(3) { transform: rotate(-1deg); }
+
+        @keyframes deckShuffle {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px) rotate(-2deg); }
+            50% { transform: translateX(6px) rotate(2deg); }
+            75% { transform: translateX(-4px) rotate(-1deg); }
+        }
+
+        .deck-stack.shuffling { animation: deckShuffle 0.35s ease-in-out infinite; }
+
+        .flip-card {
+            width: 130px;
+            height: 182px;
+            perspective: 800px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            border: 3px solid var(--gold-primary);
+            background: var(--card-bg);
+            backface-visibility: hidden;
+            box-shadow: 0 6px 18px var(--shadow-deep);
+        }
+
+        .flip-card-front {
+            font-size: 3.2rem;
+            color: var(--gold-primary);
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+            flex-direction: column;
+            gap: 2px;
+            font-family: var(--font-arcade);
+        }
+
+        .flip-card-back .card-number {
+            font-size: 2.4rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .flip-card-back .card-suit {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .game-readout {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-align: center;
+            min-height: 22px;
         }
 
         canvas {
@@ -268,37 +446,83 @@
             font-weight: 600;
         }
 
-        /* Calibration Grid Buttons */
-        .prob-options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        /* Typed Probability Answer Row */
+        .prob-input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .prob-btn {
+        .prob-input-prefix {
+            font-family: var(--font-arcade);
+            font-weight: 800;
+            color: var(--gold-primary);
+        }
+
+        .prob-answer-input {
+            flex: 1;
+            min-width: 0;
             background: var(--panel-sunken);
             color: var(--text-light);
             border: 1px solid var(--felt-border);
-            padding: 12px;
             border-radius: 6px;
+            padding: 12px;
             font-family: var(--font-arcade);
             font-size: 1rem;
             font-weight: 700;
-            cursor: pointer;
-            text-align: center;
         }
 
-        .prob-btn:hover {
+        .prob-answer-input:focus {
+            outline: none;
             border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
 
-        .prob-btn.selected {
-            background: rgba(0, 240, 255, 0.15);
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
-            box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
+        .prob-check-btn {
+            background: var(--neon-cyan);
+            color: #00121a;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: var(--font-arcade);
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .prob-check-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .prob-check-btn:disabled {
+            background: var(--felt-border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .prob-input-feedback {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-height: 18px;
+            margin-top: 6px;
+        }
+
+        .dealer-quip-line {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: 8px;
+            min-height: 18px;
+        }
+
+        .dealer-quip-audit {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
         /* Betting Table Board */

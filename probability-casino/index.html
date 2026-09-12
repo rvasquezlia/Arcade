@@ -45,16 +45,16 @@
         <!-- 1. CASINO WELCOME SCREEN -->
         <div id="startScreen" class="screen-center">
             <h1 class="casino-title">Probability Casino</h1>
-            <p class="casino-subtitle">High-Roller Wheel & Gaming Table // 10 Random Floor Rounds</p>
+            <p class="casino-subtitle">Wheel, Dice &amp; Cards Gaming Floor // 10 Random Rounds</p>
 
             <div class="briefing-box">
                 <p style="margin-bottom: 10px;"><strong>CASINO OPERATIONAL RULES:</strong></p>
                 <ul>
-                    <li><strong>Dynamic Question Bank:</strong> 10 questions are randomly sampled from a bank of 20 probability challenges every game session.</li>
+                    <li><strong>Three Floor Games:</strong> Rounds rotate across the <strong>Spinning Wheel</strong>, the <strong>Dice Tower</strong>, and the <strong>Card Table</strong> — every session visits all three.</li>
                     <li><strong>Initial Bankroll:</strong> Start with <strong>$1,000 Chips</strong>. Survive all 10 rounds to complete your casino shift.</li>
-                    <li><strong>Step 1 - Odds Calibration:</strong> Select the exact probability $P(E)$ or complement $P(E') = 1 - P(E)$. A correct calculation unlocks a <strong>Dealer Audit Card</strong> and grants a <strong>1.5x Multiplier</strong>!</li>
+                    <li><strong>Step 1 - Odds Calibration:</strong> Type your probability estimate for $P(E)$ or complement $P(E') = 1 - P(E)$ — a fraction like <strong>3/8</strong> or a decimal like <strong>0.375</strong> both work. Correct math unlocks a <strong>Dealer Audit Card</strong> and a <strong>1.5x Multiplier</strong>!</li>
                     <li><strong>Step 2 - Table Betting:</strong> Select chip size ($100, $250, $500) and bet on <strong>Target $E$</strong> or <strong>Complement $E'$</strong>.</li>
-                    <li><strong>Step 3 - Real-Time Wheel Spin:</strong> Spin the wheel! Winning pays out instantly.</li>
+                    <li><strong>Step 3 - Spin, Roll, or Draw:</strong> Set the wheel spinning, tumble the dice, or flip a card — whichever game is live this round. Winning pays out instantly.</li>
                 </ul>
             </div>
 
@@ -95,10 +95,37 @@
             <!-- Table Layout Grid -->
             <div class="table-grid">
                 
-                <!-- Canvas Wheel Left -->
-                <div class="wheel-wrapper">
-                    <div class="wheel-pointer"></div>
-                    <canvas id="wheelCanvas" width="330" height="330"></canvas>
+                <!-- Mini-Game Visual Left: exactly one of these three is shown per round -->
+                <div class="game-visual-column">
+
+                    <div id="wheelWrapper" class="wheel-wrapper">
+                        <div class="wheel-pointer"></div>
+                        <canvas id="wheelCanvas" width="330" height="330"></canvas>
+                    </div>
+
+                    <div id="diceWrapper" class="dice-wrapper" style="display: none;">
+                        <div class="dice-tray">
+                            <div id="die1" class="die"></div>
+                            <div id="die2" class="die"></div>
+                        </div>
+                        <div id="diceReadout" class="game-readout">Ready to roll…</div>
+                    </div>
+
+                    <div id="cardsWrapper" class="cards-wrapper" style="display: none;">
+                        <div id="deckStack" class="deck-stack">
+                            <div class="deck-card"></div>
+                            <div class="deck-card"></div>
+                            <div class="deck-card"></div>
+                        </div>
+                        <div id="flipCard" class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">🂠</div>
+                                <div class="flip-card-back" id="flipCardValue">?</div>
+                            </div>
+                        </div>
+                        <div id="cardReadout" class="game-readout">Ready to draw…</div>
+                    </div>
+
                 </div>
 
                 <!-- Dealer Terminal Right -->
@@ -110,16 +137,20 @@
                         <div id="dealerPromptText" class="dealer-text">
                             Loading floor probability challenge...
                         </div>
+                        <div id="dealerQuipLine" class="dealer-quip-line"></div>
                     </div>
 
                     <!-- Step 1: Odds Calibration -->
                     <div>
                         <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
-                            STEP 1: SELECT PROBABILITY CALIBRATION
+                            STEP 1: TYPE YOUR PROBABILITY CALCULATION
                         </div>
-                        <div id="probOptionsGrid" class="prob-options-grid">
-                            <!-- Dynamic Probability Buttons -->
+                        <div class="prob-input-row">
+                            <span class="prob-input-prefix">P =</span>
+                            <input type="text" id="probAnswerInput" class="prob-answer-input" placeholder="e.g. 3/8 or 0.375" autocomplete="off" onkeydown="handleProbInputKeydown(event)">
+                            <button id="probCheckBtn" class="prob-check-btn" onclick="submitProbabilityAnswer()">LOCK IN</button>
                         </div>
+                        <div id="probInputFeedback" class="prob-input-feedback"></div>
                     </div>
 
                     <!-- Step 2: Table Wager Board -->
@@ -148,7 +179,7 @@
 
                     <!-- Action Button & Output Feedback -->
                     <div>
-                        <button id="spinBtn" class="spin-btn" onclick="spinWheel()" disabled>SELECT CALIBRATION FIRST</button>
+                        <button id="actionBtn" class="spin-btn" onclick="handleActionButtonClick()" disabled>SELECT CALIBRATION FIRST</button>
                         <div id="feedbackLine" class="feedback-line" style="margin-top: 8px;"></div>
                     </div>
 
@@ -208,7 +239,7 @@
                 </div>
             </div>
 
-            <button class="audit-close-btn" onclick="closeAuditModal()">CONTINUE TO WHEEL SPIN 🎰</button>
+            <button id="auditCloseBtn" class="audit-close-btn" onclick="closeAuditModal()">CONTINUE</button>
         </div>
     </div>
 
