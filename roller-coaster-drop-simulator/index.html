@@ -50,10 +50,11 @@
             <div class="brief-box">
                 <p style="margin-bottom: 10px;"><strong>TRACK ENGINEER BRIEFING:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Design 12 coaster hills and drops by finding the vertex \( (h, k) \) of each quadratic track equation \( y = ax^2 + bx + c \).</li>
-                    <li><strong>Cart Integrity:</strong> You start with 3 test carts. Each incorrect vertex derails 1 cart. Losing all 3 shuts down the track.</li>
+                    <li><strong>Objective:</strong> Design 12 coaster hills and drops by physically marking the vertex \( (h, k) \) of each quadratic track equation \( y = ax^2 + bx + c \) — right on the blueprint.</li>
+                    <li><strong>How to Build:</strong> Compute \( h = \tfrac{-b}{2a} \), then <strong>drag the 🟡 vertex marker</strong> onto the curve's peak or valley, and <strong>drag the axis handle</strong> to line up with it. No multiple choice — your hands are the engineering tool.</li>
+                    <li><strong>Cart Integrity:</strong> You start with 3 test carts. A wrong placement sends a cart into a wobbly, comedic derailment. Losing all 3 shuts down the track.</li>
                     <li><strong>Track Randomization:</strong> Track equations are shuffled every design session.</li>
-                    <li><strong>Test Run Animation:</strong> A correct vertex launches a live test-cart animation along your track's parabola on the design canvas!</li>
+                    <li><strong>Test Run Animation:</strong> Nail the vertex + axis and a real test-cart rolls down your actual parabola with gravity-style speed — fast in the dips, slow over the peaks!</li>
                     <li><strong>Session Memory:</strong> This blueprint console holds data only in active memory. Reloading the page resets the design log completely.</li>
                 </ul>
             </div>
@@ -70,7 +71,7 @@
         <!-- 2. GAMEPLAY SCREEN -->
         <div id="gameScreen" style="display: none;">
             <h2 id="hillHeader" class="park-title" style="font-size: 1.3rem; text-align: left;">Hill 01: Track Blueprint</h2>
-            <p class="park-subtitle" style="text-align: left; margin-bottom: 12px;">FIND THE VERTEX TO CLEAR THE TEST RUN</p>
+            <p class="park-subtitle" style="text-align: left; margin-bottom: 12px;">DRAG THE VERTEX &amp; AXIS ONTO THE TRACK TO CLEAR THE TEST RUN</p>
 
             <!-- HUD -->
             <div class="hud-status-bar">
@@ -98,8 +99,9 @@
             <div class="arena-grid">
 
                 <!-- Canvas Left -->
-                <div class="canvas-wrapper">
+                <div class="canvas-wrapper" id="canvasWrapper">
                     <canvas id="trackCanvas" width="420" height="320"></canvas>
+                    <div id="cheerLayer" class="cheer-layer" aria-hidden="true"></div>
                 </div>
 
                 <!-- Panel Right -->
@@ -112,21 +114,20 @@
                             </div>
                         </div>
 
-                        <!-- Vertex Input -->
-                        <div class="vertex-input-group">
-                            <div class="vertex-field">
-                                <label for="inputH">h (x-coordinate)</label>
-                                <input type="number" id="inputH" class="vertex-number-input" step="any" placeholder="h">
-                            </div>
-                            <div class="vertex-field">
-                                <label for="inputK">k (y-coordinate)</label>
-                                <input type="number" id="inputK" class="vertex-number-input" step="any" placeholder="k">
-                            </div>
+                        <!-- Drag Controls Instructions -->
+                        <div class="drag-instructions">
+                            <div class="drag-step"><span class="drag-dot vertex-dot"></span> Drag the <strong>vertex marker</strong> along the curve onto the peak or valley.</div>
+                            <div class="drag-step"><span class="drag-dot axis-dot"></span> Drag the <strong>axis handle</strong> (dashed line) to match that x-position.</div>
+                        </div>
+
+                        <div class="guess-readout">
+                            <span>Vertex guess: <strong id="vertexGuessText">—</strong></span>
+                            <span>Axis guess: <strong id="axisGuessText">—</strong></span>
                         </div>
                     </div>
 
                     <div>
-                        <button class="fire-btn" onclick="submitVertex()">TEST-RUN THE TRACK 🎡</button>
+                        <button class="fire-btn" id="fireBtn" onclick="launchTestRun()">🚀 LOCK IN &amp; TEST-RUN</button>
                         <div id="feedbackLine" class="feedback-line"></div>
                     </div>
                 </div>
