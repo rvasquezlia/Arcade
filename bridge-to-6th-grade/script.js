@@ -581,6 +581,16 @@
             showExplanationModal(points, isSpecial);
         }
 
+        // The just-placed plank tile is left as position:fixed with a very
+        // high inline z-index (999, see attemptPlacement) so it can animate
+        // and sit visually inside the gap-slot. The feedback modal only has
+        // Tailwind's z-50, so without this it floats above the modal overlay.
+        function sinkSnappedTilesBelowModal() {
+            document.querySelectorAll('.plank-tile').forEach((t) => {
+                if (t.style.position === 'fixed') t.style.zIndex = '1';
+            });
+        }
+
         function showExplanationModal(points, isSpecial) {
             const modal = document.getElementById('feedback-modal');
             const modalBadge = document.getElementById('modal-badge');
@@ -592,6 +602,7 @@
             modalTitle.innerText = isSpecial ? `Bonus Earned! (+${points} PTS)` : "Great Crossing!";
             modalExp.innerHTML = currentGapData.explanation;
 
+            sinkSnappedTilesBelowModal();
             modal.classList.remove('hidden');
             renderMath();
         }
@@ -607,6 +618,7 @@
             modalTitle.innerText = "Grappling Hook Deployed!";
             modalExp.innerHTML = "You swung past this bonus chasm safely — no bonus points, but no ropes lost either. " + randomLine(hikerLines.skip);
 
+            sinkSnappedTilesBelowModal();
             modal.classList.remove('hidden');
             renderMath();
         }

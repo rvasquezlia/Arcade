@@ -243,12 +243,12 @@
             z-index: 1;
             width: 100%;
             max-width: 230px;
-            height: 260px;
+            height: 300px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 12px 0 8px;
+            justify-content: flex-start;
+            padding: 14px 0 10px;
             border-left: 3px dashed var(--bridge-rope);
             border-right: 3px dashed var(--bridge-rope);
             border-radius: 14px;
@@ -328,8 +328,7 @@
             border-radius: 10px;
             font-size: 0.68rem;
             font-weight: 800;
-            white-space: nowrap;
-            max-width: 200px;
+            max-width: 230px;
             white-space: normal;
             text-align: center;
             opacity: 0;
@@ -348,6 +347,10 @@
             flex-shrink: 0;
             width: 112px;
             height: 72px;
+            /* Deliberate clearance below the gap so the hiker-quip bubble
+               (which pops up above the climber) has room to appear without
+               overlapping the gap-hint text above it. */
+            margin-bottom: 64px;
             border: 3px dashed var(--bridge-gap-border);
             border-radius: 12px;
             background: var(--bridge-gap-bg);
@@ -395,6 +398,7 @@
             opacity: 0.9;
             z-index: 2;
             flex-shrink: 0;
+            margin-bottom: 16px;
         }
 
         .rack-label {
@@ -503,7 +507,7 @@
                 padding: 12px 10px 16px;
             }
             .cliff-face {
-                height: 210px;
+                height: 260px;
                 max-width: 190px;
             }
             .planks-crossed {
@@ -512,6 +516,7 @@
             .gap-slot {
                 width: 92px;
                 height: 64px;
+                margin-bottom: 54px;
             }
             .challenge-gap .gap-slot,
             .boss-gap .gap-slot {
