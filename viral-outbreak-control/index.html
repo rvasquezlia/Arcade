@@ -48,11 +48,12 @@
             <p class="lab-subtitle">Epidemic Modeling Lab // Exponential Growth &amp; Decay</p>
 
             <div class="brief-box">
-                <p style="margin-bottom: 10px;"><strong>EPIDEMIOLOGIST BRIEFING:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>EPIDEMIOLOGIST BRIEFING (please try to look calm):</strong></p>
                 <ul>
                     <li><strong>Objective:</strong> Model 11 outbreak &amp; containment scenarios using \( y = a \cdot b^x \), where \( a \) is the starting value and \( b \) is the daily growth or decay factor.</li>
-                    <li><strong>Dual Control Panel:</strong> Drag the \( a \) and \( b \) sliders to match each scenario. Watch your curve draw live on the outbreak chart.</li>
-                    <li><strong>Containment Meter:</strong> You start at 100% Containment. Precise models restore containment (+15%). Inaccurate models drain containment based on how far off your curve is.</li>
+                    <li><strong>Live Outbreak Simulator:</strong> Type your \( a \) and \( b \) values into the control panel. A population of little dots will immediately spread (or recover from) infection on screen, animated live from Day 0 &mdash; change a number and the whole simulation replays instantly.</li>
+                    <li><strong>Target Overlay:</strong> A faint dashed curve and a \( \small\text{🎯} \) marker on the mini-graph show the actual outbreak the field report describes. Tune your numbers until your solid curve and dot swarm line up with it.</li>
+                    <li><strong>Containment Meter:</strong> You start at 100% Containment. Deploying a matching model restores containment (+15%). A mismatched model drains containment based on how far off you were.</li>
                     <li><strong>Session Memory:</strong> This lab holds data only in active memory. Reloading the page resets the outbreak log completely.</li>
                 </ul>
             </div>
@@ -69,7 +70,8 @@
         <!-- 2. GAMEPLAY SCREEN -->
         <div id="gameScreen" style="display: none;">
             <h2 id="scenarioHeader" class="lab-title" style="font-size: 1.3rem; text-align: left;">Scenario 01: Outbreak Origin</h2>
-            <p class="lab-subtitle" style="text-align: left; margin-bottom: 14px;">LIVE MODELING CONSOLE ENGAGED</p>
+            <p class="lab-subtitle" style="text-align: left; margin-bottom: 6px;">LIVE MODELING CONSOLE ENGAGED</p>
+            <p id="narratorLine" class="narrator-line">🎙️ Standing by for outbreak telemetry...</p>
 
             <!-- Status HUD -->
             <div class="hud-status-bar">
@@ -88,6 +90,14 @@
                     <span id="modelReadout" class="hud-value" style="color: var(--accent-gold);">a=0, b=0.00</span>
                 </div>
                 <div class="hud-item">
+                    <span class="hud-label">Sim Day</span>
+                    <span id="simDayReadout" class="hud-value">0.0 / 6</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Simulated Infected</span>
+                    <span id="simInfectedReadout" class="hud-value">0 / 90</span>
+                </div>
+                <div class="hud-item">
                     <span class="hud-label">Score</span>
                     <span id="scoreDisplay" class="hud-value">0 PTS</span>
                 </div>
@@ -100,6 +110,7 @@
                 <div class="canvas-wrapper">
                     <canvas id="curveCanvas" width="400" height="340"></canvas>
                 </div>
+                <p class="canvas-legend">🔴 Infected &nbsp;•&nbsp; ⚪ Healthy &nbsp;•&nbsp; ┈┈ Target curve &nbsp;•&nbsp; 🎯 Containment check</p>
 
                 <!-- Terminal Right -->
                 <div class="terminal-panel">
@@ -111,23 +122,22 @@
                             </div>
                         </div>
 
-                        <!-- Manual Slider Controls -->
+                        <!-- Typed Parameter Controls (drives the live simulator) -->
                         <div class="coord-control-group">
-                            <div class="slider-row">
-                                <span class="slider-label">a (initial):</span>
-                                <input type="range" id="sliderA" class="coord-slider" min="0" max="300" value="0" step="5" oninput="updateFromSliders()">
-                                <span id="valADisplay" class="coord-val-display">0</span>
+                            <div class="input-row">
+                                <label class="slider-label" for="inputA">a (initial):</label>
+                                <input type="number" id="inputA" class="param-input" min="0" max="500" step="1" placeholder="0" inputmode="decimal" oninput="onParamChange()">
                             </div>
-                            <div class="slider-row">
-                                <span class="slider-label">b (factor):</span>
-                                <input type="range" id="sliderB" class="coord-slider" min="0.05" max="3" value="1" step="0.05" oninput="updateFromSliders()">
-                                <span id="valBDisplay" class="coord-val-display">1.00</span>
+                            <div class="input-row">
+                                <label class="slider-label" for="inputB">b (factor):</label>
+                                <input type="number" id="inputB" class="param-input" min="0" max="10" step="0.01" placeholder="1.00" inputmode="decimal" oninput="onParamChange()">
                             </div>
+                            <div id="matchQualityLine" class="match-quality">🔴 Type your model above to launch the live simulation.</div>
                         </div>
                     </div>
 
                     <div>
-                        <button class="fire-btn" onclick="deployModel()">DEPLOY MODEL 🧪</button>
+                        <button class="fire-btn" onclick="deployModel()">DEPLOY CONTAINMENT 🧪</button>
                         <div id="feedbackLine" class="feedback-line"></div>
                     </div>
                 </div>
@@ -139,6 +149,7 @@
         <div id="failScreen" class="screen-center" style="display: none;">
             <h1 class="lab-title" style="color: var(--accent-red);">CONTAINMENT FAILURE</h1>
             <p class="lab-subtitle">Modeling error variance depleted your containment meter to zero.</p>
+            <p style="max-width: 560px; margin-bottom: 10px; font-style: italic; color: var(--text-secondary);">🎙️ Field Report: "The dots have unionized. Negotiations with the outbreak are ongoing."</p>
             <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Modeling Score: <span id="failScore">0</span> PTS</p>
 
             <div class="kit-submission-card">
@@ -155,9 +166,10 @@
             <h1 class="lab-title">OUTBREAK CONTAINED</h1>
             <p class="lab-subtitle">Exponential Modeling Mastery Awarded</p>
 
-            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 16px; font-weight: 600;">
+            <p style="font-size: 1.1rem; max-width: 620px; line-height: 1.6; margin-bottom: 8px; font-weight: 600;">
                 Outstanding epidemiological modeling! You successfully matched exponential growth and decay curves \( y = a \cdot b^x \) across every outbreak and containment scenario.
             </p>
+            <p style="max-width: 560px; margin-bottom: 16px; font-style: italic; color: var(--text-secondary);">🎙️ Field Report: "The dots are throwing a tiny, statistically-significant party. Somewhere, a virus is filing paperwork."</p>
 
             <div style="font-family: var(--font-mono); font-size: 1.2rem; background: var(--card-bg); padding: 10px 24px; border: 1px solid var(--border-color); margin-bottom: 10px; border-radius: 6px;">
                 Final Modeling Score: <span id="victoryScore" style="color: var(--accent-teal);">1100</span> PTS

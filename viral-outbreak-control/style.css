@@ -16,6 +16,22 @@
             --panel-sunken: rgba(0, 0, 0, 0.3);
             --canvas-bg: #050b12;
 
+            /* Live Outbreak Simulator theming — every canvas color is a
+               themed token, never a hardcoded hex read at draw time, and
+               each is restated explicitly in the light-mode block below
+               (var-of-var does not reliably re-track across themes). */
+            --grid-color: #16293a;
+            --axis-color: var(--accent-teal);
+            --graph-text-color: var(--text-secondary);
+            --curve-color: var(--accent-gold);
+            --target-curve-color: rgba(248, 113, 113, 0.55);
+            --playhead-color: rgba(228, 237, 245, 0.35);
+            --strip-bg-color: rgba(0, 0, 0, 0.22);
+            --dot-healthy-color: #2c4a5e;
+            --dot-healthy-border: #3d6580;
+            --dot-infected-color: #f87171;
+            --dot-infected-glow: rgba(248, 113, 113, 0.6);
+
             /* Shared kit mapping */
             --kit-accent: var(--accent-teal);
             --kit-accent-ink: #00201a;
@@ -44,6 +60,21 @@
             --shadow-color: rgba(10, 40, 40, 0.1);
             --panel-sunken: rgba(12, 60, 55, 0.05);
             --canvas-bg: #f6faf9;
+
+            /* Live Outbreak Simulator theming (light) — redeclared in full,
+               same reasoning as --kit-* below: never rely on a var-of-var
+               inheriting its override, restate every token explicitly. */
+            --grid-color: #d8e6e3;
+            --axis-color: var(--accent-teal);
+            --graph-text-color: var(--text-secondary);
+            --curve-color: var(--accent-gold);
+            --target-curve-color: rgba(220, 38, 38, 0.45);
+            --playhead-color: rgba(12, 31, 34, 0.25);
+            --strip-bg-color: rgba(12, 60, 55, 0.06);
+            --dot-healthy-color: #cfe3df;
+            --dot-healthy-border: #9fc4bd;
+            --dot-infected-color: #dc2626;
+            --dot-infected-glow: rgba(220, 38, 38, 0.4);
 
             /* Shared kit mapping (light) — redeclared in full: a custom
                property whose value is var(--other-var) does not reliably
@@ -286,6 +317,60 @@
             text-align: right;
             font-size: 1.05rem;
             font-weight: 700;
+        }
+
+        .narrator-line {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-style: italic;
+            color: var(--accent-gold);
+            text-align: left;
+            margin-bottom: 14px;
+            min-height: 18px;
+        }
+
+        .canvas-legend {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 8px;
+            max-width: 400px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+        }
+
+        .param-input {
+            flex: 1;
+            font: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: right;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            background: var(--panel-sunken);
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        .param-input:focus {
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 3px var(--glow-color);
+        }
+
+        .match-quality {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            min-height: 20px;
+            margin-top: 2px;
         }
 
         .fire-btn {
