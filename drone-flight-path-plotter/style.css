@@ -248,39 +248,43 @@ canvas {
     font-weight: 600;
 }
 
-/* Slider Controls */
-.slider-control-group {
+/* Drag Controls Hint */
+.drag-hint-box {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
     margin-bottom: 18px;
+    background: var(--panel-sunken);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 14px 16px;
 }
 
-.slider-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-mono);
-}
-
-.slider-label {
-    width: 110px;
+.drag-hint-title {
+    font-family: var(--font-header);
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--accent-sky);
+}
+
+.drag-hint-text {
     font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
 }
 
-.flight-slider {
-    flex: 1;
-    accent-color: var(--accent-sky);
-    cursor: pointer;
+.pilot-chatter {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--accent-amber);
+    font-style: italic;
+    min-height: 18px;
 }
 
-.slider-val-display {
-    width: 44px;
-    text-align: right;
-    font-size: 1.05rem;
-    font-weight: 700;
+/* Canvas: block touch scrolling so dragging handles works on mobile */
+#flightCanvas {
+    touch-action: none;
+    cursor: grab;
 }
 
 /* Chart Course Button */
@@ -302,6 +306,11 @@ canvas {
 
 .chart-btn:hover {
     opacity: 0.92;
+}
+
+.chart-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Feedback */

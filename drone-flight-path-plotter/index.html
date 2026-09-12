@@ -35,8 +35,9 @@
             <div class="brief-box">
                 <p style="margin-bottom: 10px;"><strong>FLIGHT COMPUTER BRIEFING:</strong></p>
                 <ul>
-                    <li><strong>Objective:</strong> Adjust the slope (m) and starting altitude (b) sliders so the plotted flight path <code>y = mx + b</code> matches the mission's target course.</li>
-                    <li><strong>Live Grid Draw:</strong> Your flight path is drawn in real time on the coordinate grid as you move the sliders — no target line is shown, so chart carefully.</li>
+                    <li><strong>Objective:</strong> Drag the <strong>⚓ ANCHOR</strong> handle (sets y-intercept b) and the <strong>🕹️ TILT</strong> handle (sets slope m) so your flight path <code>y = mx + b</code> matches the mission's target course.</li>
+                    <li><strong>Live Grid Draw:</strong> Your flight path updates in real time on the coordinate grid as you drag — no target line is shown, so aim carefully using the skyline gaps as clues.</li>
+                    <li><strong>Threading the Gate:</strong> Press LAUNCH and your drone flies the exact line you dragged. Match the target and it threads clean through the gaps in the skyscrapers; miss, and it clips a building.</li>
                     <li><strong>Drone Battery:</strong> You launch at 100% battery. Exact course matches restore battery (+15%); missed courses drain battery based on how far off your m and b were.</li>
                     <li><strong>Route Randomization:</strong> Missions are pulled from a larger route bank and shuffled every flight.</li>
                     <li><strong>Progress Disclaimer:</strong> This terminal holds session memory only. Reloading or leaving the page wipes the flight log completely.</li>
@@ -91,22 +92,15 @@
                             <div id="missionPromptText" class="mission-prompt">Awaiting flight plan...</div>
                         </div>
 
-                        <div class="slider-control-group">
-                            <div class="slider-row">
-                                <span class="slider-label">SLOPE (m):</span>
-                                <input type="range" id="sliderM" class="flight-slider" min="-5" max="5" value="0" step="0.5" oninput="updateFromSliders()">
-                                <span id="valMDisplay" class="slider-val-display">0</span>
-                            </div>
-                            <div class="slider-row">
-                                <span class="slider-label">ALTITUDE (b):</span>
-                                <input type="range" id="sliderB" class="flight-slider" min="-10" max="10" value="0" step="1" oninput="updateFromSliders()">
-                                <span id="valBDisplay" class="slider-val-display">0</span>
-                            </div>
+                        <div class="drag-hint-box">
+                            <div class="drag-hint-title">✈️ Flight Controls</div>
+                            <p class="drag-hint-text">Drag <strong>⚓ ANCHOR</strong> up/down to set <strong>b</strong>. Drag <strong>🕹️ TILT</strong> to set <strong>m</strong>. Both work on mouse or touch — right on the map!</p>
+                            <div id="pilotChatter" class="pilot-chatter">🧑‍✈️ "Standing by for coordinates, chief..."</div>
                         </div>
                     </div>
 
                     <div>
-                        <button class="chart-btn" onclick="chartCourse()">CHART COURSE 🧭</button>
+                        <button class="chart-btn" id="launchBtn" onclick="launchDrone()">LAUNCH DRONE 🚀</button>
                         <div id="feedbackLine" class="feedback-line"></div>
                     </div>
                 </div>
