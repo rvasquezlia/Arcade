@@ -37,9 +37,10 @@
             <p>Test your 6th-grade math skills before starting the new year!</p>
             <ul>
                 <li>Select tiles from the board ranging from <strong>$100</strong> to <strong>$400</strong>.</li>
+                <li><strong>No more multiple choice</strong> — type your answer before the buzzer timer runs out!</li>
                 <li><strong>Dynamic Multipliers:</strong> 2x & 3x challenges are randomly hidden across tiles every game!</li>
-                <li><strong>Shuffled Choices:</strong> Answer options change position every time you play.</li>
-                <li>Pick the right choice to maximize your total score!</li>
+                <li><strong>Daily Double:</strong> one tile per game is a secret Daily Double — wager your own points before you even see the question!</li>
+                <li>Score at least <strong>$2,000</strong> total to prove you're 7th-grade ready. Byte the host will be watching. 🤖</li>
             </ul>
 
             <div class="kit-name-field">
@@ -57,14 +58,42 @@
         <div class="modal-content">
             <div id="multiplier-tag"></div>
             <div id="question-category" style="color: var(--accent-blue); font-weight: 800; text-transform: uppercase; letter-spacing: 1px;"></div>
-            <div id="question-body" class="question-text"></div>
-            <div id="options-container" class="options-grid"></div>
-            <div id="feedback" class="feedback"></div>
+
+            <!-- Daily Double wager screen (shown only for the secret Daily Double tile) -->
+            <div id="wager-view" hidden>
+                <p class="dd-host-line">⭐ You uncovered the DAILY DOUBLE! ⭐</p>
+                <p>Wager some of your points before you see the question. Answer correctly to win the wager, or lose it if you're wrong or run out of time.</p>
+                <div class="wager-form">
+                    <label for="wagerInput">Your Wager ($):</label>
+                    <input type="number" id="wagerInput" class="wager-input" step="5">
+                    <div id="wager-range-note" class="answer-hint"></div>
+                    <button class="btn" id="wager-submit-btn" onclick="submitWager()">Lock In Wager 🔒</button>
+                </div>
+            </div>
+
+            <!-- Typed-answer + buzzer screen -->
+            <div id="answer-view">
+                <div id="question-body" class="question-text"></div>
+
+                <div class="timer-wrap">
+                    <div class="timer-bar-track"><div class="timer-bar-fill" id="timer-bar-fill"></div></div>
+                    <div class="timer-number" id="timer-number">25</div>
+                </div>
+
+                <div class="answer-form">
+                    <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer..." autocomplete="off">
+                    <button class="btn" id="submit-answer-btn" onclick="submitAnswer()">Submit 🔔</button>
+                </div>
+                <div id="answer-hint" class="answer-hint"></div>
+
+                <div id="feedback" class="feedback"></div>
+            </div>
+
             <button id="next-btn" class="btn" style="display: none; margin-top: 20px;" onclick="closeQuestion()">Continue</button>
         </div>
     </div>
 
-    <!-- Game Completion Modal -->
+    <!-- Game Completion Modal (win) -->
     <div id="completion-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div style="font-size: 3.5rem; margin-bottom: 10px;">🏆</div>
@@ -72,7 +101,7 @@
             <p style="font-size: 1.3rem; font-weight: 800; color: var(--accent-green); margin-bottom: 10px;">
                 Final Score: $<span id="final-score">0</span>
             </p>
-            <p>You have answered all 24 questions on the board!</p>
+            <p>You have answered all 24 questions on the board and proved you're 7th-grade ready!</p>
 
             <div class="kit-submission-card">
                 <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayWin">Student</span></div>
@@ -84,8 +113,34 @@
         </div>
     </div>
 
+    <!-- Game Completion Modal (fail) -->
+    <div id="fail-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content fail-card">
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">📚</div>
+            <h2>Needs More Review</h2>
+            <p style="font-size: 1.3rem; font-weight: 800; color: var(--accent-red); margin-bottom: 10px;">
+                Final Score: $<span id="final-score-fail">0</span>
+            </p>
+            <p>You answered all 24 questions, but didn't reach the $2,000 readiness bar this time. Give it another shot!</p>
+
+            <div class="kit-submission-card">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now as proof of completion for your teacher.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('fail-modal', {buttonEl: this, gameSlug: 'jeopardy-7th-grade', playerName: playerName, score: currentScore})">📸 Save Screenshot</button>
+            </div>
+
+            <button class="btn" style="margin-top: 10px;" onclick="restartGame()">Try Again 🔄</button>
+        </div>
+    </div>
+
     <!-- Game Board Grid -->
     <main class="board" id="board"></main>
+
+    <!-- Persistent snarky game-show host -->
+    <div id="host-widget" class="host-widget" aria-hidden="true">
+        <div class="host-avatar">🤖</div>
+        <div class="host-bubble" id="host-bubble">Let's see what you've got, math stars!</div>
+    </div>
 
     <script src="../shared/arcade-kit.js" defer></script>
     <script src="script.js" defer></script>
