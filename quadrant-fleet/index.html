@@ -43,16 +43,17 @@
         <!-- 1. BRIEFING SCREEN -->
         <div id="startScreen" class="screen-center">
             <h1 class="title-header">Quadrant Fleet</h1>
-            <p class="subtitle-header">Interactive Tactical Radar Grid // Direct Coordinate Control</p>
+            <p class="subtitle-header">Interactive Tactical Radar Grid // Direct Coordinate Control // Sass Levels: Nominal</p>
 
             <div class="briefing-box">
-                <p style="margin-bottom: 10px;"><strong>TACTICAL OPERATIONAL INSTRUCTIONS:</strong></p>
+                <p style="margin-bottom: 10px;"><strong>TACTICAL OPERATIONAL INSTRUCTIONS (read carefully — my patience circuits are limited):</strong></p>
                 <ul>
-                    <li><strong>Interactive Radar Targeting:</strong> Instead of simple multiple-choice questions, you must manually position target vectors on an active Cartesian coordinate grid ($x, y \in [-10, 10]$).</li>
-                    <li><strong>Dual Input System:</strong> Drag the $X$ and $Y$ coordinate sliders OR click directly on the interactive radar grid canvas to select grid positions.</li>
-                    <li><strong>Battery Energy Mechanics:</strong> You operate on a 100% Operational Battery Core. Precise locks restore battery reserves (+15%). Inaccurate locks drain battery proportional to your grid error distance.</li>
-                    <li><strong>Tactical Geometry:</strong> Calculate reflections, midpoints, translations, and trajectories to lock down all 10 target sectors.</li>
-                    <li><strong>Session Integrity:</strong> Session progress lives strictly in active memory. Reloading the page clears the radar logs and restarts the grid operation.</li>
+                    <li><strong>Interactive Radar Targeting:</strong> Forget multiple choice. You will manually position target vectors on a live Cartesian coordinate grid ($x, y \in [-10, 10]$). Real coordinates. Real clicking.</li>
+                    <li><strong>Dual Input System:</strong> Drag the $X$ and $Y$ coordinate sliders OR click directly on the radar canvas. I don't care which method you use, only whether it's accurate.</li>
+                    <li><strong>Incoming Contacts:</strong> Some sectors don't hold still. Lock the correct coordinates and a hostile blip will sweep across the radar — click it while it's in range for a bonus. Miss the window and your coordinate lock still counts, so relax.</li>
+                    <li><strong>Battery Energy Mechanics:</strong> You operate on a 100% Tactical Battery Core. Exact locks restore reserves (+15%). Sloppy locks drain it proportional to your grid error distance. Chain exact locks for a streak bonus — consistency apparently deserves a reward now.</li>
+                    <li><strong>Tactical Geometry:</strong> Reflections, midpoints, translations, and trajectories across all 10 target sectors. No shortcuts, no partial credit from me.</li>
+                    <li><strong>Session Integrity:</strong> Progress lives strictly in active memory. Reloading the page clears the radar logs and restarts the operation. Screenshot your victories — glory should outlast my memory banks.</li>
                 </ul>
             </div>
 
@@ -90,6 +91,10 @@
                     <span class="hud-label">Score</span>
                     <span id="scoreDisplay" class="hud-value">0 PTS</span>
                 </div>
+                <div class="hud-item">
+                    <span class="hud-label">Lock Streak</span>
+                    <span id="streakDisplay" class="hud-value" style="color: var(--accent-gold);">0x</span>
+                </div>
             </div>
 
             <!-- Arena Split Grid -->
@@ -98,6 +103,10 @@
                 <!-- Canvas Left -->
                 <div class="canvas-wrapper">
                     <canvas id="radarCanvas" width="380" height="380"></canvas>
+                    <div id="interceptBanner" class="intercept-banner" style="display: none;">
+                        <span>⚠ Inbound Contact — Intercept!</span>
+                        <div class="intercept-timer-track"><div id="interceptTimerFill" class="intercept-timer-fill"></div></div>
+                    </div>
                 </div>
 
                 <!-- Terminal Right -->
@@ -108,6 +117,7 @@
                             <div id="missionPromptText" class="telemetry-prompt">
                                 Acquiring target coordinates...
                             </div>
+                            <div id="aiQuipLine" class="ai-quip-line"></div>
                         </div>
 
                         <!-- Manual Slider Controls -->
@@ -137,7 +147,7 @@
         <!-- 3. MISSION FAILED / BATTERY DEPLETED -->
         <div id="failScreen" class="screen-center" style="display: none;">
             <h1 class="title-header" style="color: var(--accent-red);">BATTERY EXHAUSTED // SYSTEM OFFLINE</h1>
-            <p class="subtitle-header">Targeting error variance depleted your tactical operational battery core.</p>
+            <p class="subtitle-header">Targeting error variance depleted your tactical operational battery core. I did warn you, calmly and repeatedly.</p>
             <p style="font-family: var(--font-mono); margin-bottom: 16px;">Final Radar Score: <span id="failScore">0</span> PTS</p>
 
             <div class="kit-submission-card">
@@ -152,10 +162,10 @@
         <!-- 4. VICTORY SCREEN -->
         <div id="victoryScreen" class="screen-center" style="display: none;">
             <h1 class="title-header">MISSION ACCOMPLISHED</h1>
-            <p class="subtitle-header">Grid Command Mastery Awarded</p>
+            <p class="subtitle-header">Grid Command Mastery Awarded (Reluctant AI Approval Included)</p>
 
             <p style="font-size: 1.15rem; max-width: 640px; line-height: 1.6; margin-bottom: 16px; font-weight: 600;">
-                Outstanding spatial precision! You successfully navigated all 10 radar grid sectors, plotting precise coordinate vectors, reflections, translations, and midpoints on the live Cartesian plane!
+                Outstanding spatial precision! You navigated all 10 radar grid sectors, plotting precise coordinate vectors, reflections, translations, and midpoints on the live Cartesian plane — and intercepted more than one contact that didn't see it coming. I'm updating your file from "liability" to "asset."
             </p>
 
             <div style="font-family: var(--font-mono); font-size: 1.25rem; background: var(--card-bg); padding: 10px 24px; border: 1px solid var(--border-color); margin-bottom: 10px; border-radius: 4px;">
