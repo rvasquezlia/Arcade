@@ -12,6 +12,25 @@
             --kit-border: #334155;
             --kit-input-bg: #1e293b;
             --kit-error: #ef4444;
+
+            /* Rope-bridge scene tokens (dark, default) */
+            --bridge-sky-top: #1e293b;
+            --bridge-sky-bottom: #0f172a;
+            --bridge-chasm: #020617;
+            --bridge-rope: #b58a5c;
+            --bridge-plank-bg: linear-gradient(180deg, #c99a63, #8a5a2b);
+            --bridge-plank-border: #6b4423;
+            --bridge-plank-text: #241407;
+            --bridge-rack-bg: rgba(15, 23, 42, 0.6);
+            --bridge-rack-border: #334155;
+            --bridge-gap-border: #64748b;
+            --bridge-gap-bg: rgba(2, 6, 23, 0.45);
+            --bridge-hiker-shadow: rgba(0, 0, 0, 0.5);
+            --bridge-rope-good: #f59e0b;
+            --bridge-rope-lost: #475569;
+            --bridge-toast-bg: #1e293b;
+            --bridge-toast-text: #f8fafc;
+            --bridge-toast-border: #334155;
         }
 
         body.light-mode {
@@ -22,6 +41,25 @@
             --kit-border: #cbd5e1;
             --kit-input-bg: #f8fafc;
             --kit-error: #dc2626;
+
+            /* Rope-bridge scene tokens (light override) */
+            --bridge-sky-top: #bfdbfe;
+            --bridge-sky-bottom: #e0f2fe;
+            --bridge-chasm: #94a3b8;
+            --bridge-rope: #92663f;
+            --bridge-plank-bg: linear-gradient(180deg, #e0b479, #ad7a3d);
+            --bridge-plank-border: #7a4a1e;
+            --bridge-plank-text: #241407;
+            --bridge-rack-bg: rgba(255, 255, 255, 0.75);
+            --bridge-rack-border: #cbd5e1;
+            --bridge-gap-border: #64748b;
+            --bridge-gap-bg: rgba(148, 163, 184, 0.3);
+            --bridge-hiker-shadow: rgba(0, 0, 0, 0.25);
+            --bridge-rope-good: #d97706;
+            --bridge-rope-lost: #cbd5e1;
+            --bridge-toast-bg: #ffffff;
+            --bridge-toast-text: #0f172a;
+            --bridge-toast-border: #cbd5e1;
         }
 
         body {
@@ -155,4 +193,314 @@
             background-color: #f8fafc !important;
             border-color: #cbd5e1 !important;
             color: #1e293b !important;
+        }
+
+        /* ==========================================================
+           Rope-Bridge Plank Builder — drag-and-drop mechanic
+           ========================================================== */
+
+        .lives-row {
+            display: flex;
+            gap: 4px;
+            font-size: 1.15rem;
+            line-height: 1;
+        }
+        .rope-icon {
+            transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+        }
+        .rope-icon.lost {
+            opacity: 0.28;
+            filter: grayscale(1);
+            transform: scale(0.9) rotate(-8deg);
+        }
+
+        .bridge-scene {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            min-height: 150px;
+            padding: 14px 16px 26px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, var(--bridge-sky-top), var(--bridge-sky-bottom));
+            border: 1px solid var(--bridge-rack-border);
+            overflow: hidden;
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .bridge-scene::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 36px;
+            height: 5px;
+            background: repeating-linear-gradient(90deg, var(--bridge-rope) 0 14px, transparent 14px 22px);
+            opacity: 0.9;
+            z-index: 1;
+        }
+        .bridge-scene::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 30px;
+            background: var(--bridge-chasm);
+            z-index: 0;
+        }
+        .bridge-scene.challenge-gap {
+            box-shadow: 0 0 0 2px var(--bridge-rope-good) inset;
+        }
+        .bridge-scene.boss-gap {
+            box-shadow: 0 0 0 2px var(--kit-error) inset;
+        }
+
+        .planks-crossed {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+            max-width: 30%;
+        }
+        .mini-plank {
+            width: 14px;
+            height: 9px;
+            border-radius: 2px;
+            background: var(--bridge-rack-border);
+            opacity: 0.45;
+            flex-shrink: 0;
+        }
+        .mini-plank.done {
+            background: var(--bridge-plank-border);
+            opacity: 1;
+            box-shadow: 0 0 6px var(--bridge-rope-good);
+        }
+
+        .hiker-wrap {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 10px;
+            flex-shrink: 0;
+        }
+        .hiker {
+            font-size: 1.9rem;
+            filter: drop-shadow(0 4px 4px var(--bridge-hiker-shadow));
+        }
+        .hiker.hop {
+            animation: hikerHop 0.65s ease;
+        }
+        @keyframes hikerHop {
+            0%   { transform: translate(0, 0) rotate(0deg); }
+            25%  { transform: translate(6px, -16px) rotate(-8deg); }
+            55%  { transform: translate(16px, -4px) rotate(6deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .hiker-quip {
+            position: absolute;
+            bottom: 100%;
+            margin-bottom: 8px;
+            left: 50%;
+            transform: translate(-50%, 4px) scale(0.92);
+            background: var(--bridge-toast-bg);
+            color: var(--bridge-toast-text);
+            border: 1px solid var(--bridge-toast-border);
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            white-space: nowrap;
+            max-width: 200px;
+            white-space: normal;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 5;
+        }
+        .hiker-quip.show {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        .gap-slot {
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+            width: 112px;
+            height: 72px;
+            border: 3px dashed var(--bridge-gap-border);
+            border-radius: 12px;
+            background: var(--bridge-gap-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6px;
+            margin-bottom: 8px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .gap-slot.hover-target {
+            border-color: var(--bridge-rope-good);
+            background: rgba(245, 158, 11, 0.18);
+        }
+        .gap-slot.wobble {
+            animation: gapWobble 0.45s ease;
+            border-color: var(--kit-error);
+        }
+        @keyframes gapWobble {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            20% { transform: translateX(-6px) rotate(-2deg); }
+            40% { transform: translateX(6px) rotate(2deg); }
+            60% { transform: translateX(-4px) rotate(-1deg); }
+            80% { transform: translateX(4px) rotate(1deg); }
+        }
+        .gap-slot.filled {
+            border-style: solid;
+            border-color: var(--bridge-rope-good);
+        }
+        .gap-hint {
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: var(--kit-accent);
+            opacity: 0.85;
+            line-height: 1.2;
+            transition: opacity 0.2s ease;
+        }
+        .challenge-gap .gap-slot,
+        .boss-gap .gap-slot {
+            width: 150px;
+        }
+
+        .finish-post {
+            margin-left: auto;
+            font-size: 1.5rem;
+            align-self: flex-end;
+            padding-bottom: 8px;
+            opacity: 0.85;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .rack-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--kit-accent);
+            margin: 16px 0 8px;
+            opacity: 0.9;
+        }
+        .plank-rack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 14px;
+            background: var(--bridge-rack-bg);
+            border: 1px solid var(--bridge-rack-border);
+        }
+        .plank-slot {
+            flex: 1 1 130px;
+            min-width: 110px;
+            max-width: 260px;
+            height: 62px;
+            position: relative;
+        }
+        .plank-tile {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8px 10px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            background: var(--bridge-plank-bg);
+            border: 3px solid var(--bridge-plank-border);
+            color: var(--bridge-plank-text);
+            font-weight: 800;
+            font-size: 0.92rem;
+            line-height: 1.15;
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: 0 3px 0 var(--bridge-plank-border), 0 6px 10px rgba(0, 0, 0, 0.25);
+        }
+        .plank-tile:active {
+            cursor: grabbing;
+        }
+        .plank-tile.dragging {
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.35);
+            filter: brightness(1.06);
+        }
+        .plank-tile.disabled {
+            pointer-events: none;
+        }
+        .plank-tile.tried-wrong {
+            outline: 2px dashed var(--kit-error);
+            outline-offset: 2px;
+        }
+        .plank-tile.crack {
+            animation: plankCrack 0.4s ease;
+        }
+        @keyframes plankCrack {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-6deg); }
+            50% { transform: rotate(5deg); }
+            75% { transform: rotate(-3deg); }
+        }
+        .plank-tile.snap-correct {
+            box-shadow: 0 0 0 3px var(--bridge-rope-good), 0 6px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translate(-50%, 10px);
+            background: var(--bridge-toast-bg);
+            color: var(--bridge-toast-text);
+            border: 1px solid var(--bridge-toast-border);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 80;
+            max-width: 90vw;
+            text-align: center;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 480px) {
+            .bridge-scene {
+                gap: 6px;
+                padding: 12px 10px 22px;
+            }
+            .planks-crossed {
+                display: none;
+            }
+            .gap-slot {
+                width: 92px;
+                height: 64px;
+            }
+            .challenge-gap .gap-slot,
+            .boss-gap .gap-slot {
+                width: 120px;
+            }
+            .plank-slot {
+                flex: 1 1 100%;
+                height: 56px;
+            }
         }

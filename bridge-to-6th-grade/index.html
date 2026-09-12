@@ -31,7 +31,7 @@
                     <h1 class="title-gradient text-lg sm:text-2xl font-black tracking-tight truncate">
                         Bridge to 6th Grade
                     </h1>
-                    <p class="text-xs text-slate-400 text-sub-theme font-bold tracking-wide hidden sm:block">Interactive Math Challenge Quest</p>
+                    <p class="text-xs text-slate-400 text-sub-theme font-bold tracking-wide hidden sm:block">Drag-the-Plank Rope Bridge Quest</p>
                 </div>
             </div>
             
@@ -85,19 +85,39 @@
             </div>
 
             <!-- Balanced Question Title -->
-            <h2 id="question-text" class="text-xl sm:text-2xl md:text-3xl font-extrabold mb-6 text-slate-100 text-main-theme leading-relaxed">
+            <h2 id="question-text" class="text-xl sm:text-2xl md:text-3xl font-extrabold mb-4 text-slate-100 text-main-theme leading-relaxed">
                 Loading question...
             </h2>
 
-            <!-- Answer Options Grid -->
-            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-2">
-                <!-- Option buttons generated dynamically -->
+            <!-- Safety Ropes (lives) -->
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                <div id="lives-row" class="lives-row" aria-label="Safety ropes remaining"></div>
+                <div class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-400 text-sub-theme">🪢 Safety Ropes</div>
+            </div>
+
+            <!-- Rope Bridge Scene -->
+            <div id="bridge-scene" class="bridge-scene">
+                <div id="planks-crossed" class="planks-crossed"></div>
+                <div class="hiker-wrap">
+                    <div id="hiker-quip" class="hiker-quip"></div>
+                    <div id="hiker" class="hiker">🧗</div>
+                </div>
+                <div id="gap-slot" class="gap-slot">
+                    <span id="gap-hint" class="gap-hint">Drag a plank here!</span>
+                </div>
+                <div class="finish-post">🚩</div>
+            </div>
+
+            <!-- Supply Rack (draggable planks) -->
+            <div id="rack-label" class="rack-label">🧰 Supply Rack — drag (or tap) the correct plank into the gap</div>
+            <div id="plank-rack" class="plank-rack">
+                <!-- Plank tiles generated dynamically -->
             </div>
 
             <!-- Optional Skip Button -->
             <div id="skip-container" class="hidden text-right mt-5 pt-3 border-t border-slate-700/50">
                 <button onclick="skipChallenge()" class="text-xs sm:text-sm font-extrabold text-slate-400 hover:text-amber-400 transition-colors underline underline-offset-4">
-                    Skip Challenge ➔
+                    Use Grappling Hook (Skip) ➔
                 </button>
             </div>
         </div>
@@ -106,7 +126,8 @@
         <div id="victory-screen" class="hidden game-card-theme text-center bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-10 shadow-xl">
             <div class="text-6xl sm:text-7xl mb-4 animate-bounce">🏆</div>
             <h2 class="text-3xl sm:text-5xl font-black text-amber-400 mb-3 tracking-tight">Quest Completed!</h2>
-            <p class="text-slate-300 text-sub-theme max-w-lg mx-auto mb-6 text-base sm:text-lg font-semibold">You conquered all levels, solved logic challenges, and proved you have been studying for 6th Grade Math!</p>
+            <p class="text-slate-300 text-sub-theme max-w-lg mx-auto mb-2 text-base sm:text-lg font-semibold">You conquered all levels, solved logic challenges, and proved you have been studying for 6th Grade Math!</p>
+            <p id="victory-quip" class="text-amber-400 font-black mb-6 text-sm sm:text-base"></p>
             <div class="score-box-theme inline-block bg-slate-900 border border-slate-700 rounded-2xl px-8 py-4 mb-6 shadow-inner">
                 <span class="text-xs text-slate-400 text-sub-theme uppercase tracking-wider block font-black mb-1">Final Score</span>
                 <span id="final-score" class="text-4xl sm:text-5xl font-black text-indigo-400">0</span>
@@ -123,7 +144,32 @@
             </button>
         </div>
 
+        <!-- Final Fail Screen -->
+        <div id="fail-screen" class="hidden game-card-theme text-center bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-10 shadow-xl">
+            <div class="text-6xl sm:text-7xl mb-4">🪢💥</div>
+            <h2 class="text-3xl sm:text-5xl font-black text-rose-400 mb-3 tracking-tight">Out of Ropes!</h2>
+            <p class="text-slate-300 text-sub-theme max-w-lg mx-auto mb-2 text-base sm:text-lg font-semibold">The canyon got the better of you this time — but every good hiker falls once before they cross for good.</p>
+            <p id="fail-quip" class="text-rose-400 font-black mb-6 text-sm sm:text-base"></p>
+            <div class="score-box-theme inline-block bg-slate-900 border border-slate-700 rounded-2xl px-8 py-4 mb-6 shadow-inner">
+                <span class="text-xs text-slate-400 text-sub-theme uppercase tracking-wider block font-black mb-1">Score When You Fell</span>
+                <span id="fail-score" class="text-4xl sm:text-5xl font-black text-indigo-400">0</span>
+            </div>
+
+            <div class="kit-submission-card" style="margin-left: auto; margin-right: auto;">
+                <div class="kit-player-line">🧑‍🎓 Player: <span id="playerNameDisplayFail">Student</span></div>
+                <p class="kit-submission-note">Progress isn't saved — save this screen now to show your teacher how far you got.</p>
+                <button class="kit-screenshot-btn" id="screenshotBtnFail" onclick="ArcadeKit.saveScreenshot('fail-screen', {buttonEl: this, gameSlug: 'bridge-to-6th-grade', playerName: playerName, score: score})">📸 Save Screenshot</button>
+            </div>
+
+            <button onclick="restartQuest()" class="py-3.5 px-10 rounded-xl font-extrabold text-base sm:text-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-indigo-500/25">
+                Try Again
+            </button>
+        </div>
+
     </main>
+
+    <!-- Toast (quick non-blocking feedback) -->
+    <div id="toast"></div>
 
     <!-- Mission Briefing Instruction Modal -->
     <div id="intro-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity duration-300">
@@ -139,15 +185,15 @@
             <div class="modal-box-theme text-left space-y-3 bg-slate-900/70 p-5 rounded-xl border border-slate-700/60 mb-6 text-sm sm:text-base text-slate-200 font-semibold leading-relaxed">
                 <div class="flex items-start space-x-3">
                     <span class="text-indigo-400 font-black text-lg">1.</span>
-                    <p>Solve <b>8 Core Math Questions</b> in each level (+100 pts each).</p>
+                    <p><b>🪵 Drag the correct plank</b> from the Supply Rack into the gap to solve <b>8 Core Math Questions</b> per level (+100 pts each).</p>
                 </div>
                 <div class="flex items-start space-x-3">
                     <span class="text-amber-400 font-black text-lg">2.</span>
-                    <p>Unlock the <b>⚡ Double-Reward Logic Challenge</b> at the end of each level (+200 pts!).</p>
+                    <p>Cross the <b>⚡ Double-Reward Logic Chasm</b> at the end of each level (+200 pts!).</p>
                 </div>
                 <div class="flex items-start space-x-3">
                     <span class="text-purple-400 font-black text-lg">3.</span>
-                    <p>Conquer all 4 levels to face the <b>🔥 Ultimate Boss Challenge</b> (+300 pts!).</p>
+                    <p>You start with <b>4 🪢 Safety Ropes</b>. A wrong plank cracks and costs a rope — run out and you fall! Conquer all 4 levels to face the <b>🔥 Ultimate Boss Chasm</b> (+300 pts!).</p>
                 </div>
             </div>
 
